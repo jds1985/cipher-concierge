@@ -28,11 +28,11 @@ CORE DIRECTIVES:
 
     const modelEndpoint =
       process.env.MODEL_API_URL || "https://api.groq.com/openai/v1/chat/completions";
-    const modelName = process.env.MODEL_NAME || "llama-3.1-8b-instant";
+    const modelName = process.env.MODEL_NAME || "qwen/qwen3.8-27b";
     const apiKey = process.env.MODEL_API_KEY;
 
     if (!apiKey) {
-      return res.status(500).json({ error: "MODEL_API_KEY is not set in environment variables." });
+      return res.status(500).json({ error: "MODEL_API_KEY is not configured." });
     }
 
     const groqResponse = await fetch(modelEndpoint, {
@@ -51,7 +51,7 @@ CORE DIRECTIVES:
 
     if (!groqResponse.ok) {
       const errorText = await groqResponse.text();
-      console.error("Model Provider Error:", errorText);
+      console.error("Groq Model Error:", errorText);
       return res.status(groqResponse.status).json({
         error: "Inference provider error",
         details: errorText,
@@ -63,7 +63,7 @@ CORE DIRECTIVES:
 
     return res.status(200).json({ content: reply });
   } catch (err) {
-    console.error("Chat API Handler Exception:", err);
+    console.error("Handler error:", err);
     return res.status(500).json({ error: "Internal server error", details: err.message });
   }
 }
