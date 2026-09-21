@@ -33,56 +33,57 @@ CORE DIRECTIVES:
       ...(Array.isArray(messages) ? messages : []),
     ];
 
-    const modelEndpoint =
-      process.env.MODEL_API_URL || "https://api.groq.com/openai/v1/chat/completions";
-    const modelName = process.env.MODEL_NAME || "openai/gpt-oss-20b";
-    const apiKey = process.env.MODEL_API_KEY;
-
+    const apiKey = (process.env.MODEL_API_KEY || "").trim();
     if (!apiKey) {
       return new Response(
-        JSON.stringify({ error: "Missing MODEL_API_KEY in environment variables." }),
+        JSON.stringify({ error: "Missing MODEL_API_KEY" }),
         { status: 500, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    const groqResponse = await fetch(modelEndpoint, {
+    const endpoint = (process.env.MODEL_API_URL || "https://api.groq.com/openai/v1/chat/completions").trim();
+    // Enforces regex stripping of any hidden newlines, tabs, or whitespace
+    const model = (process.env.MODEL_NAME || "openai/gpt-oss-120b").replace(/\s+/g, "");
+
+    const groqResponse = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: modelName,
+        model: model,
         messages: fullMessages,
-        temperature: 0.6,
-        max_tokens: 500,
+        temperature: 0.7,
+        max_completion_tokens: 1024,
       }),
     });
 
+    const responseText = await groqResponse.text();
+
     if (!groqResponse.ok) {
-      const errorText = await groqResponse.text();
-      console.error("Groq Upstream Error:", errorText);
+      console.error("Groq Upstream Error:", responseText);
       return new Response(
-        JSON.stringify({ error: "Upstream inference error", details: errorText }),
+        JSON.stringify({ error: "Upstream inference error", details: responseText }),
         { status: groqResponse.status, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    const data = await groqResponse.json();
-    const replyText =
+    const data = JSON.parse(responseText);
+    const reply =
       data.choices?.[0]?.message?.content ||
       "Welcome to The Oliver. How may I assist your stay tonight?";
 
     return new Response(
       JSON.stringify({
-        reply: replyText,
-        content: replyText,
-        message: replyText,
+        reply: reply,
+        content: reply,
+        message: reply,
       }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
   } catch (err) {
-    console.error("Internal Server Error:", err);
+    console.error("Handler Error:", err);
     return new Response(
       JSON.stringify({ error: "Internal Server Error", details: err.message }),
       { status: 500, headers: { "Content-Type": "application/json" } }
