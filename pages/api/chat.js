@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { messages, roomId } = req.body;
+    const { messages, roomId } = req.body || {};
 
     const hotelInfo = JSON.stringify(propertyConfig.property, null, 2);
 
@@ -23,16 +23,16 @@ CORE DIRECTIVES:
 
     const fullMessages = [
       { role: "system", content: systemPrompt },
-      ...(messages || []),
+      ...(Array.isArray(messages) ? messages : []),
     ];
 
     const modelEndpoint =
       process.env.MODEL_API_URL || "https://api.groq.com/openai/v1/chat/completions";
-    const modelName = process.env.MODEL_NAME || "qwen/qwen3.8-27b";
+    const modelName = process.env.MODEL_NAME || "llama-3.1-8b-instant";
     const apiKey = process.env.MODEL_API_KEY;
 
     if (!apiKey) {
-      return res.status(500).json({ error: "MODEL_API_KEY is not configured." });
+      return res.status(500).json({ error: "Missing MODEL_API_KEY environment variable." });
     }
 
     const groqResponse = await fetch(modelEndpoint, {
@@ -51,19 +51,29 @@ CORE DIRECTIVES:
 
     if (!groqResponse.ok) {
       const errorText = await groqResponse.text();
-      console.error("Groq Model Error:", errorText);
+      console.error("Groq Upstream Error:", errorText);
       return res.status(groqResponse.status).json({
-        error: "Inference provider error",
+        error: "Upstream inference error",
         details: errorText,
       });
     }
 
     const data = await groqResponse.json();
-    const reply = data.choices?.[0]?.message?.content || "How else can I assist your stay tonight?";
+    const replyText =
+      data.choices?.[0]?.message?.content ||
+      "Welcome to The Oliver. How may I assist your stay tonight?";
 
-    return res.status(200).json({ content: reply });
+    // Returns both 'reply' and 'content' keys so any frontend parser works
+    return res.status(200).json({
+      reply: replyText,
+      content: replyText,
+      message: replyText,
+    });
   } catch (err) {
-    console.error("Handler error:", err);
-    return res.status(500).json({ error: "Internal server error", details: err.message });
+    console.error("Internal Server Error:", err);
+    return res.status(500).json({
+      error: "Internal Server Error",
+      details: err.message,
+    });
   }
 }
