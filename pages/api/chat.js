@@ -1,12 +1,19 @@
 import propertyConfig from "../../config/property.json";
 
-export default async function handler(req, res) {
+export const config = {
+  runtime: "edge",
+};
+
+export default async function handler(req) {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+      status: 405,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   try {
-    const { messages, roomId } = req.body || {};
+    const { messages, roomId } = await req.json();
 
     const hotelInfo = JSON.stringify(propertyConfig.property, null, 2);
 
@@ -28,11 +35,14 @@ CORE DIRECTIVES:
 
     const modelEndpoint =
       process.env.MODEL_API_URL || "https://api.groq.com/openai/v1/chat/completions";
-    const modelName = process.env.MODEL_NAME || "llama-3.1-8b-instant";
+    const modelName = process.env.MODEL_NAME || "openai/gpt-oss-20b";
     const apiKey = process.env.MODEL_API_KEY;
 
     if (!apiKey) {
-      return res.status(500).json({ error: "Missing MODEL_API_KEY environment variable." });
+      return new Response(
+        JSON.stringify({ error: "Missing MODEL_API_KEY in environment variables." }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
     }
 
     const groqResponse = await fetch(modelEndpoint, {
@@ -52,10 +62,10 @@ CORE DIRECTIVES:
     if (!groqResponse.ok) {
       const errorText = await groqResponse.text();
       console.error("Groq Upstream Error:", errorText);
-      return res.status(groqResponse.status).json({
-        error: "Upstream inference error",
-        details: errorText,
-      });
+      return new Response(
+        JSON.stringify({ error: "Upstream inference error", details: errorText }),
+        { status: groqResponse.status, headers: { "Content-Type": "application/json" } }
+      );
     }
 
     const data = await groqResponse.json();
@@ -63,17 +73,19 @@ CORE DIRECTIVES:
       data.choices?.[0]?.message?.content ||
       "Welcome to The Oliver. How may I assist your stay tonight?";
 
-    // Returns both 'reply' and 'content' keys so any frontend parser works
-    return res.status(200).json({
-      reply: replyText,
-      content: replyText,
-      message: replyText,
-    });
+    return new Response(
+      JSON.stringify({
+        reply: replyText,
+        content: replyText,
+        message: replyText,
+      }),
+      { status: 200, headers: { "Content-Type": "application/json" } }
+    );
   } catch (err) {
     console.error("Internal Server Error:", err);
-    return res.status(500).json({
-      error: "Internal Server Error",
-      details: err.message,
-    });
+    return new Response(
+      JSON.stringify({ error: "Internal Server Error", details: err.message }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
   }
 }
