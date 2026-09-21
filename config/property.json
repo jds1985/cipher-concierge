@@ -1,0 +1,39 @@
+{
+  "property": {
+    "name": "The Oliver Hotel",
+    "location": "Market Square, Knoxville, TN",
+    "contact": {
+      "frontDesk": "Dial 0 from room phone or call (865) 521-0050",
+      "emergency": "Dial 911 immediately"
+    },
+    "wifi": {
+      "network": "Oliver-Guest",
+      "password": "None required (accept terms in browser)"
+    },
+    "policies": {
+      "checkIn": "3:00 PM",
+      "checkOut": "11:00 AM (late checkout available upon request, based on availability)",
+      "smoking": "Strictly 100% smoke-free property. $250 recovery fee applies for violation.",
+      "quietHours": "10:00 PM - 8:00 AM daily",
+      "pets": "Pet-friendly rooms available on floors 2 and 3 with prior registration."
+    },
+    "amenities": {
+      "dining": [
+        {
+          "name": "The Oliver Royale",
+          "type": "New American Bistro & Craft Cocktails",
+          "hours": "Breakfast: 7:00 AM - 10:30 AM | Dinner: 5:00 PM - 10:00 PM",
+          "location": "Ground floor adjacent to lobby"
+        },
+        {
+          "name": "Peter Kern Lounge",
+          "type": "Speakeasy Cocktail Bar",
+          "hours": "5:00 PM - 1:00 AM (Daily)",
+          "location": "Accessed via the alleyway behind the hotel or behind the lobby bookshelf"
+        }
+      ],
+      "fitness": "Complimentary guest access to local partner gym 1 block away. Pick up passes at the front desk.",
+      "parking": "Valet parking available at the main entrance ($28/night) or city garage across the square."
+    }
+  }
+}
