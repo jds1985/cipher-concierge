@@ -24,8 +24,8 @@ ${hotelInfo}
 
 CORE DIRECTIVES:
 1. HOSPITALITY GROUNDING: Use the property knowledge base for hours, amenities, policies, and Wi-Fi. If unsure or if physical staff assistance is needed, advise the guest to dial 0 for the front desk.
-2. CONVERSATIONAL FREEDOM: You are not a rigid FAQ bot. You are warm, engaging, and articulate. Answer questions concisely without showing internal thinking.
-3. ABSOLUTE PRIVACY: Remind guests when asked that this session runs statelessly in RAM with zero logging, zero telemetry, and zero tracking.
+2. CONVERSATIONAL FREEDOM: You are warm, engaging, and articulate. Answer clearly and directly.
+3. ABSOLUTE PRIVACY: Remind guests when asked that this session runs statelessly in volatile RAM with zero logging, zero telemetry, and zero tracking.
 4. MOBILE BREVITY: Keep room logistics answers concise and direct.`;
 
     const fullMessages = [
@@ -34,17 +34,10 @@ CORE DIRECTIVES:
     ];
 
     const apiKey = (process.env.MODEL_API_KEY || "").trim();
-    if (!apiKey) {
-      return new Response(
-        JSON.stringify({ error: "Missing MODEL_API_KEY" }),
-        { status: 500, headers: { "Content-Type": "application/json" } }
-      );
-    }
-
     const endpoint = (process.env.MODEL_API_URL || "https://api.groq.com/openai/v1/chat/completions").trim();
     const model = (process.env.MODEL_NAME || "openai/gpt-oss-120b").replace(/\s+/g, "");
 
-    const groqResponse = await fetch(endpoint, {
+    const upstreamResponse = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -54,45 +47,26 @@ CORE DIRECTIVES:
         model: model,
         messages: fullMessages,
         temperature: 0.7,
-        max_completion_tokens: 2048,
+        stream: true,
       }),
     });
 
-    const responseText = await groqResponse.text();
-
-    if (!groqResponse.ok) {
-      console.error("Groq Upstream Error:", responseText);
-      return new Response(
-        JSON.stringify({ error: "Upstream inference error", details: responseText }),
-        { status: groqResponse.status, headers: { "Content-Type": "application/json" } }
-      );
+    if (!upstreamResponse.ok) {
+      const errText = await upstreamResponse.text();
+      console.error("Groq Upstream Error:", errText);
+      return new Response(errText, { status: upstreamResponse.status });
     }
 
-    const data = JSON.parse(responseText);
-    const choice = data.choices?.[0]?.message || {};
-    
-    // Catch both standard content and reasoning content
-    const replyText =
-      (choice.content && choice.content.trim().length > 0)
-        ? choice.content.trim()
-        : (choice.reasoning_content && choice.reasoning_content.trim().length > 0)
-        ? choice.reasoning_content.trim()
-        : "Welcome to The Oliver. How may I assist your stay tonight?";
-
-    return new Response(
-      JSON.stringify({
-        reply: replyText,
-        content: replyText,
-        text: replyText,
-        message: replyText,
-      }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
-    );
+    // Pipe the raw SSE stream directly back to the browser reader
+    return new Response(upstreamResponse.body, {
+      headers: {
+        "Content-Type": "text/event-stream; charset=utf-8",
+        "Cache-Control": "no-cache, no-transform",
+        "Connection": "keep-alive",
+      },
+    });
   } catch (err) {
-    console.error("Handler Error:", err);
-    return new Response(
-      JSON.stringify({ error: "Internal Server Error", details: err.message }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+    console.error("Edge Stream Crash:", err);
+    return new Response(JSON.stringify({ error: err.message }), { status: 500 });
   }
 }
