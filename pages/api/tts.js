@@ -28,7 +28,7 @@ export default async function handler(req) {
     }
 
     // aura-asteria-en or aura-stella-en (clean, natural, expressive female voices)
-    const voiceModel = "aura-stella-en";
+    const voiceModel = "aura-asteria-en";
     const endpoint = `https://api.deepgram.com/v1/speak?model=${voiceModel}&encoding=mp3`;
 
     const upstreamResponse = await fetch(endpoint, {
