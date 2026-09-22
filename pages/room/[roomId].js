@@ -60,7 +60,17 @@ export default function RoomChat() {
     scrollToBottom();
   }, [messages, loading]);
 
-  // Voice output handler using native browser Web Speech API
+  // Preload browser voices asynchronously for mobile Safari & Chrome
+  useEffect(() => {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+      };
+    }
+  }, []);
+
+  // Voice output handler prioritizing refined British female voices
   const handleToggleVoice = (text, index) => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
 
@@ -71,10 +81,58 @@ export default function RoomChat() {
     }
 
     window.speechSynthesis.cancel();
-    // Clean markdown characters out before speaking aloud
+
+    // Clean markdown formatting before sending to speech synthesis
     const cleanText = text.replace(/[*_#•|-]/g, "").trim();
     const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.rate = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+
+    // 1. First priority: High-definition British English Female voices
+    const britishFemale = voices.find((v) => {
+      const name = v.name.toLowerCase();
+      const lang = (v.lang || "").toLowerCase().replace("_", "-");
+      const isBritish = lang === "en-gb" || name.includes("united kingdom") || name.includes("uk");
+      const isFemale =
+        name.includes("female") ||
+        name.includes("serena") ||
+        name.includes("stephanie") ||
+        name.includes("martha") ||
+        name.includes("libby") ||
+        name.includes("sonia") ||
+        name.includes("alice");
+      return isBritish && isFemale;
+    });
+
+    // 2. Second priority: Any British English voice (en-GB)
+    const anyBritish = voices.find((v) => {
+      const lang = (v.lang || "").toLowerCase().replace("_", "-");
+      return lang === "en-gb" || v.name.toLowerCase().includes("united kingdom") || v.name.toLowerCase().includes("uk");
+    });
+
+    // 3. Fallback: Any natural or enhanced female English voice
+    const fallbackFemale = voices.find((v) => {
+      const name = v.name.toLowerCase();
+      return (
+        v.lang.startsWith("en") &&
+        (name.includes("natural") ||
+          name.includes("neural") ||
+          name.includes("enhanced") ||
+          name.includes("samantha") ||
+          name.includes("ava") ||
+          name.includes("jenny"))
+      );
+    });
+
+    const selectedVoice = britishFemale || anyBritish || fallbackFemale || voices[0];
+
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+      utterance.lang = selectedVoice.lang || "en-GB";
+    }
+
+    // Refined, calm cadence for a boutique concierge
+    utterance.rate = 0.94;
     utterance.pitch = 1.0;
 
     utterance.onend = () => setSpeakingIndex(null);
