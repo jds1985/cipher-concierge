@@ -370,6 +370,11 @@ export default function RoomChat() {
           opacity: 0.6;
         }
 
+        .bubble-text {
+          white-space: pre-wrap;
+          word-break: break-word;
+        }
+
         .glass-bubble {
           background: rgba(255, 255, 255, 0.05);
           border: 1px solid rgba(255, 255, 255, 0.1);
