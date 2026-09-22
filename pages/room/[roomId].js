@@ -2,6 +2,41 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState, useRef, useEffect } from "react";
 
+// Lightweight renderer: converts **bold** and *italic* into native HTML without external dependencies
+function FormattedText({ text }) {
+  if (!text) return null;
+
+  // Split by bold (**...**) first
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+
+  return (
+    <>
+      {parts.map((part, index) => {
+        if (part.startsWith("**") && part.endsWith("**")) {
+          return (
+            <strong key={index} className="font-bold text-white">
+              {part.slice(2, -2)}
+            </strong>
+          );
+        }
+
+        // Handle single *italics*
+        const subParts = part.split(/(\*[^*]+\*)/g);
+        return subParts.map((sub, sIdx) => {
+          if (sub.startsWith("*") && sub.endsWith("*")) {
+            return (
+              <em key={sIdx} className="text-slate-300 italic">
+                {sub.slice(1, -1)}
+              </em>
+            );
+          }
+          return sub;
+        });
+      })}
+    </>
+  );
+}
+
 export default function RoomChat() {
   const router = useRouter();
   const { roomId } = router.query;
@@ -176,7 +211,9 @@ export default function RoomChat() {
               <div className="bubble-sender">
                 {msg.role === "user" ? "You" : "Cipher Concierge"}
               </div>
-              <div className="bubble-text">{msg.content}</div>
+              <div className="bubble-text">
+                <FormattedText text={msg.content} />
+              </div>
             </div>
           ))}
 
@@ -373,6 +410,16 @@ export default function RoomChat() {
         .bubble-text {
           white-space: pre-wrap;
           word-break: break-word;
+        }
+
+        .bubble-text strong {
+          font-weight: 700;
+          color: #ffffff;
+        }
+
+        .bubble-text em {
+          font-style: italic;
+          color: #cbd5e1;
         }
 
         .glass-bubble {
