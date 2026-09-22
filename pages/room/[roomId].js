@@ -50,7 +50,10 @@ export default function RoomChat() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [speakingIndex, setSpeakingIndex] = useState(null);
+  const [audioLoading, setAudioLoading] = useState(false);
+
   const messagesEndRef = useRef(null);
+  const currentAudioRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -60,96 +63,69 @@ export default function RoomChat() {
     scrollToBottom();
   }, [messages, loading]);
 
-  // Preload browser voices asynchronously for mobile Safari & Chrome
-  useEffect(() => {
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      window.speechSynthesis.getVoices();
-      window.speechSynthesis.onvoiceschanged = () => {
-        window.speechSynthesis.getVoices();
-      };
+  const stopAudio = () => {
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current = null;
     }
-  }, []);
+    setSpeakingIndex(null);
+    setAudioLoading(false);
+  };
 
-  // Voice output handler prioritizing refined British female voices
-  const handleToggleVoice = (text, index) => {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-
+  // High-fidelity Deepgram TTS Player
+  const handleToggleVoice = async (text, index) => {
+    // If currently playing this message, tap to stop
     if (speakingIndex === index) {
-      window.speechSynthesis.cancel();
-      setSpeakingIndex(null);
+      stopAudio();
       return;
     }
 
-    window.speechSynthesis.cancel();
-
-    // Clean markdown formatting before sending to speech synthesis
-    const cleanText = text.replace(/[*_#•|-]/g, "").trim();
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-
-    const voices = window.speechSynthesis.getVoices();
-
-    // 1. First priority: High-definition British English Female voices
-    const britishFemale = voices.find((v) => {
-      const name = v.name.toLowerCase();
-      const lang = (v.lang || "").toLowerCase().replace("_", "-");
-      const isBritish = lang === "en-gb" || name.includes("united kingdom") || name.includes("uk");
-      const isFemale =
-        name.includes("female") ||
-        name.includes("serena") ||
-        name.includes("stephanie") ||
-        name.includes("martha") ||
-        name.includes("libby") ||
-        name.includes("sonia") ||
-        name.includes("alice");
-      return isBritish && isFemale;
-    });
-
-    // 2. Second priority: Any British English voice (en-GB)
-    const anyBritish = voices.find((v) => {
-      const lang = (v.lang || "").toLowerCase().replace("_", "-");
-      return lang === "en-gb" || v.name.toLowerCase().includes("united kingdom") || v.name.toLowerCase().includes("uk");
-    });
-
-    // 3. Fallback: Any natural or enhanced female English voice
-    const fallbackFemale = voices.find((v) => {
-      const name = v.name.toLowerCase();
-      return (
-        v.lang.startsWith("en") &&
-        (name.includes("natural") ||
-          name.includes("neural") ||
-          name.includes("enhanced") ||
-          name.includes("samantha") ||
-          name.includes("ava") ||
-          name.includes("jenny"))
-      );
-    });
-
-    const selectedVoice = britishFemale || anyBritish || fallbackFemale || voices[0];
-
-    if (selectedVoice) {
-      utterance.voice = selectedVoice;
-      utterance.lang = selectedVoice.lang || "en-GB";
-    }
-
-    // Refined, calm cadence for a boutique concierge
-    utterance.rate = 0.94;
-    utterance.pitch = 1.0;
-
-    utterance.onend = () => setSpeakingIndex(null);
-    utterance.onerror = () => setSpeakingIndex(null);
-
+    stopAudio();
     setSpeakingIndex(index);
-    window.speechSynthesis.speak(utterance);
+    setAudioLoading(true);
+
+    // Strip markdown formatting out before feeding to TTS
+    const cleanText = text.replace(/[*_#•|-]/g, "").trim();
+
+    try {
+      const res = await fetch("/api/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: cleanText }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Unable to synthesize audio stream");
+      }
+
+      const audioBlob = await res.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      currentAudioRef.current = audio;
+
+      audio.onended = () => {
+        setSpeakingIndex(null);
+        setAudioLoading(false);
+      };
+
+      audio.onerror = () => {
+        setSpeakingIndex(null);
+        setAudioLoading(false);
+      };
+
+      await audio.play();
+      setAudioLoading(false);
+    } catch (err) {
+      console.error("Audio playback error:", err);
+      stopAudio();
+    }
   };
 
   const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim() || loading) return;
 
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      setSpeakingIndex(null);
-    }
+    stopAudio();
 
     const userMsg = { role: "user", content: input.trim() };
     const updatedMessages = [...messages, userMsg];
@@ -227,10 +203,7 @@ export default function RoomChat() {
   };
 
   const clearSession = () => {
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      setSpeakingIndex(null);
-    }
+    stopAudio();
     setMessages([
       {
         role: "assistant",
@@ -303,7 +276,11 @@ export default function RoomChat() {
                     className="btn-voice"
                     title={speakingIndex === i ? "Stop Audio" : "Listen to Response"}
                   >
-                    {speakingIndex === i ? "⏹ Stop" : "🔊 Listen"}
+                    {speakingIndex === i
+                      ? audioLoading
+                        ? "⏳ Loading..."
+                        : "⏹ Stop"
+                      : "🔊 Listen"}
                   </button>
                 )}
               </div>
