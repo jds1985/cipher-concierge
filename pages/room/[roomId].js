@@ -2,11 +2,10 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState, useRef, useEffect } from "react";
 
-// Lightweight renderer: converts **bold** and *italic* into native HTML without external dependencies
+// Lightweight renderer: converts **bold** and *italic* into native HTML
 function FormattedText({ text }) {
   if (!text) return null;
 
-  // Split by bold (**...**) first
   const parts = text.split(/(\*\*[^*]+\*\*)/g);
 
   return (
@@ -20,7 +19,6 @@ function FormattedText({ text }) {
           );
         }
 
-        // Handle single *italics*
         const subParts = part.split(/(\*[^*]+\*)/g);
         return subParts.map((sub, sIdx) => {
           if (sub.startsWith("*") && sub.endsWith("*")) {
@@ -51,9 +49,9 @@ export default function RoomChat() {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [speakingIndex, setSpeakingIndex] = useState(null);
   const messagesEndRef = useRef(null);
 
-  // Auto-scroll to bottom of chat
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -62,9 +60,38 @@ export default function RoomChat() {
     scrollToBottom();
   }, [messages, loading]);
 
+  // Voice output handler using native browser Web Speech API
+  const handleToggleVoice = (text, index) => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+
+    if (speakingIndex === index) {
+      window.speechSynthesis.cancel();
+      setSpeakingIndex(null);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    // Clean markdown characters out before speaking aloud
+    const cleanText = text.replace(/[*_#•|-]/g, "").trim();
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+
+    utterance.onend = () => setSpeakingIndex(null);
+    utterance.onerror = () => setSpeakingIndex(null);
+
+    setSpeakingIndex(index);
+    window.speechSynthesis.speak(utterance);
+  };
+
   const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim() || loading) return;
+
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+      setSpeakingIndex(null);
+    }
 
     const userMsg = { role: "user", content: input.trim() };
     const updatedMessages = [...messages, userMsg];
@@ -122,7 +149,7 @@ export default function RoomChat() {
                 return newArr;
               });
             } catch {
-              // Ignore partial or non-JSON stream chunks
+              // Ignore non-JSON stream chunks
             }
           }
         }
@@ -142,6 +169,10 @@ export default function RoomChat() {
   };
 
   const clearSession = () => {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+      setSpeakingIndex(null);
+    }
     setMessages([
       {
         role: "assistant",
@@ -166,10 +197,8 @@ export default function RoomChat() {
         />
       </Head>
 
-      {/* Layer 1: Master Dual-Radial Canvas */}
       <div className="bg-canvas" />
 
-      {/* Layer 2: Faded Logo Watermark */}
       <div className="bg-watermark">
         <img
           src="/images/cipher-cts-bg.png"
@@ -179,7 +208,6 @@ export default function RoomChat() {
       </div>
 
       <div className="chat-viewport">
-        {/* Compact Hotel / Room Header */}
         <header className="room-header glass-panel">
           <div className="room-brand">
             <img
@@ -199,7 +227,6 @@ export default function RoomChat() {
           </button>
         </header>
 
-        {/* Message Thread */}
         <main className="messages-area">
           {messages.map((msg, i) => (
             <div
@@ -208,8 +235,19 @@ export default function RoomChat() {
                 msg.role === "user" ? "user-bubble" : "assistant-bubble glass-bubble"
               }`}
             >
-              <div className="bubble-sender">
-                {msg.role === "user" ? "You" : "Cipher Concierge"}
+              <div className="bubble-header-row">
+                <span className="bubble-sender">
+                  {msg.role === "user" ? "You" : "Cipher Concierge"}
+                </span>
+                {msg.role === "assistant" && msg.content && (
+                  <button
+                    onClick={() => handleToggleVoice(msg.content, i)}
+                    className="btn-voice"
+                    title={speakingIndex === i ? "Stop Audio" : "Listen to Response"}
+                  >
+                    {speakingIndex === i ? "⏹ Stop" : "🔊 Listen"}
+                  </button>
+                )}
               </div>
               <div className="bubble-text">
                 <FormattedText text={msg.content} />
@@ -227,14 +265,13 @@ export default function RoomChat() {
           <div ref={messagesEndRef} />
         </main>
 
-        {/* Floating Input Dock */}
         <footer className="input-dock">
           <form onSubmit={handleSend} className="input-bar glass-panel">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={`Ask about amenities, dining, or Knoxville...`}
+              placeholder="Ask about amenities, dining, or Knoxville..."
               disabled={loading}
               className="chat-input"
             />
@@ -321,7 +358,6 @@ export default function RoomChat() {
           -webkit-backdrop-filter: blur(28px) saturate(140%);
         }
 
-        /* Header */
         .room-header {
           display: flex;
           justify-content: space-between;
@@ -379,7 +415,6 @@ export default function RoomChat() {
           border-color: rgba(255, 107, 107, 0.3);
         }
 
-        /* Messages */
         .messages-area {
           flex: 1;
           overflow-y: auto;
@@ -399,12 +434,33 @@ export default function RoomChat() {
           animation: fadeSlideUp 0.25s ease forwards;
         }
 
+        .bubble-header-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 6px;
+        }
+
         .bubble-sender {
           font-size: 10px;
           text-transform: uppercase;
           letter-spacing: 1px;
-          margin-bottom: 4px;
           opacity: 0.6;
+        }
+
+        .btn-voice {
+          background: rgba(0, 255, 213, 0.08);
+          border: 1px solid rgba(0, 255, 213, 0.2);
+          color: #00ffd5;
+          font-size: 10px;
+          padding: 2px 8px;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+
+        .btn-voice:hover {
+          background: rgba(0, 255, 213, 0.2);
         }
 
         .bubble-text {
@@ -444,7 +500,6 @@ export default function RoomChat() {
           color: rgba(255, 255, 255, 0.8);
         }
 
-        /* Thinking animation */
         .thinking-indicator {
           display: inline-flex;
           align-items: center;
@@ -491,7 +546,6 @@ export default function RoomChat() {
           }
         }
 
-        /* Input Dock */
         .input-dock {
           position: absolute;
           bottom: 0;
