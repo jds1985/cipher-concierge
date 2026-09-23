@@ -1,4 +1,13 @@
-import propertyConfig from "../../config/property.json";
+import theOliver from "../../config/properties/the-oliver.json";
+import theTennessean from "../../config/properties/the-tennessean.json";
+// Optional fallback if config/property.json still exists during migration
+import defaultProperty from "../../config/property.json";
+
+// Multi-hotel property registry
+const propertyRegistry = {
+  "the-oliver": theOliver,
+  "the-tennessean": theTennessean,
+};
 
 export const config = {
   runtime: "edge",
@@ -13,17 +22,29 @@ export default async function handler(req) {
   }
 
   try {
-    const { messages, roomId } = await req.json();
+    const { messages, roomId, hotelId } = await req.json();
 
-    const hotelInfo = JSON.stringify(propertyConfig.property, null, 2);
+    // Match incoming hotel slug or fall back gracefully to the-oliver / default
+    const activeConfig =
+      propertyRegistry[hotelId] || propertyRegistry["the-oliver"] || defaultProperty;
 
-    const systemPrompt = `You are Cipher, an intelligent, sovereign digital concierge hosting guests in Room ${roomId || "Guest Suite"} at ${propertyConfig.property.name} in ${propertyConfig.property.location}.
+    const hotelName =
+      activeConfig.name || activeConfig.property?.name || "The Hotel";
+    const hotelLocation =
+      activeConfig.location || activeConfig.property?.location || "Knoxville, TN";
+    const frontDeskPhone =
+      activeConfig.property?.front_desk_phone || "extension 0";
+    const hotelInfo = JSON.stringify(activeConfig.property || activeConfig, null, 2);
+
+    const systemPrompt = `You are Cipher, an intelligent, sovereign digital concierge hosting guests in Room ${
+      roomId || "Guest Suite"
+    } at ${hotelName} in ${hotelLocation}.
 
 HOTEL KNOWLEDGE BASE:
 ${hotelInfo}
 
 CORE DIRECTIVES:
-1. HOSPITALITY GROUNDING: Use the property knowledge base for hours, amenities, policies, and Wi-Fi. If unsure or if physical staff assistance is needed, advise the guest to dial 0 for the front desk.
+1. HOSPITALITY GROUNDING: Use the property knowledge base for hours, amenities, policies, and Wi-Fi. If unsure or if physical staff assistance is needed, advise the guest to contact the front desk at ${frontDeskPhone}.
 2. CONVERSATIONAL FREEDOM: You are warm, engaging, and articulate. Always open with a complete, polite first sentence (never clip or omit the first words).
 3. ABSOLUTE PRIVACY: Remind guests when asked that this session runs statelessly in volatile RAM with zero logging, zero telemetry, and zero tracking.
 4. MOBILE-FIRST FORMATTING (STRICT):
@@ -47,8 +68,14 @@ Here are three great walkable dinner options:
     ];
 
     const apiKey = (process.env.MODEL_API_KEY || "").trim();
-    const endpoint = (process.env.MODEL_API_URL || "https://api.groq.com/openai/v1/chat/completions").trim();
-    const model = (process.env.MODEL_NAME || "openai/gpt-oss-120b").replace(/\s+/g, "");
+    const endpoint = (
+      process.env.MODEL_API_URL ||
+      "https://api.groq.com/openai/v1/chat/completions"
+    ).trim();
+    const model = (process.env.MODEL_NAME || "openai/gpt-oss-120b").replace(
+      /\s+/g,
+      ""
+    );
 
     const upstreamResponse = await fetch(endpoint, {
       method: "POST",
@@ -75,7 +102,7 @@ Here are three great walkable dinner options:
       headers: {
         "Content-Type": "text/event-stream; charset=utf-8",
         "Cache-Control": "no-cache, no-transform",
-        "Connection": "keep-alive",
+        Connection: "keep-alive",
       },
     });
   } catch (err) {
