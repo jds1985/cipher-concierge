@@ -1,0 +1,27 @@
+{
+  "id": "the-tennessean",
+  "name": "The Tennessean Hotel",
+  "location": "Clinch Avenue, Knoxville, TN",
+  "logo": "/images/cipher-cts-logo.png",
+  "property": {
+    "front_desk_phone": "ext. 0",
+    "wifi": {
+      "network": "TENNESSEAN_GUEST",
+      "password": "luxuryknoxville"
+    },
+    "policies": {
+      "check_in": "4:00 PM",
+      "check_out": "11:00 AM"
+    },
+    "dining": {
+      "on_site": [
+        {
+          "name": "The Drawing Room",
+          "type": "Fine Dining & Lounge",
+          "hours": "Breakfast 7 AM - 10:30 AM, Cocktails & Dinner 4 PM - 10 PM",
+          "signature": "Prime steaks, classic cocktails, and afternoon tea service."
+        }
+      ]
+    }
+  }
+}
