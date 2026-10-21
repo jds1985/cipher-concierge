@@ -1,0 +1,25 @@
+MATCH	checkout	checkout	how late can we sleep in before we gotta be out
+MATCH	checkout	checkout	what's the deadline to vacate the room
+MATCH	wifi	wifi	whats the code for the internets
+MATCH	wifi	wifi	my laptop can't find the hotel signal
+MATCH	breakfast	breakfast	where's the morning buffet
+MATCH	late_food	late_food	any place to grab a bite at 2 in the morning
+MATCH	housekeeping	housekeeping	can someone bring up more pillows
+WRONG	housekeeping	maintenance	we ran out of toilet paper
+MATCH	locked_out	locked_out	left my card inside the room
+MATCH	front_desk	front_desk	how do I reach the lobby
+MATCH	parking	parking	is there somewhere to leave my truck overnight
+MATCH	gym	gym	can I lift weights somewhere
+MATCH	pool	pool	do you guys have a place to swim
+MATCH	noise	noise	people partying in the hallway at 3am
+MATCH	emergency	emergency	someone collapsed in the hallway
+MATCH	late_checkout	late_checkout	could I keep the room till 2pm
+MATCH	checkin	checkin	when does my room become available
+MATCH	directions	directions	what street are you on
+MATCH	local_recs	local_recs	best bbq in town?
+MATCH	dining	dining	is the restaurant open for supper
+MATCH	pets	pets	is my puppy allowed
+WRONG	housekeeping	maintenance	the AC is broken
+MATCH	front_desk	front_desk	I need a wake up call at 6
+WRONG	housekeeping	maintenance	no hot water in the shower
+exact intent 21/24

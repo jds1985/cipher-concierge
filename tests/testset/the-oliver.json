@@ -1,0 +1,443 @@
+[
+ {
+  "id": "checkout-1",
+  "q": "What time is checkout?",
+  "expect": {
+   "intent": "checkout",
+   "contains": [
+    "11:00 AM"
+   ]
+  }
+ },
+ {
+  "id": "checkout-2",
+  "q": "when do i have to leave tomorrow",
+  "expect": {
+   "intent": "checkout",
+   "contains": [
+    "11:00 AM"
+   ]
+  }
+ },
+ {
+  "id": "checkout-3",
+  "q": "Check out time??",
+  "expect": {
+   "intent": "checkout",
+   "contains": [
+    "11:00 AM"
+   ]
+  }
+ },
+ {
+  "id": "late-checkout-1",
+  "q": "Can I get a late checkout?",
+  "expect": {
+   "intent": "late_checkout",
+   "contains": [
+    "11:00 AM",
+    "availability"
+   ],
+   "call": true
+  }
+ },
+ {
+  "id": "late-checkout-2",
+  "q": "is it possible to stay a bit later tomorrow, like 1pm",
+  "expect": {
+   "intent": "late_checkout",
+   "call": true
+  }
+ },
+ {
+  "id": "checkin-1",
+  "q": "What time is check-in?",
+  "expect": {
+   "intent": "checkin",
+   "contains": [
+    "3:00 PM"
+   ]
+  }
+ },
+ {
+  "id": "early-checkin",
+  "q": "Can I check in early? I land at 9am",
+  "expect": {
+   "intent": "early_checkin",
+   "call": true
+  }
+ },
+ {
+  "id": "wifi-1",
+  "q": "What's the wifi password?",
+  "expect": {
+   "intent": "wifi",
+   "contains": [
+    "Oliver-Guest"
+   ]
+  }
+ },
+ {
+  "id": "wifi-2",
+  "q": "how do I get on the internet",
+  "expect": {
+   "intent": "wifi",
+   "contains": [
+    "Oliver-Guest"
+   ]
+  }
+ },
+ {
+  "id": "wifi-3",
+  "q": "Wi-Fi isn't working, what network should I join?",
+  "expect": {
+   "intent": "wifi",
+   "contains": [
+    "Oliver-Guest"
+   ]
+  }
+ },
+ {
+  "id": "breakfast-1",
+  "q": "What time is breakfast?",
+  "expect": {
+   "intent": "breakfast",
+   "contains": [
+    "7:00 AM",
+    "10:30 AM",
+    "Oliver Royale"
+   ]
+  }
+ },
+ {
+  "id": "breakfast-2",
+  "q": "is breakfast included and where is it",
+  "expect": {
+   "intent": "breakfast",
+   "contains": [
+    "Oliver Royale"
+   ]
+  }
+ },
+ {
+  "id": "dining-1",
+  "q": "Where can I get dinner?",
+  "expect": {
+   "intent": "dining",
+   "contains": [
+    "Oliver Royale",
+    "5:00 PM"
+   ]
+  }
+ },
+ {
+  "id": "dining-2",
+  "q": "Is there a bar in the hotel?",
+  "expect": {
+   "intent": "dining",
+   "contains": [
+    "Peter Kern"
+   ]
+  }
+ },
+ {
+  "id": "late-food-1",
+  "q": "I'm starving, is anything open right now?",
+  "at": "02:30",
+  "expect": {
+   "intent": "late_food",
+   "contains": [
+    "2:30 AM",
+    "closed"
+   ]
+  }
+ },
+ {
+  "id": "late-food-2",
+  "q": "hungry at 3am any food",
+  "at": "03:05",
+  "expect": {
+   "intent": "late_food",
+   "contains": [
+    "3:05 AM"
+   ]
+  }
+ },
+ {
+  "id": "late-food-3",
+  "q": "what's open tonight for a drink",
+  "at": "23:30",
+  "expect": {
+   "intent": "late_food",
+   "contains": [
+    "Peter Kern",
+    "open now"
+   ]
+  }
+ },
+ {
+  "id": "room-service",
+  "q": "Do you have room service?",
+  "at": "02:15",
+  "expect": {
+   "intent": "room_service",
+   "kind": "fallback",
+   "call": true
+  }
+ },
+ {
+  "id": "parking-1",
+  "q": "Where do I park?",
+  "expect": {
+   "intent": "parking",
+   "contains": [
+    "$28"
+   ]
+  }
+ },
+ {
+  "id": "parking-2",
+  "q": "how much is valet",
+  "expect": {
+   "intent": "parking",
+   "contains": [
+    "$28"
+   ]
+  }
+ },
+ {
+  "id": "pool",
+  "q": "Is there a pool?",
+  "expect": {
+   "intent": "pool",
+   "kind": "fallback",
+   "call": true
+  }
+ },
+ {
+  "id": "gym",
+  "q": "Where's the gym?",
+  "expect": {
+   "intent": "gym",
+   "contains": [
+    "partner gym"
+   ]
+  }
+ },
+ {
+  "id": "towels-1",
+  "q": "Can I get extra towels?",
+  "at": "02:40",
+  "expect": {
+   "intent": "housekeeping",
+   "call": true
+  }
+ },
+ {
+  "id": "towels-2",
+  "q": "I need a toothbrush and toothpaste",
+  "expect": {
+   "intent": "housekeeping",
+   "call": true
+  }
+ },
+ {
+  "id": "housekeeping",
+  "q": "can housekeeping clean my room at noon",
+  "expect": {
+   "intent": "housekeeping",
+   "call": true
+  }
+ },
+ {
+  "id": "front-desk-1",
+  "q": "What's the front desk number?",
+  "expect": {
+   "intent": "front_desk",
+   "contains": [
+    "(865) 521-0050"
+   ],
+   "call": true
+  }
+ },
+ {
+  "id": "front-desk-2",
+  "q": "I want to talk to a real person",
+  "expect": {
+   "intent": "front_desk",
+   "call": true
+  }
+ },
+ {
+  "id": "locked-out",
+  "q": "I'm locked out of my room",
+  "at": "02:50",
+  "expect": {
+   "intent": "locked_out",
+   "call": true
+  }
+ },
+ {
+  "id": "keycard",
+  "q": "my key card stopped working",
+  "at": "03:10",
+  "expect": {
+   "intent": "locked_out",
+   "call": true
+  }
+ },
+ {
+  "id": "noise",
+  "q": "The room next door is really loud, I can't sleep",
+  "at": "02:20",
+  "expect": {
+   "intent": "noise",
+   "contains": [
+    "10:00 PM"
+   ],
+   "call": true
+  }
+ },
+ {
+  "id": "emergency",
+  "q": "There's a smoke alarm going off and I smell smoke",
+  "at": "03:00",
+  "expect": {
+   "intent": "emergency",
+   "kind": "emergency",
+   "contains": [
+    "911"
+   ],
+   "call": true
+  }
+ },
+ {
+  "id": "medical",
+  "q": "my husband has chest pain",
+  "at": "02:45",
+  "expect": {
+   "intent": "emergency",
+   "kind": "emergency",
+   "contains": [
+    "911"
+   ]
+  }
+ },
+ {
+  "id": "directions",
+  "q": "What's the hotel address for my Uber?",
+  "expect": {
+   "intent": "directions",
+   "contains": [
+    "Market Square"
+   ],
+   "call": true
+  }
+ },
+ {
+  "id": "local-recs",
+  "q": "Any good restaurants nearby you'd recommend?",
+  "expect": {
+   "intent": "local_recs",
+   "contains": [
+    "Tupelo Honey"
+   ]
+  }
+ },
+ {
+  "id": "amenities",
+  "q": "What amenities does the hotel have?",
+  "expect": {
+   "intent": "amenities",
+   "contains": [
+    "Peter Kern"
+   ]
+  }
+ },
+ {
+  "id": "pets",
+  "q": "Can I bring my dog?",
+  "expect": {
+   "intent": "pets",
+   "contains": [
+    "floors 2 and 3"
+   ]
+  }
+ },
+ {
+  "id": "smoking",
+  "q": "Can I smoke on the balcony?",
+  "expect": {
+   "intent": "smoking",
+   "contains": [
+    "$250"
+   ]
+  }
+ },
+ {
+  "id": "unknown-spa",
+  "q": "Do you have a spa?",
+  "expect": {
+   "intent": "unknown_hotel_question",
+   "kind": "fallback",
+   "call": true
+  }
+ },
+ {
+  "id": "unknown-shuttle",
+  "q": "Is there an airport shuttle at 5am?",
+  "at": "02:30",
+  "expect": {
+   "intent": "directions"
+  }
+ },
+ {
+  "id": "unknown-laundry",
+  "q": "Where is the laundry room?",
+  "expect": {
+   "intent": "unknown_hotel_question",
+   "kind": "fallback",
+   "call": true
+  }
+ },
+ {
+  "id": "thanks",
+  "q": "thank you!",
+  "expect": {
+   "intent": "thanks"
+  }
+ },
+ {
+  "id": "open-1",
+  "q": "Tell me a fun fact about Knoxville",
+  "expect": {
+   "source_in": [
+    "cipher",
+    "cipher-fallback"
+   ],
+   "safe": true
+  }
+ },
+ {
+  "id": "open-2",
+  "q": "What should I pack for a hike in the Smokies?",
+  "expect": {
+   "source_in": [
+    "cipher",
+    "cipher-fallback"
+   ],
+   "safe": true
+  }
+ },
+ {
+  "id": "open-3",
+  "q": "How do you say thank you in Spanish?",
+  "expect": {
+   "source_in": [
+    "cipher",
+    "cipher-fallback"
+   ],
+   "safe": true
+  }
+ }
+]

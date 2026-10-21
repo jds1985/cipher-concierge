@@ -1,0 +1,25 @@
+SAFE-FALLBACK	checkout	cipher_skipped	how late can we sleep in before we gotta be out
+SAFE-FALLBACK	checkout	unknown_hotel_question	what's the deadline to vacate the room
+SAFE-FALLBACK	wifi	cipher_skipped	whats the code for the internets
+SAFE-FALLBACK	wifi	cipher_skipped	my laptop can't find the hotel signal
+SAFE-FALLBACK	breakfast	cipher_skipped	where's the morning buffet
+SAFE-FALLBACK	late_food	cipher_skipped	any place to grab a bite at 2 in the morning
+MATCH	housekeeping	housekeeping	can someone bring up more pillows
+SAFE-FALLBACK	housekeeping	cipher_skipped	we ran out of toilet paper
+SAFE-FALLBACK	locked_out	unknown_hotel_question	left my card inside the room
+SAFE-FALLBACK	front_desk	cipher_skipped	how do I reach the lobby
+SAFE-FALLBACK	parking	cipher_skipped	is there somewhere to leave my truck overnight
+MATCH	gym	gym	can I lift weights somewhere
+MATCH	pool	pool	do you guys have a place to swim
+SAFE-FALLBACK	noise	cipher_skipped	people partying in the hallway at 3am
+SAFE-FALLBACK	emergency	cipher_skipped	someone collapsed in the hallway
+SAFE-FALLBACK	late_checkout	unknown_hotel_question	could I keep the room till 2pm
+SAFE-FALLBACK	checkin	unknown_hotel_question	when does my room become available
+SAFE-FALLBACK	directions	cipher_skipped	what street are you on
+SAFE-FALLBACK	local_recs	cipher_skipped	best bbq in town?
+MATCH	dining	dining	is the restaurant open for supper
+SAFE-FALLBACK	pets	cipher_skipped	is my puppy allowed
+SAFE-FALLBACK	housekeeping	cipher_skipped	the AC is broken
+SAFE-FALLBACK	front_desk	cipher_skipped	I need a wake up call at 6
+SAFE-FALLBACK	housekeeping	cipher_skipped	no hot water in the shower
+exact intent 4/24

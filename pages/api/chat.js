@@ -1,112 +1,30 @@
-import theOliver from "../../config/properties/the-oliver.json";
-import theTennessean from "../../config/properties/the-tennessean.json";
-// Optional fallback if config/property.json still exists during migration
-import defaultProperty from "../../config/property.json";
+// POST /api/chat  { hotelId, roomId, t, messages:[{role:"user"|"assistant",content}] }
+// Nothing is stored or logged: no conversation content is written anywhere on the server.
+import { getHotel, validRoom } from "../../lib/hotels";
+import { verifyRoom } from "../../lib/token";
+import { rateLimit } from "../../lib/ratelimit";
+import { sanitizeMessages } from "../../lib/sanitize";
+import { answer, connect } from "../../lib/answer";
 
-// Multi-hotel property registry
-const propertyRegistry = {
-  "the-oliver": theOliver,
-  "the-tennessean": theTennessean,
-};
+export const config = { api: { bodyParser: { sizeLimit: "16kb" } } };
 
-export const config = {
-  runtime: "edge",
-};
-
-export default async function handler(req) {
-  if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), {
-      status: 405,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
+export default async function handler(req, res) {
+  res.setHeader("Cache-Control", "no-store");
+  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+  const ip = (req.headers["x-forwarded-for"] || "").split(",")[0].trim() || req.socket.remoteAddress || "?";
+  const { hotelId, roomId, t, messages } = req.body || {};
+  const hotel = getHotel(hotelId);
+  if (!hotel || !validRoom(roomId)) return res.status(404).json({ error: "Unknown hotel or room" });
+  if (!verifyRoom(hotelId, roomId, t)) return res.status(403).json({ error: "Please scan the QR code in your room to start." });
+  const rl1 = rateLimit("ip:" + ip, { limit: 20, windowMs: 60_000 });
+  const rl2 = rateLimit(`room:${hotelId}:${roomId}`, { limit: 30, windowMs: 60_000 });
+  if (!rl1.ok || !rl2.ok) return res.status(429).json({ error: "Too many questions at once. Please wait a moment." });
+  const clean = sanitizeMessages(messages);
+  if (!clean) return res.status(400).json({ error: "Invalid message" });
   try {
-    const { messages, roomId, hotelId } = await req.json();
-
-    // Match incoming hotel slug or fall back gracefully to the-oliver / default
-    const activeConfig =
-      propertyRegistry[hotelId] || propertyRegistry["the-oliver"] || defaultProperty;
-
-    const hotelName =
-      activeConfig.name || activeConfig.property?.name || "The Hotel";
-    const hotelLocation =
-      activeConfig.location || activeConfig.property?.location || "Knoxville, TN";
-    const frontDeskPhone =
-      activeConfig.property?.front_desk_phone || "extension 0";
-    const hotelInfo = JSON.stringify(activeConfig.property || activeConfig, null, 2);
-
-    const systemPrompt = `You are Cipher, an intelligent, sovereign digital concierge hosting guests in Room ${
-      roomId || "Guest Suite"
-    } at ${hotelName} in ${hotelLocation}.
-
-HOTEL KNOWLEDGE BASE:
-${hotelInfo}
-
-CORE DIRECTIVES:
-1. HOSPITALITY GROUNDING: Use the property knowledge base for hours, amenities, policies, and Wi-Fi. If unsure or if physical staff assistance is needed, advise the guest to contact the front desk at ${frontDeskPhone}.
-2. CONVERSATIONAL FREEDOM: You are warm, engaging, and articulate. Always open with a complete, polite first sentence (never clip or omit the first words).
-3. ABSOLUTE PRIVACY: Remind guests when asked that this session runs statelessly in volatile RAM with zero logging, zero telemetry, and zero tracking.
-4. MOBILE-FIRST FORMATTING (STRICT):
-   - NEVER use Markdown tables or pipe characters (|).
-   - When providing lists, ALWAYS place a blank line between every item (double newline) so each bullet renders cleanly on its own separate line.
-   - Limit local recommendations to 3 or 4 top spots with 1 to 2 concise sentences each.
-   - Bold key names, walking times, and hours for easy skimming.
-
-FORMAT EXAMPLE:
-Here are three great walkable dinner options:
-
-• **The Oliver Royale** (On-site) — New American bistro in the hotel lobby. Open 5:00 PM–10:00 PM.
-
-• **Tupelo Honey** (2-min walk) — Southern comfort food on Market Square. Open until 10:00 PM.
-
-• **Knox Mason** (4-min walk) — Upscale regional fare and seasonal cocktails.`;
-
-    const fullMessages = [
-      { role: "system", content: systemPrompt },
-      ...(Array.isArray(messages) ? messages : []),
-    ];
-
-    const apiKey = (process.env.MODEL_API_KEY || "").trim();
-    const endpoint = (
-      process.env.MODEL_API_URL ||
-      "https://api.groq.com/openai/v1/chat/completions"
-    ).trim();
-    const model = (process.env.MODEL_NAME || "openai/gpt-oss-120b").replace(
-      /\s+/g,
-      ""
-    );
-
-    const upstreamResponse = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: model,
-        messages: fullMessages,
-        temperature: 0.7,
-        stream: true,
-      }),
-    });
-
-    if (!upstreamResponse.ok) {
-      const errText = await upstreamResponse.text();
-      console.error("Groq Upstream Error:", errText);
-      return new Response(errText, { status: upstreamResponse.status });
-    }
-
-    // Pipe the raw SSE stream directly back to the browser reader
-    return new Response(upstreamResponse.body, {
-      headers: {
-        "Content-Type": "text/event-stream; charset=utf-8",
-        "Cache-Control": "no-cache, no-transform",
-        Connection: "keep-alive",
-      },
-    });
-  } catch (err) {
-    console.error("Edge Stream Crash:", err);
-    return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+    const a = await answer(hotel, clean);
+    return res.status(200).json({ kind: a.kind, text: a.text, call: !!a.call, source: a.source, intent: a.intent });
+  } catch {
+    return res.status(200).json({ ...connect(hotel, "Something went wrong on my side. "), source: "error" });
   }
 }

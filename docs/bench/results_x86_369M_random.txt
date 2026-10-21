@@ -1,0 +1,4 @@
+369M-random threads=4 idle_rss_mb=9
+{"N":1,"wall_s":2.2,"tokens":120,"agg_tok_s":55,"ttft_ms_p50":602,"ttft_ms_max":602,"total_ms_p50":2183,"total_ms_max":2183,"peak_rss_mb":168,"avg_cores_busy":3.51}
+{"N":5,"wall_s":9,"tokens":598,"agg_tok_s":66.5,"ttft_ms_p50":4190,"ttft_ms_max":7671,"total_ms_p50":5489,"total_ms_max":8938,"peak_rss_mb":183,"avg_cores_busy":3.58}
+{"N":20,"wall_s":35.3,"tokens":2379,"agg_tok_s":67.4,"ttft_ms_p50":18233,"ttft_ms_max":33768,"total_ms_p50":19468,"total_ms_max":35252,"peak_rss_mb":191,"avg_cores_busy":3.58}

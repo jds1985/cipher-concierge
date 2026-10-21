@@ -1,263 +1,79 @@
 import Head from "next/head";
-import { useState } from "react";
-import { useRouter } from "next/router";
+import Link from "next/link";
+import Mark from "../components/Mark";
 
-export default function Home() {
-  const [roomId, setRoomId] = useState("");
-  const router = useRouter();
+export async function getServerSideProps() { return { props: { demo: process.env.DEMO_MODE === "1" } }; }
 
-  const handleEnterRoom = (e) => {
-    e.preventDefault();
-    if (!roomId.trim()) return;
-    router.push(`/room/${encodeURIComponent(roomId.trim())}`);
-  };
+const FAQ = [
+  ["What time is checkout?", "Checkout is at **11:00 AM**."],
+  ["It's 2 AM, is anything open?", "On-site dining is closed right now. Breakfast starts at 7:00 AM…"],
+  ["I'm locked out of my room", "The front desk can make you a new key right away. [Call front desk]"],
+];
 
+export default function Home({ demo }) {
   return (
-    <>
+    <div className="page landing">
       <Head>
-        <title>Cipher Concierge | Private Hotel AI</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap"
-          rel="stylesheet"
-        />
+        <title>Cipher Concierge · The after-hours front desk for your hotel</title>
+        <meta name="description" content="A private AI concierge guests reach by scanning the QR code in their room. Answers from your hotel's own information. No third-party AI." />
       </Head>
+      <style>{`
+        .landing .hero{display:grid;gap:36px;align-items:center;grid-template-columns:1.1fr .9fr;padding:30px 0 50px}
+        .landing h1{font-size:clamp(32px,5.4vw,56px);line-height:1.05;letter-spacing:-.02em;margin:14px 0 18px}
+        .landing .lede{font-size:clamp(16px,2vw,19px);color:var(--muted);line-height:1.6;max-width:560px}
+        .landing .ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+        .phone{border-radius:34px;padding:16px;max-width:360px;margin:0 auto;width:100%}
+        .phone .b{padding:10px 13px;border-radius:16px;font-size:14px;line-height:1.45;margin:8px 0}
+        .phone .q{background:linear-gradient(135deg,rgba(21,87,240,.55),rgba(14,140,248,.45));border:1px solid rgba(110,170,255,.5);margin-left:18%}
+        .phone .a{background:rgba(140,190,255,.07);border:1px solid var(--glass-border);margin-right:12%}
+        .phone .a strong{color:#fff}
+        .grid3{display:grid;gap:16px;grid-template-columns:repeat(3,1fr);margin:10px 0 50px}
+        .tile{border-radius:22px;padding:22px}
+        .tile h3{font-size:17px;margin:10px 0 8px}
+        .tile p{color:var(--muted);line-height:1.55;font-size:14.5px}
+        .num{font:800 13px "Plus Jakarta Sans";width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--grad);color:#04122a}
+        .sec-title{font-size:clamp(22px,3.4vw,32px);margin-bottom:16px}
+        .tbd{display:inline-block;font:700 11px Inter;letter-spacing:.12em;padding:4px 10px;border-radius:999px;border:1px dashed var(--citron);color:var(--citron);margin-left:8px;vertical-align:middle}
+        .foot{color:var(--dim);font-size:12.5px;line-height:1.6;border-top:1px solid var(--glass-border);padding-top:18px;margin-top:40px}
+        @media (max-width:820px){.landing .hero,.grid3{grid-template-columns:1fr}}
+      `}</style>
+      <nav className="nav"><Mark size={34} /><span className="brand">CIPHER</span><span style={{ color: "var(--dim)", fontSize: 13 }}>Concierge</span><span className="spacer" />{demo && <Link className="btn btn-ghost" href="/demo" style={{ minHeight: 40 }}>Live demo</Link>}</nav>
 
-      <div className="bg-canvas" />
-
-      <div className="bg-watermark">
-        <img
-          src="/images/cipher-cts-bg.png"
-          alt="Cipher CTS Watermark"
-          className="watermark-img"
-        />
-      </div>
-
-      <div className="portal-wrap">
-        <div className="portal-card glass-panel">
-          <div className="brand">
-            <img
-              src="/images/cipher-cts-logo.png"
-              alt="Cipher Logo"
-              className="brand-logo"
-            />
-            <h2>THE OLIVER HOTEL</h2>
-            <p className="portal-sub">Digital Concierge Portal</p>
-          </div>
-
-          <form onSubmit={handleEnterRoom} className="room-form">
-            <label htmlFor="roomInput">Enter Room or Suite Number</label>
-            <input
-              id="roomInput"
-              type="text"
-              placeholder="e.g. 304"
-              value={roomId}
-              onChange={(e) => setRoomId(e.target.value)}
-              className="room-input"
-              autoFocus
-            />
-            <button type="submit" className="btn-enter">
-              Access Private Concierge →
-            </button>
-          </form>
-
-          <div className="quick-access">
-            <span>Demo Suites:</span>
-            <button type="button" onClick={() => router.push("/room/304")}>
-              Room 304
-            </button>
-            <button type="button" onClick={() => router.push("/room/412")}>
-              Room 412
-            </button>
-          </div>
-
-          <div className="portal-footer">
-            🔒 Stateless RAM-Only Session • No App Download Required
+      <section className="hero">
+        <div>
+          <span className="pill-label">For hotel general managers</span>
+          <h1>The 2 AM front-desk call, <span className="grad-text">answered before it rings.</span></h1>
+          <p className="lede">Guests scan the QR card in their room and ask: checkout time, Wi-Fi, "is anything open?", "where do I park?". Cipher answers instantly from <b>your hotel's own information</b>, and hands anything it can't answer straight to your front desk with one tap.</p>
+          <div className="ctas">
+            {demo && <Link className="btn btn-primary" href="/demo">Try it as a guest →</Link>}
+            <a className="btn btn-ghost" href="#privacy">How privacy works</a>
           </div>
         </div>
+        <div className="phone glass" aria-label="Example conversation">
+          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "4px 4px 10px", borderBottom: "1px solid var(--glass-border)" }}><Mark size={26} small /><b style={{ font: "700 13px 'Plus Jakarta Sans'", letterSpacing: ".08em" }}>YOUR HOTEL</b><span style={{ marginLeft: "auto", fontSize: 12, color: "var(--muted)" }}>Room 304</span></div>
+          {FAQ.map(([q, a]) => (<div key={q}><div className="b q">{q}</div><div className="b a" dangerouslySetInnerHTML={{ __html: a.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>") }} /></div>))}
+        </div>
+      </section>
+
+      <h2 className="sec-title">How it works</h2>
+      <div className="grid3">
+        <div className="tile glass"><div className="num">1</div><h3>A QR card in every room</h3><p>Print branded cards from the admin page. Each code is signed for its room, so guests can't fake a room number. No app and no sign-up.</p></div>
+        <div className="tile glass"><div className="num">2</div><h3>Answers from your facts</h3><p>Checkout, Wi-Fi, breakfast, parking, gym, pets, quiet hours and more are answered word-for-word from one hotel info file you control. It won't invent prices or hours.</p></div>
+        <div className="tile glass"><div className="num">3</div><h3>Front desk, one tap away</h3><p>Lockouts, towels, noise, emergencies, or anything Cipher isn't sure about get a tap-to-call button for your front desk.</p></div>
       </div>
 
-      <style jsx global>{`
-        * {
-          box-sizing: border-box;
-          margin: 0;
-          padding: 0;
-        }
+      <section id="privacy" className="tile glass" style={{ marginBottom: 40 }}>
+        <span className="pill-label">Privacy · local-first</span>
+        <h2 className="sec-title" style={{ marginTop: 10 }}>Intelligent systems. Zero data extraction.</h2>
+        <p style={{ color: "var(--muted)", lineHeight: 1.65, maxWidth: 760 }}>Cipher Concierge runs on <b>Cipher 2.0</b>, Cipher CTS's own AI model, on servers run by Cipher CTS or on a small box at your property. No third-party AI service ever sees a guest's question. Conversations aren't stored or logged, the chat lives only in the guest's browser tab, and there are no trackers, analytics, or outside fonts. With the on-property option, guest questions never leave the building.</p>
+      </section>
 
-        body {
-          font-family: "Inter", sans-serif;
-          background-color: #05060a;
-          color: rgba(255, 255, 255, 0.94);
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
+      <section className="tile glass">
+        <h2 className="sec-title">Pricing <span className="tbd">TBD</span></h2>
+        <p style={{ color: "var(--muted)", lineHeight: 1.6 }}>Priced <b>per room, per month</b>. <i>Placeholder: final pricing to be announced. This is not a quote.</i></p>
+      </section>
 
-        .bg-canvas {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background:
-            radial-gradient(circle at 15% 10%, rgba(90, 70, 255, 0.35), transparent 40%),
-            radial-gradient(circle at 85% 90%, rgba(0, 255, 200, 0.25), transparent 45%),
-            radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.03), transparent 60%),
-            #05060a;
-          z-index: -2;
-        }
-
-        .bg-watermark {
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 100%;
-          max-width: 600px;
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          pointer-events: none;
-          z-index: -1;
-          opacity: 0.06;
-          filter: drop-shadow(0 0 40px rgba(0, 255, 200, 0.3));
-        }
-
-        .watermark-img {
-          width: 75%;
-          max-width: 380px;
-          object-fit: contain;
-        }
-
-        .portal-wrap {
-          width: 100%;
-          max-width: 420px;
-          padding: 20px;
-          z-index: 1;
-        }
-
-        .glass-panel {
-          background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          backdrop-filter: blur(28px) saturate(140%);
-          -webkit-backdrop-filter: blur(28px) saturate(140%);
-          border-radius: 24px;
-          padding: 34px 26px;
-          box-shadow:
-            0 0 100px rgba(0, 255, 200, 0.08),
-            0 0 50px rgba(90, 70, 255, 0.15);
-        }
-
-        .brand {
-          text-align: center;
-          margin-bottom: 24px;
-        }
-
-        .brand-logo {
-          width: 42px;
-          height: 42px;
-          object-fit: contain;
-          margin: 0 auto 12px auto;
-          display: block;
-        }
-
-        .brand h2 {
-          font-family: "Plus Jakarta Sans", sans-serif;
-          font-size: 15px;
-          letter-spacing: 2px;
-          color: #ffffff;
-          margin-bottom: 4px;
-        }
-
-        .portal-sub {
-          font-size: 12.5px;
-          color: #00ffd5;
-        }
-
-        .room-form {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          margin-bottom: 20px;
-        }
-
-        .room-form label {
-          font-size: 12px;
-          color: #94a3b8;
-        }
-
-        .room-input {
-          width: 100%;
-          padding: 14px 16px;
-          border-radius: 14px;
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          background: rgba(255, 255, 255, 0.04);
-          color: #ffffff;
-          font-size: 16px;
-          outline: none;
-          text-align: center;
-          transition: border-color 0.2s;
-        }
-
-        .room-input:focus {
-          border-color: #00ffd5;
-        }
-
-        .btn-enter {
-          width: 100%;
-          padding: 14px;
-          border-radius: 14px;
-          border: 1px solid rgba(255, 255, 255, 0.18);
-          background: linear-gradient(135deg, #5a46ff, #00ffd5);
-          color: #ffffff;
-          font-family: "Plus Jakarta Sans", sans-serif;
-          font-weight: 700;
-          font-size: 14px;
-          cursor: pointer;
-          transition: all 0.2s;
-          box-shadow: 0 0 25px rgba(90, 70, 255, 0.4);
-        }
-
-        .btn-enter:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 0 35px rgba(90, 70, 255, 0.6);
-        }
-
-        .quick-access {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          font-size: 12px;
-          color: #64748b;
-          margin-bottom: 20px;
-        }
-
-        .quick-access button {
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          color: #94a3b8;
-          font-size: 11px;
-          padding: 4px 10px;
-          border-radius: 8px;
-          cursor: pointer;
-        }
-
-        .quick-access button:hover {
-          color: #ffffff;
-          border-color: #00ffd5;
-        }
-
-        .portal-footer {
-          text-align: center;
-          font-size: 11px;
-          color: #64748b;
-          border-top: 1px solid rgba(255, 255, 255, 0.08);
-          padding-top: 16px;
-        }
-      `}</style>
-    </>
+      <p className="foot">Demo: hotel names and details are sample data for illustration only. They haven't been confirmed by those hotels and don't imply any affiliation or endorsement. © 2026 Cipher CTS · ciphercts.com</p>
+    </div>
   );
 }

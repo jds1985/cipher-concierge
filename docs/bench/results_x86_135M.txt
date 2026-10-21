@@ -1,0 +1,8 @@
+threads=4 idle_rss_mb=6
+{"N":1,"wall_s":0.6,"tokens":120,"agg_tok_s":213.1,"ttft_ms_p50":221,"ttft_ms_max":221,"total_ms_p50":563,"total_ms_max":563,"peak_rss_mb":72,"avg_cores_busy":3.52}
+{"N":5,"wall_s":2.6,"tokens":600,"agg_tok_s":233.9,"ttft_ms_p50":1082,"ttft_ms_max":2119,"total_ms_p50":1420,"total_ms_max":2514,"peak_rss_mb":76,"avg_cores_busy":3.86}
+{"N":20,"wall_s":10.8,"tokens":2400,"agg_tok_s":222.8,"ttft_ms_p50":5510,"ttft_ms_max":10354,"total_ms_p50":5894,"total_ms_max":10721,"peak_rss_mb":81,"avg_cores_busy":3.92}
+threads=1 idle_rss_mb=6
+{"N":1,"wall_s":1.2,"tokens":120,"agg_tok_s":103.2,"ttft_ms_p50":476,"ttft_ms_max":476,"total_ms_p50":1162,"total_ms_max":1162,"peak_rss_mb":72,"avg_cores_busy":0.94}
+{"N":5,"wall_s":6,"tokens":600,"agg_tok_s":100.1,"ttft_ms_p50":2822,"ttft_ms_max":5130,"total_ms_p50":3526,"total_ms_max":5943,"peak_rss_mb":76,"avg_cores_busy":0.99}
+{"N":20,"wall_s":24,"tokens":2400,"agg_tok_s":99.9,"ttft_ms_p50":12407,"ttft_ms_max":23167,"total_ms_p50":13155,"total_ms_max":23953,"peak_rss_mb":80,"avg_cores_busy":1}

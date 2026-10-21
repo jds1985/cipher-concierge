@@ -1,0 +1,66 @@
+{
+  "id": "the-oliver",
+  "name": "The Oliver Hotel",
+  "location": {
+    "area": "Market Square",
+    "city": "Knoxville, TN",
+    "address": null,
+    "directions": null
+  },
+  "frontDesk": {
+    "phoneDisplay": "(865) 521-0050",
+    "phoneTel": "+18655210050",
+    "inRoom": "Dial 0 from your room phone",
+    "hours": null
+  },
+  "emergency": "Dial 911 immediately, then let the front desk know.",
+  "wifi": {
+    "network": "Oliver-Guest",
+    "password": null,
+    "notes": "No password needed. Join the network and accept the terms in your browser."
+  },
+  "checkIn": { "time": "3:00 PM" },
+  "checkOut": {
+    "time": "11:00 AM",
+    "late": "Late checkout is available on request, based on availability. Ask the front desk."
+  },
+  "dining": [
+    {
+      "name": "The Oliver Royale",
+      "type": "New American bistro and craft cocktails",
+      "location": "Ground floor, next to the lobby",
+      "meals": { "breakfast": "7:00 AM to 10:30 AM", "dinner": "5:00 PM to 10:00 PM" },
+      "hours": null
+    },
+    {
+      "name": "Peter Kern Lounge",
+      "type": "Speakeasy cocktail bar",
+      "location": "Through the alleyway behind the hotel, or behind the lobby bookshelf",
+      "meals": {},
+      "hours": "5:00 PM to 1:00 AM daily"
+    }
+  ],
+  "roomService": null,
+  "parking": "Valet parking at the main entrance is $28 per night. There is also a city garage across the square.",
+  "fitness": "Guests get complimentary access to a partner gym one block away. Pick up a pass at the front desk.",
+  "pool": null,
+  "housekeeping": null,
+  "pets": "Pet-friendly rooms are available on floors 2 and 3 with prior registration.",
+  "smoking": "The Oliver is 100% smoke-free. A $250 recovery fee applies to violations.",
+  "quietHours": "10:00 PM to 8:00 AM daily",
+  "amenities": [
+    "The Oliver Royale restaurant",
+    "Peter Kern Lounge speakeasy",
+    "Partner gym access",
+    "Valet parking",
+    "Pet-friendly rooms (floors 2 and 3)"
+  ],
+  "localRecommendations": [
+    { "name": "Tupelo Honey", "distance": "2-minute walk", "description": "Southern comfort food on Market Square.", "hours": "Open until 10:00 PM" },
+    { "name": "Knox Mason", "distance": "4-minute walk", "description": "Upscale regional fare and seasonal cocktails.", "hours": null }
+  ],
+  "_meta": {
+    "source": "Migrated from Jim's the-oliver.json and the Knoxville examples in the original chat prompt.",
+    "confirmWithHotel": ["frontDesk.phoneDisplay", "all hours", "localRecommendations", "pool", "housekeeping", "roomService", "address"]
+  }
+}
