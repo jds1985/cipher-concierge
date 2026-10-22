@@ -141,3 +141,6 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Cipher model weights (large; copy from cipher_wasm/web/models)
+public/cipher/models/

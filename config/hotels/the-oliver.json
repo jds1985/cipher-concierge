@@ -19,7 +19,9 @@
     "password": null,
     "notes": "No password needed. Join the network and accept the terms in your browser."
   },
-  "checkIn": { "time": "3:00 PM" },
+  "checkIn": {
+    "time": "3:00 PM"
+  },
   "checkOut": {
     "time": "11:00 AM",
     "late": "Late checkout is available on request, based on availability. Ask the front desk."
@@ -29,7 +31,10 @@
       "name": "The Oliver Royale",
       "type": "New American bistro and craft cocktails",
       "location": "Ground floor, next to the lobby",
-      "meals": { "breakfast": "7:00 AM to 10:30 AM", "dinner": "5:00 PM to 10:00 PM" },
+      "meals": {
+        "breakfast": "7:00 AM to 10:30 AM",
+        "dinner": "5:00 PM to 10:00 PM"
+      },
       "hours": null
     },
     {
@@ -56,11 +61,113 @@
     "Pet-friendly rooms (floors 2 and 3)"
   ],
   "localRecommendations": [
-    { "name": "Tupelo Honey", "distance": "2-minute walk", "description": "Southern comfort food on Market Square.", "hours": "Open until 10:00 PM" },
-    { "name": "Knox Mason", "distance": "4-minute walk", "description": "Upscale regional fare and seasonal cocktails.", "hours": null }
+    {
+      "name": "Tupelo Honey",
+      "distance": "2-minute walk",
+      "description": "Southern comfort food on Market Square.",
+      "hours": "Open until 10:00 PM",
+      "cuisines": [
+        "southern",
+        "american"
+      ],
+      "source": "hotel-provided"
+    },
+    {
+      "name": "Knox Mason",
+      "distance": "4-minute walk",
+      "description": "Upscale regional fare and seasonal cocktails.",
+      "hours": null,
+      "cuisines": [
+        "southern",
+        "american"
+      ],
+      "source": "hotel-provided"
+    },
+    {
+      "name": "Kabuki",
+      "distance": "approx. 3-minute walk",
+      "address": "19 Market Square",
+      "description": "Japanese: sushi and hibachi.",
+      "hours": null,
+      "cuisines": [
+        "japanese",
+        "sushi",
+        "hibachi"
+      ],
+      "source": "restaurantkabuki.com; verified 2026-10-21 (address/cuisine); walk time approx., estimated from coordinates"
+    },
+    {
+      "name": "Nama Sushi Bar",
+      "distance": "approx. 4-minute walk",
+      "address": "506 S Gay St",
+      "description": "Japanese sushi bar.",
+      "hours": null,
+      "cuisines": [
+        "japanese",
+        "sushi"
+      ],
+      "source": "verified 2026-10-21 (address/cuisine); walk time approx., estimated from coordinates"
+    },
+    {
+      "name": "Nama Izakaya",
+      "distance": "approx. 12-minute walk",
+      "address": "141 S Gay St",
+      "description": "Japanese small plates (izakaya).",
+      "hours": null,
+      "cuisines": [
+        "japanese",
+        "izakaya"
+      ],
+      "source": "verified 2026-10-21 (address/cuisine); walk time approx., estimated from coordinates"
+    },
+    {
+      "name": "Kaizen",
+      "distance": "approx. 13-minute walk",
+      "address": "127 S Central St",
+      "description": "Asian fusion.",
+      "hours": null,
+      "cuisines": [
+        "asian fusion",
+        "asian"
+      ],
+      "source": "verified 2026-10-21 (address/cuisine); walk time approx., estimated from coordinates"
+    },
+    {
+      "name": "Chivo Taqueria",
+      "distance": "approx. 6-minute walk",
+      "address": "314 S Gay St",
+      "description": "Mexican taqueria.",
+      "hours": null,
+      "cuisines": [
+        "mexican",
+        "tacos"
+      ],
+      "source": "verified 2026-10-21 (address/cuisine); walk time approx., estimated from coordinates"
+    },
+    {
+      "name": "Chismoso",
+      "distance": "approx. 12-minute walk",
+      "address": "131 S Gay St",
+      "description": "Mexican-American / Latin.",
+      "hours": null,
+      "cuisines": [
+        "mexican",
+        "latin",
+        "tacos"
+      ],
+      "source": "verified 2026-10-21 (address/cuisine); walk time approx., estimated from coordinates"
+    }
   ],
   "_meta": {
     "source": "Migrated from Jim's the-oliver.json and the Knoxville examples in the original chat prompt.",
-    "confirmWithHotel": ["frontDesk.phoneDisplay", "all hours", "localRecommendations", "pool", "housekeeping", "roomService", "address"]
+    "confirmWithHotel": [
+      "frontDesk.phoneDisplay",
+      "all hours",
+      "localRecommendations",
+      "pool",
+      "housekeeping",
+      "roomService",
+      "address"
+    ]
   }
 }

@@ -14,6 +14,7 @@ function check(r, e) {
   if (e.intent && r.intent !== e.intent) why.push(`intent ${r.intent} != ${e.intent}`);
   if (e.kind && r.kind !== e.kind) why.push(`kind ${r.kind} != ${e.kind}`);
   if (e.call !== undefined && !!r.call !== e.call) why.push(`call ${!!r.call} != ${e.call}`);
+  for (const c of e.not_contains || []) if (r.text.includes(c)) why.push(`unexpected "${c}"`);
   for (const c of e.contains || []) if (!r.text.includes(c)) why.push(`missing "${c}"`);
   if (e.source_in && !e.source_in.includes(r.source)) why.push(`source ${r.source}`);
   return why;

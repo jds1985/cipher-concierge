@@ -439,5 +439,83 @@
    ],
    "safe": true
   }
+ },
+ {
+  "id": "food-asian-jim",
+  "q": "Are there any good Asian restraints nearby",
+  "expect": {
+   "intent": "local_recs",
+   "contains": [
+    "Kabuki",
+    "Nama Sushi Bar",
+    "Kaizen"
+   ],
+   "not_contains": [
+    "Tupelo Honey",
+    "Knox Mason",
+    "Chivo"
+   ]
+  }
+ },
+ {
+  "id": "food-sushi",
+  "q": "where can I get sushi?",
+  "expect": {
+   "intent": "local_recs",
+   "contains": [
+    "Kabuki",
+    "Nama Sushi Bar"
+   ],
+   "not_contains": [
+    "Tupelo Honey",
+    "Chivo",
+    "Kaizen"
+   ]
+  }
+ },
+ {
+  "id": "food-mexican",
+  "q": "any mexican resturants around here?",
+  "expect": {
+   "intent": "local_recs",
+   "contains": [
+    "Chivo Taqueria",
+    "Chismoso"
+   ],
+   "not_contains": [
+    "Tupelo Honey",
+    "Kabuki"
+   ]
+  }
+ },
+ {
+  "id": "food-indian-none",
+  "q": "Is there an Indian restaurant nearby?",
+  "expect": {
+   "intent": "local_recs",
+   "kind": "fallback",
+   "call": true,
+   "contains": [
+    "I don't have an indian restaurant listed nearby"
+   ],
+   "not_contains": [
+    "Tupelo",
+    "Kabuki",
+    "Chivo"
+   ]
+  }
+ },
+ {
+  "id": "food-plain",
+  "q": "restaurants nearby",
+  "expect": {
+   "intent": "local_recs",
+   "contains": [
+    "Tupelo Honey",
+    "Knox Mason",
+    "Kabuki",
+    "Chivo Taqueria"
+   ]
+  }
  }
 ]

@@ -93,3 +93,21 @@ test("answer(): facts first, hotel-specific unknowns skip the model, cipher fail
   const ok = await answer(oliver, [{ role: "user", content: "tell me a fun fact about owls" }], { askCipher: async () => ({ ok: true, text: "Owls can turn their heads very far." }) });
   assert.equal(ok.source, "cipher");
 });
+
+// On-phone mode shares the facts engine with the server via lib/factpack.js (browser-safe, no fs/crypto).
+import { route } from "../lib/factpack.js";
+test("route: facts answer on-device, open questions need the model, openQuestions=false goes to the desk", () => {
+  const h = getHotel("the-oliver");
+  const a = route(h, "What time is checkout?");
+  assert.equal(a.source, "facts"); assert.ok(a.text.includes("11:00 AM")); assert.ok(!a.needsModel);
+  const b = route(h, "Tell me a fun fact about owls");
+  assert.ok(b.needsModel); assert.ok(Array.isArray(b.facts));
+  const c = route(h, "Tell me a fun fact about owls", { openQuestions: false });
+  assert.equal(c.intent, "cipher_disabled"); assert.ok(c.call);
+  assert.equal(route(h, "Are there any good Asian restraints nearby").text.includes("Tupelo"), false);
+});
+test("factpack module is browser-safe (no node built-ins)", async () => {
+  const fs = await import("fs");
+  for (const f of ["lib/factpack.js", "lib/intents.js", "lib/food.js", "lib/hours.js", "lib/onphone.js"])
+    assert.ok(!/from "(fs|path|crypto)"/.test(fs.readFileSync(f, "utf8")), f);
+});
