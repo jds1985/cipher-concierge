@@ -65,7 +65,8 @@ h1,h2,h3,.display{font-family:"Plus Jakarta Sans",Inter,sans-serif}
 @keyframes pulse{0%,80%,100%{opacity:.35;transform:scale(.7)}40%{opacity:1;transform:scale(1)}}
 @keyframes rise{from{opacity:0;transform:translateY(6px)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
-.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 14px 8px;scrollbar-width:none}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 40px 8px 14px;scrollbar-width:none;scroll-snap-type:x proximity;-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 44px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 44px),transparent)}
+.chip{scroll-snap-align:start}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex:none;min-height:40px;padding:0 14px;border-radius:999px;font:500 13.5px Inter;color:var(--text);background:rgba(140,190,255,.08);border:1px solid var(--glass-border);cursor:pointer}
 .dock{padding:6px 12px calc(10px + env(safe-area-inset-bottom))}
