@@ -43,7 +43,12 @@ export default function Stay({ hotel, roomId, t, factVersion, openQuestions, for
     Object.assign(dbg, { mode: why ? "server" : "phone", why }); if (debug) window.__cipher = dbg;
     if (why) { setMode("server"); return; }
     setMode("phone");
-    if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {});
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {});
+      // Let the worker store this page + the chunks already loaded, so a reload works offline.
+      navigator.serviceWorker.ready.then((reg) => reg.active && reg.active.postMessage({ type: "cache-page", page: location.href,
+        assets: performance.getEntriesByType("resource").map((r) => r.name).filter((n) => n.startsWith(location.origin + "/_next/static/")) })).catch(() => {});
+    }
     pack.current = loadFactPack({ hotelId: hotel.id, roomId, t, version: factVersion }).then((r) => { dbg.factPack = r.fromCache ? "cache" : "network"; return r.hotel; });
     aiReady.current = loadCipher({ onProgress: (p) => { const pct = Math.floor((100 * p.got) / p.size);
         setLoad({ pct, ready: false, text: p.fromCache ? `Loading Cipher from this phone… ${pct}%` : `Downloading Cipher once (${Math.round(p.size / 1e6)} MB)… ${pct}%` }); } })
