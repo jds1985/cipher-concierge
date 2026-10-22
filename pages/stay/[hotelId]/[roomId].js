@@ -6,7 +6,7 @@ import Mark from "../../../components/Mark";
 import RichText from "../../../components/RichText";
 import CallButton from "../../../components/CallButton";
 import { Send, Lock } from "../../../components/Icons";
-import { route, guardAnswer, buildPrompt, connect } from "../../../lib/factpack";
+import { route, guardAnswer, buildPrompt, connect, trimAnswer, GEN } from "../../../lib/factpack";
 import { unsupportedReason, loadCipher, loadFactPack } from "../../../lib/onphone";
 import crypto from "crypto";
 
@@ -17,13 +17,16 @@ export async function getServerSideProps({ params, query, res }) {
   if (!ok) res.statusCode = 403;
   const factVersion = crypto.createHash("sha256").update(JSON.stringify(getHotel(hotel.id))).digest("hex").slice(0, 12);
   return { props: { hotel: publicHotel(hotel), roomId: params.roomId, t: ok ? query.t : null, factVersion,
-    openQuestions: process.env.CIPHER_OPEN_QUESTIONS !== "off", force: ["phone", "server"].includes(query.mode) ? query.mode : null } };
+    openQuestions: process.env.CIPHER_OPEN_QUESTIONS !== "off", force: ["phone", "server"].includes(query.mode) ? query.mode : null,
+    debug: query.debug === "1" && process.env.NODE_ENV !== "production" } };
 }
 
 const CHIPS = ["Checkout time", "Wi-Fi", "Breakfast", "Anything open now?", "Extra towels", "Parking", "Nearby food"];
 const hhmm = () => new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 
-export default function Stay({ hotel, roomId, t, factVersion, openQuestions, force }) {
+export default function Stay({ hotel, roomId, t, factVersion, openQuestions, force, debug }) {
+  // Debug info only in dev with ?debug=1; never exposed on window otherwise.
+  const dbg = useRef({ stats: [] }).current;
   const welcome = { role: "assistant", kind: "fact", content: `Welcome to ${hotel.name}. I'm Cipher, your private concierge for Room ${roomId}. Ask me anything about your stay, day or night.`, at: "" };
   const [msgs, setMsgs] = useState([welcome]);
   const [input, setInput] = useState("");
@@ -37,16 +40,16 @@ export default function Stay({ hotel, roomId, t, factVersion, openQuestions, for
   useEffect(() => {
     if (!t) return;
     const why = unsupportedReason(force);
-    window.__cipher = { mode: why ? "server" : "phone", why, stats: [] };
+    Object.assign(dbg, { mode: why ? "server" : "phone", why }); if (debug) window.__cipher = dbg;
     if (why) { setMode("server"); return; }
     setMode("phone");
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {});
-    pack.current = loadFactPack({ hotelId: hotel.id, roomId, t, version: factVersion }).then((r) => { window.__cipher.factPack = r.fromCache ? "cache" : "network"; return r.hotel; });
+    pack.current = loadFactPack({ hotelId: hotel.id, roomId, t, version: factVersion }).then((r) => { dbg.factPack = r.fromCache ? "cache" : "network"; return r.hotel; });
     aiReady.current = loadCipher({ onProgress: (p) => { const pct = Math.floor((100 * p.got) / p.size);
         setLoad({ pct, ready: false, text: p.fromCache ? `Loading Cipher from this phone… ${pct}%` : `Downloading Cipher once (${Math.round(p.size / 1e6)} MB)… ${pct}%` }); } })
-      .then((m) => { ai.current = m; window.__cipher.build = m.info.info.build; window.__cipher.ready = true;
+      .then((m) => { ai.current = m; dbg.build = m.info.info.build; dbg.ready = true;
         setLoad({ pct: 100, ready: true, text: `Cipher is ready on this phone · ${m.info.info.build}` }); return m; })
-      .catch((e) => { window.__cipher.modelError = String(e); setLoad({ pct: 0, ready: false, failed: true, text: "Cipher couldn't load on this phone. Hotel facts still answer here." }); return null; });
+      .catch((e) => { dbg.modelError = String(e); setLoad({ pct: 0, ready: false, failed: true, text: "Cipher couldn't load on this phone. Hotel facts still answer here." }); return null; });
   }, [t]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function askServer(next) {
@@ -59,14 +62,15 @@ export default function Stay({ hotel, roomId, t, factVersion, openQuestions, for
     let H;
     try { H = await pack.current; } catch { return askServer(next); }   // no fact pack (first visit offline): use the server
     const r = route(H, q, { now: new Date(), openQuestions });
-    if (!r.needsModel) { window.__cipher.stats.push({ q, source: r.source }); return { role: "assistant", content: r.text, kind: r.kind, call: r.call, source: r.source, where: "phone" }; }
+    if (!r.needsModel) { if (debug) dbg.stats.push({ q, source: r.source }); return { role: "assistant", content: r.text, kind: r.kind, call: r.call, source: r.source, where: "phone" }; }
     const m = await aiReady.current;
     if (!m) return { ...(await askServer(next)) };                       // model failed to load: the hotel's server answers
     await m.reset(); await m.setSystem(buildPrompt(H, r.facts));
-    const g = await m.generate(q, { maxNew: 120 });
-    const ok = guardAnswer(g.text, r.facts, q, H.name).ok;
-    window.__cipher.stats.push({ q, source: ok ? "cipher" : "cipher-fallback", raw: g.text.slice(0, 300), ...g.stats });
-    return ok ? { role: "assistant", content: g.text.trim(), kind: "cipher", source: "cipher", where: "phone" }
+    let sofar = "";
+    const g = await m.generate(q, { maxNew: GEN.maxNew, onToken: (p) => { sofar += p; if (GEN.stops.some((s) => sofar.includes(s))) m.stop(); } });
+    const text = trimAnswer(g.text), ok = guardAnswer(text, r.facts, q, H.name).ok;
+    if (debug) dbg.stats.push({ q, source: ok ? "cipher" : "cipher-fallback", raw: g.text.slice(0, 300), ...g.stats });
+    return ok ? { role: "assistant", content: text, kind: "cipher", source: "cipher", where: "phone" }
       : { role: "assistant", ...connect(H, "I'm not certain about that. "), content: connect(H, "I'm not certain about that. ").text, source: "cipher-fallback", where: "phone" };
   }
   useEffect(() => { end.current?.scrollIntoView({ behavior: "smooth", block: "end" }); }, [msgs, busy]);

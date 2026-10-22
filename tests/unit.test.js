@@ -79,7 +79,7 @@ test("guard rejects unverified numbers", () => {
   assert.ok(!guardAnswer("Checkout is at 12:00 PM, see you then!", f, "checkout").ok);
   assert.ok(!guardAnswer("", f, "x").ok);
   assert.ok(!guardAnswer("The Touche Hotel is a charming place to stay.", f, "x", "The Tennessean Hotel").ok);
-  assert.ok(guardAnswer("The Tennessean Hotel is a charming place to stay.", f, "x", "The Tennessean Hotel").ok);
+  assert.ok(guardAnswer("The Tennessean Hotel front desk is happy to help.", f, "x", "The Tennessean Hotel").ok);
   assert.ok(!guardAnswer("de la tierra de la tierra de la tierra de la tierra de la tierra", f, "x").ok);
 });
 
@@ -110,4 +110,28 @@ test("factpack module is browser-safe (no node built-ins)", async () => {
   const fs = await import("fs");
   for (const f of ["lib/factpack.js", "lib/intents.js", "lib/food.js", "lib/hours.js", "lib/onphone.js"])
     assert.ok(!/from "(fs|path|crypto)"/.test(fs.readFileSync(f, "utf8")), f);
+});
+
+// Open questions: compact relevant facts reach the model; guard rejects poems, lists, invented names, ungrounded drift.
+import { trimAnswer, buildPrompt } from "../lib/factpack.js";
+test("open questions: facts padded into prompt, poem/list/invented answers fall back", () => {
+  const h = getHotel("the-oliver");
+  const f = retrieveFacts(h, "What should I do on a rainy afternoon?");
+  assert.ok(f.length >= 3 && f.some((x) => x.text.includes("Peter Kern Lounge")));
+  const p = buildPrompt(h, f);
+  assert.ok(p.length < 1100 && p.includes("Peter Kern Lounge") && /No poems/.test(p));
+  const q = "What should I do on a rainy afternoon?";
+  assert.ok(guardAnswer("Try a cocktail at Peter Kern Lounge, behind the lobby bookshelf.", f, q, h.name).ok);
+  assert.ok(!guardAnswer("In the heart of the city,\nThe stars were shining bright.", f, q, h.name).ok);
+  assert.ok(!guardAnswer("1. Visit a museum\n2. Read a book", f, q, h.name).ok);
+  assert.ok(!guardAnswer("Visit the Knoxville Museum of Art for a quiet afternoon.", f, q, h.name).ok);
+  assert.ok(!guardAnswer("On a rainy morning the weather is mild and pleasant outside.", f, q, h.name).ok);
+  assert.ok(!guardAnswer("A symphony of colors at Peter Kern Lounge tonight.", f, q, h.name).ok);
+  assert.equal(trimAnswer("Head to The Oliver Royale. It is cozy. Enjoy! Also more.\n\nGuest: hi"), "Head to The Oliver Royale. It is cozy.");
+});
+test("hosted mode: open questions go to the front desk without calling the model", async () => {
+  process.env.CIPHER_SERVER_MODEL = "off"; let called = 0;
+  const r = await answer(getHotel("the-oliver"), [{ role: "user", content: "tell me a fun fact about owls" }], { askCipher: async () => { called++; return { ok: true, text: "x" }; } });
+  delete process.env.CIPHER_SERVER_MODEL;
+  assert.equal(called, 0); assert.equal(r.kind, "fallback"); assert.ok(r.call && r.text.includes("front desk"));
 });

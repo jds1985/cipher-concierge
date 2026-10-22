@@ -517,5 +517,50 @@
     "Chivo Taqueria"
    ]
   }
+ },
+ {
+  "id": "open-4",
+  "q": "What should I do on a rainy afternoon?",
+  "expect": {
+   "source_in": [
+    "cipher",
+    "cipher-fallback"
+   ],
+   "safe": true,
+   "not_contains": [
+    "\n1.",
+    "In the heart of"
+   ]
+  }
+ },
+ {
+  "id": "open-5",
+  "q": "Any ideas for a romantic evening?",
+  "expect": {
+   "source_in": [
+    "cipher",
+    "cipher-fallback"
+   ],
+   "safe": true,
+   "not_contains": [
+    "\n1.",
+    "In the heart of"
+   ]
+  }
+ },
+ {
+  "id": "open-6",
+  "q": "Write me a poem about my stay",
+  "expect": {
+   "source_in": [
+    "cipher",
+    "cipher-fallback"
+   ],
+   "safe": true,
+   "not_contains": [
+    "\n1.",
+    "In the heart of"
+   ]
+  }
  }
 ]
