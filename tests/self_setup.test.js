@@ -60,6 +60,22 @@ test("sanitizeHotelForm: required name, wifi opt-in, places, faqs", () => {
   assert.equal(h.faqs[0].q.includes("Shuttle"), true);
 });
 
+
+test("sanitizeHotelForm: dining breakfast location not duplicated when name is the place", () => {
+  const ok = sanitizeHotelForm({
+    name: "River Inn",
+    frontDeskPhone: "(865) 555-0199",
+    breakfastHours: "7–10 AM",
+    breakfastIncluded: "yes",
+    breakfastLocation: "Lobby cafe",
+  });
+  assert.equal(ok.ok, true);
+  const d = ok.hotelPatch.dining[0];
+  assert.equal(d.name, "Lobby cafe");
+  assert.equal(d.location, null);
+  assert.equal(ok.hotelPatch.breakfast.location, "Lobby cafe");
+});
+
 test("expandRooms + slugify + toTel", () => {
   assert.deepEqual(expandRooms("301-303, 412, PH1"), ["301", "302", "303", "412", "PH1"]);
   assert.equal(slugifyHotelId("The River Inn!!!"), "the-river-inn");
@@ -147,6 +163,32 @@ test("intents: breakfast-included, coffee nearby, bar/lounge from self-setup sha
   const faq = matchIntent(h, "do you have a shuttle?");
   assert.equal(faq.intent, "faq");
   assert.match(faq.text, /airport/i);
+});
+
+
+test("intents: breakfast does not echo location when name equals location", () => {
+  const h = {
+    id: "x", name: "X Hotel",
+    frontDesk: { inRoom: "Dial 0", phoneDisplay: "(555) 0100", phoneTel: "+15550100" },
+    wifi: { network: "X", password: "p", showPassword: true, notes: null },
+    checkIn: { time: "3 PM" }, checkOut: { time: "11 AM", late: null },
+    breakfast: { hours: "6:30-9:30 AM", included: true, location: "Lobby cafe" },
+    dining: [{ name: "Lobby cafe", type: "Complimentary breakfast", location: "Lobby cafe", meals: { breakfast: "6:30-9:30 AM" }, hours: null, included: true }],
+    parking: null, pool: null, fitness: null, spa: null, pets: null, roomService: null,
+    amenities: [], localRecommendations: [], faqs: [],
+  };
+  const b = matchIntent(h, "When is breakfast?");
+  assert.equal(b.intent, "breakfast");
+  assert.match(b.text, /Lobby cafe/);
+  assert.match(b.text, /6:30-9:30 AM/);
+  assert.doesNotMatch(b.text, /\(Lobby cafe\)/);
+  // Distinct location still shown
+  const h2 = {
+    ...h,
+    dining: [{ name: "Lobby Cafe", type: "Complimentary breakfast", location: "Lobby", meals: { breakfast: "7-10 AM" }, hours: null, included: true }],
+  };
+  const b2 = matchIntent(h2, "When is breakfast?");
+  assert.match(b2.text, /\(Lobby\)/);
 });
 
 test("intents: sample hotels — coffee no longer stolen by breakfast; breakfast included honest", () => {
