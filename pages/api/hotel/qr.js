@@ -1,11 +1,11 @@
-// POST /api/hotel/qr { token, rooms } — signed QR cards for THIS hotel only.
+// POST /api/hotel/qr { token?, rooms } (edit token or manager session cookie) — signed QR cards for THIS hotel only.
 import QRCode from "qrcode";
-import { getHotelByEditToken } from "../../../lib/store";
-import { expandRooms } from "../../../lib/hotel-form";
-import { roomUrl } from "../../../lib/token";
-import { baseUrl } from "../../../lib/admin";
-import { rateLimit } from "../../../lib/ratelimit";
-import { hashSecret } from "../../../lib/store";
+import { getHotelByEditToken } from "../../../lib/store.js";
+import { expandRooms } from "../../../lib/hotel-form.js";
+import { roomUrl } from "../../../lib/token.js";
+import { baseUrl } from "../../../lib/admin.js";
+import { rateLimit } from "../../../lib/ratelimit.js";
+import { hotelForRequest, clientIp } from "../../../lib/auth.js";
 
 export const config = { api: { bodyParser: { sizeLimit: "4kb" } } };
 
@@ -13,17 +13,16 @@ export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const ip = (req.headers["x-forwarded-for"] || "").split(",")[0].trim() || req.socket.remoteAddress || "?";
-  const token = req.body?.token;
-  if (typeof token !== "string") return res.status(403).json({ error: "Invalid edit link." });
-  const tokHash = hashSecret(token).slice(0, 16);
-  if (!rateLimit("hotel-qr:" + tokHash, { limit: 30, windowMs: 60 * 60_000 }).ok ||
-      !rateLimit("hotel-qr-ip:" + ip, { limit: 40, windowMs: 60 * 60_000 }).ok) {
+  const ip = clientIp(req);
+  if (!rateLimit("hotel-qr-ip:" + ip, { limit: 40, windowMs: 60 * 60_000 }).ok) {
     return res.status(429).json({ error: "Too many QR requests." });
   }
-
-  const hotel = await getHotelByEditToken(token);
-  if (!hotel) return res.status(403).json({ error: "Invalid or expired edit link." });
+  const auth = await hotelForRequest(req, { getHotelByEditToken });
+  if (!auth.hotel) return res.status(auth.status).json({ error: auth.error });
+  if (!rateLimit("hotel-qr-" + auth.rlId, { limit: 30, windowMs: 60 * 60_000 }).ok) {
+    return res.status(429).json({ error: "Too many QR requests." });
+  }
+  const hotel = auth.hotel;
 
   const rooms = expandRooms(req.body?.rooms || "");
   if (!rooms.length) return res.status(400).json({ error: "Enter at least one room number or range (e.g. 301-310, 412)." });

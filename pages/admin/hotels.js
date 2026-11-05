@@ -10,6 +10,33 @@ export default function AdminHotels() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [created, setCreated] = useState(null);
+  const [managerEmail, setManagerEmail] = useState("");
+  const [managerPassword, setManagerPassword] = useState("");
+  const [lHotelId, setLHotelId] = useState("");
+  const [lEmail, setLEmail] = useState("");
+  const [lPassword, setLPassword] = useState("");
+  const [lBusy, setLBusy] = useState(false);
+  const [lErr, setLErr] = useState("");
+  const [lDone, setLDone] = useState(null);
+
+  async function onSetLogin(e) {
+    e.preventDefault();
+    setLBusy(true); setLErr(""); setLDone(null);
+    try {
+      const r = await fetch("/api/admin/hotel-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
+        body: JSON.stringify({ hotelId: lHotelId.trim(), email: lEmail, password: lPassword }),
+      });
+      const j = await r.json();
+      if (!r.ok) { setLErr(j.error || "Could not set login"); return; }
+      setLDone(j); setLPassword("");
+    } catch {
+      setLErr("Network error. Try again.");
+    } finally {
+      setLBusy(false);
+    }
+  }
 
   async function onCreate(e) {
     e.preventDefault();
@@ -18,12 +45,12 @@ export default function AdminHotels() {
       const r = await fetch("/api/admin/hotels", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ name, managerEmail, managerPassword }),
       });
       const j = await r.json();
       if (!r.ok) { setErr(j.error || "Could not create hotel"); return; }
       setCreated(j);
-      setName("");
+      setName(""); setManagerPassword("");
     } catch {
       setErr("Network error. Try again.");
     } finally {
@@ -76,6 +103,16 @@ export default function AdminHotels() {
             aria-required="true"
           />
         </label>
+        <label className="field">
+          <span>Hotel manager email (optional — creates their login)</span>
+          <input type="email" name="managerEmail" value={managerEmail}
+            onChange={(e) => setManagerEmail(e.target.value)} placeholder="gm@riverinn.com" maxLength={254} autoComplete="off" />
+        </label>
+        <label className="field">
+          <span>Manager password (leave blank to generate one, min 10 characters)</span>
+          <input type="text" name="managerPassword" value={managerPassword}
+            onChange={(e) => setManagerPassword(e.target.value)} autoComplete="new-password" maxLength={128} />
+        </label>
         {err && <p className="form-err" role="alert">{err}</p>}
         <button className="btn btn-primary" type="submit" disabled={busy}>
           {busy ? "Creating…" : "Create hotel + edit link"}
@@ -99,8 +136,37 @@ export default function AdminHotels() {
             Copy link
           </button>
           <a className="btn btn-primary" href={created.editUrl}>Open setup form →</a>
+          {created.login && created.login.error && <p className="form-err" role="alert">{created.login.error}</p>}
+          {created.login && !created.login.error && <LoginCard login={created.login} />}
         </section>
       )}
+
+      <h2 className="setup-h1" style={{ fontSize: 28, marginTop: 40 }}>Set or reset a manager login</h2>
+      <p className="setup-lede">For an existing hotel. Resetting signs the manager out everywhere. One email manages one hotel.</p>
+      <form className="setup-form glass" onSubmit={onSetLogin} autoComplete="off">
+        <label className="field"><span>Hotel id</span>
+          <input type="text" name="hotelId" value={lHotelId} onChange={(e) => setLHotelId(e.target.value)} placeholder="the-river-inn" required /></label>
+        <label className="field"><span>Manager email</span>
+          <input type="email" name="email" value={lEmail} onChange={(e) => setLEmail(e.target.value)} required maxLength={254} /></label>
+        <label className="field"><span>New password (blank = generate)</span>
+          <input type="text" name="password" value={lPassword} onChange={(e) => setLPassword(e.target.value)} autoComplete="new-password" maxLength={128} /></label>
+        {lErr && <p className="form-err" role="alert">{lErr}</p>}
+        <button className="btn btn-primary" type="submit" disabled={lBusy}>{lBusy ? "Saving…" : "Set manager login"}</button>
+      </form>
+      {lDone && <section className="glass created" aria-live="polite"><LoginCard login={{ ...lDone, loginUrl: "/login" }} /></section>}
+    </div>
+  );
+}
+
+function LoginCard({ login }) {
+  const text = `Sign in: ${typeof window !== "undefined" ? window.location.origin : ""}/login\nEmail: ${login.email}\nPassword: ${login.password}`;
+  return (
+    <div>
+      <h2>Manager login</h2>
+      <p>Shown once. Send it to the manager privately (not in the same message as the edit link).</p>
+      <label className="field"><span>Email</span><input type="text" readOnly value={login.email} /></label>
+      <label className="field"><span>Password</span><input type="text" readOnly value={login.password} onFocus={(e) => e.target.select()} /></label>
+      <button type="button" className="btn btn-ghost" onClick={() => navigator.clipboard?.writeText(text)}>Copy login details</button>
     </div>
   );
 }
