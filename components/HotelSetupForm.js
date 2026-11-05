@@ -171,6 +171,7 @@ export default function HotelSetupForm({ token, sessionMode = false, email = "" 
         <span className="spacer" />
         <span className="pill-label">Hotel setup</span>
         {sessionMode && <a className="btn btn-ghost" href="/requests" style={{ marginLeft: 12 }}>Requests</a>}
+        {sessionMode && <a className="btn btn-ghost" href="/usage" style={{ marginLeft: 12 }}>Usage</a>}
         {sessionMode && <a className="btn btn-ghost" href="/billing" style={{ marginLeft: 12 }}>Billing</a>}
         {sessionMode && (
           <form method="post" action="/api/auth/logout" style={{ marginLeft: 12 }}>
