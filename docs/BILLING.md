@@ -21,7 +21,7 @@ create a 13-month coupon and point `STRIPE_FOUNDING_COUPON_ID` at it.
 For live mode run: `STRIPE_SECRET_KEY=sk_live_... node scripts/stripe-setup.mjs` after removing the test-key guard deliberately (or create the same objects in the Dashboard).
 
 ## Flow
-1. Manager signs in → `/billing` → enters room count (live price shown) → **Start 30-day free trial** → Stripe Checkout (`mode=subscription`, `trial_period_days=30`, no `payment_method_types`; Dashboard controls payment methods).
+1. Manager signs in → `/billing` → enters room count (live price shown) → **Start 30-day free trial** → Stripe Checkout (`mode=subscription`, `trial_period_days=30`, no `payment_method_types`; Dashboard controls payment methods). Success redirects to `/billing/success` (trial started + guest QR note); cancel to `/billing/canceled`.
 2. Fulfillment happens only in `POST /api/stripe/webhook` (signature-verified, raw body, event-id idempotency).
    Every subscription-related event re-fetches the subscription from Stripe, so out-of-order delivery is safe.
    Stored at Redis `cc:v1:billing:<hotelId>`: customerId, subscriptionId, status, rooms, trialEnd, currentPeriodEnd, cancelAtPeriodEnd, founding, comp, lastInvoice.

@@ -63,6 +63,8 @@ test("checkout: subscription mode, 30-day trial, quantity, founding coupon, no p
   assert.deepEqual(p.discounts, [{ coupon: "CONCIERGE_FOUNDING_50" }]);
   assert.equal(p.client_reference_id, "h1");
   assert.ok(!("payment_method_types" in p));
+  assert.equal(p.success_url, "https://x.test/billing/success");
+  assert.equal(p.cancel_url, "https://x.test/billing/canceled");
   await setBilling("h1", { subscriptionId: "sub_1", status: "trialing" });
   await assert.rejects(createCheckout({ hotelId: "h1", email: "gm@river.test", rooms: 40, baseUrl: "https://x.test" }), /already/);
 });
