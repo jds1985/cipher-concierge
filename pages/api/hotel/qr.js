@@ -6,6 +6,7 @@ import { roomUrl } from "../../../lib/token.js";
 import { baseUrl } from "../../../lib/admin.js";
 import { rateLimit } from "../../../lib/ratelimit.js";
 import { hotelForRequest, clientIp } from "../../../lib/auth.js";
+import { guestAccess } from "../../../lib/billing.js";
 
 export const config = { api: { bodyParser: { sizeLimit: "4kb" } } };
 
@@ -23,6 +24,8 @@ export default async function handler(req, res) {
     return res.status(429).json({ error: "Too many QR requests." });
   }
   const hotel = auth.hotel;
+  const access = await guestAccess(hotel.id);
+  if (!access.ok) return res.status(402).json({ error: "Your trial or subscription has ended. Open Billing to update your card, then print QR cards again." });
 
   const rooms = expandRooms(req.body?.rooms || "");
   if (!rooms.length) return res.status(400).json({ error: "Enter at least one room number or range (e.g. 301-310, 412)." });

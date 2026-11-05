@@ -154,6 +154,7 @@ export default function AdminHotels() {
         <button className="btn btn-primary" type="submit" disabled={lBusy}>{lBusy ? "Saving…" : "Set manager login"}</button>
       </form>
       {lDone && <section className="glass created" aria-live="polite"><LoginCard login={{ ...lDone, loginUrl: "/login" }} /></section>}
+      <OwnerBilling adminKey={adminKey} />
     </div>
   );
 }
@@ -168,5 +169,63 @@ function LoginCard({ login }) {
       <label className="field"><span>Password</span><input type="text" readOnly value={login.password} onFocus={(e) => e.target.select()} /></label>
       <button type="button" className="btn btn-ghost" onClick={() => navigator.clipboard?.writeText(text)}>Copy login details</button>
     </div>
+  );
+}
+
+const money = (c) => (c == null ? "—" : `$${(c / 100).toFixed(2).replace(/\.00$/, "")}`);
+const day = (d) => (d ? new Date(d).toLocaleDateString() : "");
+
+function OwnerBilling({ adminKey }) {
+  const [rows, setRows] = useState(null);
+  const [configured, setConfigured] = useState(true);
+  const [err, setErr] = useState("");
+  const [busy, setBusy] = useState("");
+  const [roomDraft, setRoomDraft] = useState({});
+
+  async function call(body) {
+    setErr("");
+    const r = await fetch("/api/admin/billing", { method: "POST", headers: { "Content-Type": "application/json", "x-admin-key": adminKey }, body: JSON.stringify(body) });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || "Request failed");
+    return j;
+  }
+  async function load() {
+    setBusy("list");
+    try { const j = await call({ action: "list" }); setRows(j.hotels); setConfigured(j.configured); } catch (e) { setErr(e.message); } finally { setBusy(""); }
+  }
+  async function act(hotelId, body) {
+    setBusy(hotelId);
+    try { const j = await call({ hotelId, ...body }); setRows((rs) => rs.map((r) => (r.id === hotelId ? j.hotel : r))); } catch (e) { setErr(e.message); } finally { setBusy(""); }
+  }
+
+  return (
+    <section className="glass setup-form" style={{ marginTop: 28 }}>
+      <h2 className="section-title" style={{ marginTop: 0 }}>Billing</h2>
+      <p className="hint">$3/room/month, $99 minimum, 30-day trial. Founding = 50% off for 12 months (limited coupon redemptions). Comp = free, never paused.</p>
+      <button className="btn btn-primary" type="button" onClick={load} disabled={!adminKey || busy === "list"}>{busy === "list" ? "Loading…" : rows ? "Refresh billing" : "Show billing for all hotels"}</button>
+      {!configured && <p className="form-err">Stripe env vars are missing on this deployment.</p>}
+      {err && <p className="form-err" role="alert">{err}</p>}
+      {rows && rows.filter((r) => !r.sample).map((r) => (
+        <div key={r.id} style={{ borderTop: "1px solid var(--glass-border)", paddingTop: 16, display: "grid", gap: 10 }}>
+          <div style={{ fontSize: 20, fontWeight: 700 }}>{r.name} <code style={{ fontSize: 14 }}>{r.id}</code></div>
+          <div style={{ fontSize: 17 }}>
+            Status: <strong>{r.comp ? "comp" : r.status || "not started"}</strong>
+            {r.trialEnd && r.status === "trialing" ? ` · trial ends ${day(r.trialEnd)}` : ""}
+            {r.cancelAtPeriodEnd ? ` · cancels ${day(r.currentPeriodEnd)}` : ""}
+            {" · "}Rooms: <strong>{r.rooms ?? "—"}</strong> · {money(r.monthlyCents)}/mo
+            {" · "}Guests: <strong style={{ color: r.guestAccess ? "var(--lime)" : "#ffb4b4" }}>{r.guestAccess ? "on" : "paused"}</strong>
+            {r.lastInvoice ? ` · last invoice: ${r.lastInvoice.status}` : ""}
+          </div>
+          <div className="btn-row">
+            <label className="check"><input type="checkbox" checked={r.founding} disabled={busy === r.id} onChange={(e) => act(r.id, { action: "founding", founding: e.target.checked })} /> Founding (50% off 12 mo)</label>
+            <label className="check"><input type="checkbox" checked={r.comp} disabled={busy === r.id} onChange={(e) => act(r.id, { action: "comp", comp: e.target.checked })} /> Comp</label>
+            <input type="number" min={1} max={2000} placeholder="rooms" value={roomDraft[r.id] ?? ""} onChange={(e) => setRoomDraft({ ...roomDraft, [r.id]: e.target.value })}
+              style={{ width: 110, minHeight: 48, fontSize: 18, borderRadius: 12, padding: "0 10px" }} aria-label={`Room count for ${r.name}`} />
+            <button className="btn btn-ghost" type="button" disabled={busy === r.id || !roomDraft[r.id]} onClick={() => act(r.id, { action: "rooms", rooms: Number(roomDraft[r.id]) })}>Set rooms</button>
+          </div>
+        </div>
+      ))}
+      {rows && !rows.some((r) => !r.sample) && <p className="hint">No self-setup hotels yet.</p>}
+    </section>
   );
 }

@@ -9,12 +9,17 @@ import { Send, Lock } from "../../../components/Icons";
 import { route, guardAnswer, buildPrompt, connect, trimAnswer, GEN } from "../../../lib/factpack";
 import { unsupportedReason, loadCipher, loadFactPack } from "../../../lib/onphone";
 import crypto from "crypto";
+import { guestAccess } from "../../../lib/billing";
+import { PAUSED_MESSAGE } from "../../../lib/pricing";
+import { isFileHotel } from "../../../lib/hotels";
 
 export async function getServerSideProps({ params, query, res }) {
   const hotel = await resolveHotel(params.hotelId);
   if (!hotel || !validRoom(params.roomId)) return { notFound: true };
   const ok = verifyRoom(hotel.id, params.roomId, query.t);
   if (!ok) res.statusCode = 403;
+  const access = await guestAccess(hotel.id, { isFile: isFileHotel(hotel.id) });
+  if (ok && !access.ok) return { props: { hotel: publicHotel(hotel), roomId: params.roomId, t: null, paused: true, factVersion: "", openQuestions: false, force: null, debug: false } };
   const factVersion = crypto.createHash("sha256").update(JSON.stringify(hotel)).digest("hex").slice(0, 12);
   return { props: { hotel: publicHotel(hotel), roomId: params.roomId, t: ok ? query.t : null, factVersion,
     openQuestions: process.env.CIPHER_OPEN_QUESTIONS !== "off", force: ["phone", "server"].includes(query.mode) ? query.mode : null,
@@ -24,7 +29,7 @@ export async function getServerSideProps({ params, query, res }) {
 const CHIPS = ["Checkout time", "Wi-Fi", "Breakfast", "Anything open now?", "Extra towels", "Parking", "Nearby food"];
 const hhmm = () => new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 
-export default function Stay({ hotel, roomId, t, factVersion, openQuestions, force, debug }) {
+export default function Stay({ hotel, roomId, t, paused = false, factVersion, openQuestions, force, debug }) {
   // Debug info only in dev with ?debug=1; never exposed on window otherwise.
   const dbg = useRef({ stats: [] }).current;
   const welcome = { role: "assistant", kind: "fact", content: `Welcome to ${hotel.name}. I'm Cipher, your private concierge for Room ${roomId}. Ask me anything about your stay, day or night.`, at: "" };
@@ -80,6 +85,15 @@ export default function Stay({ hotel, roomId, t, factVersion, openQuestions, for
   }
   useEffect(() => { end.current?.scrollIntoView({ behavior: "smooth", block: "end" }); }, [msgs, busy]);
 
+  if (paused) return (
+    <main className="center-card glass">
+      <Head><title>{hotel.name} · Cipher Concierge</title></Head>
+      <Mark size={56} />
+      <h1>Welcome to {hotel.name}</h1>
+      <p>{PAUSED_MESSAGE}</p>
+      <div style={{ marginTop: 18 }}><CallButton frontDesk={hotel.frontDesk} /></div>
+    </main>
+  );
   if (!t) return (
     <main className="center-card glass">
       <Head><title>Scan your room QR code · Cipher Concierge</title></Head>

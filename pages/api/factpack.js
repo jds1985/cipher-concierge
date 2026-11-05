@@ -1,6 +1,7 @@
 // POST /api/factpack { hotelId, roomId, t } -> the hotel's full fact sheet for on-phone answering.
 // Signed room link required; rate limited. Downloaded once per fact version and cached on the phone.
-import { resolveHotel, validRoom } from "../../lib/hotels";
+import { resolveHotel, validRoom, isFileHotel } from "../../lib/hotels";
+import { guestAccess, PAUSED_MESSAGE } from "../../lib/billing";
 import { verifyRoom } from "../../lib/token";
 import { rateLimit } from "../../lib/ratelimit";
 
@@ -13,6 +14,8 @@ export default async function handler(req, res) {
   const hotel = await resolveHotel(hotelId);
   if (!hotel || !validRoom(roomId)) return res.status(404).json({ error: "Unknown hotel or room" });
   if (!verifyRoom(hotelId, roomId, t)) return res.status(403).json({ error: "Please scan the QR code in your room to start." });
+  const access = await guestAccess(hotel.id, { isFile: isFileHotel(hotel.id) });
+  if (!access.ok) return res.status(402).json({ error: PAUSED_MESSAGE, paused: true });
   if (!rateLimit("fp:" + ip, { limit: 10, windowMs: 60_000 }).ok) return res.status(429).json({ error: "Too many requests." });
   return res.status(200).json(hotel);
 }

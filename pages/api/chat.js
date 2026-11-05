@@ -1,6 +1,7 @@
 // POST /api/chat  { hotelId, roomId, t, messages:[{role:"user"|"assistant",content}] }
 // Nothing is stored or logged: no conversation content is written anywhere on the server.
-import { resolveHotel, validRoom } from "../../lib/hotels";
+import { resolveHotel, validRoom, isFileHotel } from "../../lib/hotels";
+import { guestAccess, PAUSED_MESSAGE } from "../../lib/billing";
 import { verifyRoom } from "../../lib/token";
 import { rateLimit } from "../../lib/ratelimit";
 import { sanitizeMessages } from "../../lib/sanitize";
@@ -16,6 +17,8 @@ export default async function handler(req, res) {
   const hotel = await resolveHotel(hotelId);
   if (!hotel || !validRoom(roomId)) return res.status(404).json({ error: "Unknown hotel or room" });
   if (!verifyRoom(hotelId, roomId, t)) return res.status(403).json({ error: "Please scan the QR code in your room to start." });
+  const access = await guestAccess(hotel.id, { isFile: isFileHotel(hotel.id) });
+  if (!access.ok) return res.status(402).json({ error: PAUSED_MESSAGE, paused: true });
   const rl1 = rateLimit("ip:" + ip, { limit: 20, windowMs: 60_000 });
   const rl2 = rateLimit(`room:${hotelId}:${roomId}`, { limit: 30, windowMs: 60_000 });
   if (!rl1.ok || !rl2.ok) return res.status(429).json({ error: "Too many questions at once. Please wait a moment." });
