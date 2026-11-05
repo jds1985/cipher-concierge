@@ -1,10 +1,10 @@
 import Head from "next/head";
 import { useState } from "react";
-import Mark from "../components/Mark";
-import { SETUP_CSS } from "../lib/setup-css";
-import { sessionFromReq } from "../lib/auth";
-import { getBilling, billingConfigured } from "../lib/billing";
-import { monthlyCents, dollars, TRIAL_DAYS } from "../lib/pricing";
+import Mark from "../../components/Mark";
+import { SETUP_CSS } from "../../lib/setup-css";
+import { sessionFromReq } from "../../lib/auth";
+import { getBilling, billingConfigured } from "../../lib/billing";
+import { monthlyCents, dollars, TRIAL_DAYS } from "../../lib/pricing";
 
 export async function getServerSideProps({ req, res, query }) {
   res.setHeader("Cache-Control", "no-store");
