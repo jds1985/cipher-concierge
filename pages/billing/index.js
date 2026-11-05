@@ -48,6 +48,7 @@ export default function Billing({ email, configured, done, canceled, billing }) 
       <nav className="nav" aria-label="Billing">
         <Mark size={30} /><span className="brand">CIPHER</span><span className="spacer" />
         <a className="btn btn-ghost" href="/manage">Hotel setup</a>
+        <a className="btn btn-ghost" href="/requests" style={{ marginLeft: 12 }}>Requests</a>
         <form method="post" action="/api/auth/logout" style={{ marginLeft: 12 }}>
           <button className="btn btn-ghost" type="submit" title={`Signed in as ${email}`}>Sign out</button></form>
       </nav>

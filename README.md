@@ -47,3 +47,7 @@ There's one JSON file per hotel in `config/hotels/`, all with the same schema. D
 
 ## Hosting
 See [docs/HOSTING.md](docs/HOSTING.md) for VPS vs. on-prem, measured cipher-serve RAM/CPU/tok/s, the ARM build, and hardware prices.
+
+## Guest requests
+
+Guests can send towels / housekeeping / maintenance requests from the room page; managers see them at `/requests`. See [docs/REQUESTS.md](docs/REQUESTS.md).

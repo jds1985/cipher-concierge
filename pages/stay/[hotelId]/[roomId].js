@@ -27,6 +27,8 @@ export async function getServerSideProps({ params, query, res }) {
 }
 
 const CHIPS = ["Checkout time", "Wi-Fi", "Breakfast", "Anything open now?", "Extra towels", "Parking", "Nearby food"];
+const REQ_TYPES = [["towels", "Towels"], ["housekeeping", "Housekeeping"], ["maintenance", "Something broken"]];
+const reqTypeFor = (m) => m.intent === "maintenance" ? "maintenance" : m.intent === "housekeeping" ? (/towel/i.test(m.q || "") ? "towels" : "housekeeping") : null;
 const hhmm = () => new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 
 export default function Stay({ hotel, roomId, t, paused = false, factVersion, openQuestions, force, debug }) {
@@ -38,6 +40,23 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
   const [busy, setBusy] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
   const end = useRef(null);
+  const [reqOpen, setReqOpen] = useState(false);
+  const [reqType, setReqType] = useState("towels");
+  const [reqNote, setReqNote] = useState("");
+  const [reqState, setReqState] = useState({ busy: false, msg: "", err: false });
+  async function sendRequest(type, note) {
+    if (reqState.busy) return;
+    setReqState({ busy: true, msg: "Sending…", err: false });
+    try {
+      const r = await fetch("/api/requests", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hotelId: hotel.id, roomId, t, type, note: note || "" }) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) { setReqState({ busy: false, msg: j.error || "Couldn't send. Please call the front desk.", err: true }); return false; }
+      setReqState({ busy: false, msg: `Sent for room ${roomId}. Staff will take care of it.`, err: false });
+      setReqOpen(false); setReqNote("");
+      return true;
+    } catch { setReqState({ busy: false, msg: "Couldn't send. Please call the front desk.", err: true }); return false; }
+  }
   // On-phone mode (default): fact pack + Cipher WASM run locally. "server" only when the device can't.
   const [mode, setMode] = useState(null); // null (deciding) | "phone" | "server"
   const [load, setLoad] = useState({ pct: 0, text: "Preparing your private concierge…", ready: false });
@@ -66,13 +85,13 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
     const r = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ hotelId: hotel.id, roomId, t, messages: next.slice(1).map(({ role, content }) => ({ role, content })) }) });
     const j = await r.json();
-    return r.ok ? { role: "assistant", content: j.text, kind: j.kind, call: j.call, source: j.source, where: "server" } : { role: "assistant", kind: "fallback", call: true, content: j.error || "Something went wrong.", where: "server" };
+    return r.ok ? { role: "assistant", content: j.text, kind: j.kind, call: j.call, source: j.source, intent: j.intent, where: "server" } : { role: "assistant", kind: "fallback", call: true, content: j.error || "Something went wrong.", where: "server" };
   }
   async function askPhone(q, next) {
     let H;
     try { H = await pack.current; } catch { return askServer(next); }   // no fact pack (first visit offline): use the server
     const r = route(H, q, { now: new Date(), openQuestions });
-    if (!r.needsModel) { if (debug) dbg.stats.push({ q, source: r.source }); return { role: "assistant", content: r.text, kind: r.kind, call: r.call, source: r.source, where: "phone" }; }
+    if (!r.needsModel) { if (debug) dbg.stats.push({ q, source: r.source }); return { role: "assistant", content: r.text, kind: r.kind, call: r.call, source: r.source, intent: r.intent, where: "phone" }; }
     const m = await aiReady.current;
     if (!m) return { ...(await askServer(next)) };                       // model failed to load: the hotel's server answers
     await m.reset(); await m.setSystem(buildPrompt(H, r.facts));
@@ -115,7 +134,7 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
     } catch {
       reply = { role: "assistant", kind: "fallback", call: true, content: "I can't reach the concierge right now. The front desk can help." };
     }
-    setMsgs((m) => [...m, { ...reply, at: hhmm() }]); setBusy(false);
+    setMsgs((m) => [...m, { ...reply, q, at: hhmm() }]); setBusy(false);
   }
 
   return (
@@ -144,6 +163,8 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
             <div style={{ minWidth: 0 }}>
               <div className={`bubble bot glass ${m.kind === "emergency" ? "emergency" : ""}`}>
                 <span className="sr-only">Concierge: </span><RichText text={m.content} />
+                {reqTypeFor(m) && <div><button type="button" className="req-btn" disabled={reqState.busy}
+                  onClick={() => sendRequest(reqTypeFor(m), "")}>Send to front desk</button></div>}
                 {m.call && <div><CallButton frontDesk={hotel.frontDesk} className="inline-call" /></div>}
               </div>
               <div className="meta">
@@ -163,6 +184,25 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
         {CHIPS.map((c) => <button key={c} className="chip" onClick={() => ask(c)} disabled={busy}>{c}</button>)}
       </nav>
       <div className="dock">
+        <style>{`.req-btn{display:block;width:100%;min-height:56px;margin-top:10px;border:0;border-radius:16px;background:#fff;color:#0b1020;font:800 19px "Plus Jakarta Sans",sans-serif;cursor:pointer}
+.req-btn:disabled{opacity:.6}.req-panel{margin-bottom:8px;padding:14px;border-radius:18px;background:#0b1020;border:2px solid #fff;color:#fff}
+.req-panel label{display:block;font-size:18px;font-weight:700;margin:8px 0 6px}.req-panel select,.req-panel input{width:100%;min-height:52px;font-size:19px;border-radius:12px;border:2px solid #fff;background:#000;color:#fff;padding:0 12px}
+.req-status{margin:0 0 8px;padding:12px 14px;border-radius:14px;font-size:19px;font-weight:700;background:#123d1f;color:#fff}.req-status.err{background:#5a1010}`}</style>
+        {reqState.msg && <p className={`req-status ${reqState.err ? "err" : ""}`} role="status" aria-live="polite">{reqState.msg}</p>}
+        {reqOpen ? (
+          <form className="req-panel" onSubmit={(e) => { e.preventDefault(); sendRequest(reqType, reqNote); }}>
+            <label htmlFor="req-type">What do you need?</label>
+            <select id="req-type" value={reqType} onChange={(e) => setReqType(e.target.value)}>
+              {REQ_TYPES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+            </select>
+            <label htmlFor="req-note">Note (optional)</label>
+            <input id="req-note" value={reqNote} onChange={(e) => setReqNote(e.target.value)} maxLength={200} placeholder="e.g. 2 bath towels" autoComplete="off" />
+            <button type="submit" className="req-btn" disabled={reqState.busy}>Send to front desk</button>
+            <button type="button" className="req-btn" style={{ background: "transparent", color: "#fff", border: "2px solid #fff" }} onClick={() => setReqOpen(false)}>Cancel</button>
+          </form>
+        ) : (
+          <button type="button" className="req-btn" style={{ marginBottom: 8 }} onClick={() => { setReqOpen(true); setReqState({ busy: false, msg: "", err: false }); }}>Request help</button>
+        )}
         <form className="composer glass" onSubmit={(e) => { e.preventDefault(); ask(input); }}>
           <label htmlFor="q" className="sr-only">Ask the concierge</label>
           <input id="q" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Ask about checkout, Wi-Fi, dining…" maxLength={500} autoComplete="off" enterKeyHint="send" />
