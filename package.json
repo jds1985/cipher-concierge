@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "NEXT_TELEMETRY_DISABLED=1 next dev",
-    "build": "NEXT_TELEMETRY_DISABLED=1 next build",
+    "build": "node scripts/fetch-model.mjs && NEXT_TELEMETRY_DISABLED=1 next build",
     "start": "NEXT_TELEMETRY_DISABLED=1 next start",
     "test": "node --test tests/",
-    "testset": "node scripts/run_testset.js"
+    "testset": "node scripts/run_testset.js",
+    "fetch-model": "node scripts/fetch-model.mjs"
   },
   "dependencies": {
     "@fontsource/inter": "^5.3.0",

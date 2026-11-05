@@ -144,3 +144,4 @@ vite.config.ts.timestamp-*
 
 # Cipher model weights (large; copy from cipher_wasm/web/models)
 public/cipher/models/
+.vercel

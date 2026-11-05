@@ -2,7 +2,7 @@
 
 The app is two processes that must sit on the **same machine** (cipher-serve only listens on 127.0.0.1):
 
-1. `cipher-serve`, the Cipher 2.0 C runtime with an OpenAI-compatible API (`/workspace/Cipher_bot/native/cipher-serve`, branch `cipher-runtime`)
+1. `cipher-serve`, the Cipher 2.0 C runtime with a local chat-completions API (`/workspace/Cipher_bot/native/cipher-serve`, branch `cipher-runtime`)
 2. The Next.js app (`npm run build && npm start`), which talks to it through `CIPHER_URL`
 
 There is no third-party AI, CDN, font host, or analytics. The only outbound traffic is what the guest's own browser sends to this server.
