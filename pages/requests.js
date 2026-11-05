@@ -49,6 +49,8 @@ export default function Requests({ email }) {
       <nav className="nav" aria-label="Requests">
         <Mark size={30} /><span className="brand">CIPHER</span><span className="spacer" />
         <a className="btn btn-ghost" href="/manage">Setup</a>
+        <a className="btn btn-ghost" href="/requests" style={{ marginLeft: 12 }}>Requests</a>
+        <a className="btn btn-ghost" href="/usage" style={{ marginLeft: 12 }}>Usage</a>
         <a className="btn btn-ghost" href="/billing" style={{ marginLeft: 12 }}>Billing</a>
         <form method="post" action="/api/auth/logout" style={{ marginLeft: 12 }}>
           <button className="btn btn-ghost" type="submit" title={`Signed in as ${email}`}>Sign out</button></form>

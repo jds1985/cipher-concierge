@@ -51,3 +51,8 @@ See [docs/HOSTING.md](docs/HOSTING.md) for VPS vs. on-prem, measured cipher-serv
 ## Guest requests
 
 Guests can send towels / housekeeping / maintenance requests from the room page; managers see them at `/requests`. See [docs/REQUESTS.md](docs/REQUESTS.md).
+
+
+## Usage stats
+
+Managers see guest activity totals at `/usage` (questions answered, staff requests, top topics). Aggregate counters only — chat content is never stored. See [docs/USAGE.md](docs/USAGE.md).

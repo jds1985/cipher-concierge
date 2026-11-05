@@ -1,11 +1,12 @@
 // POST /api/chat  { hotelId, roomId, t, messages:[{role:"user"|"assistant",content}] }
 // Nothing is stored or logged: no conversation content is written anywhere on the server.
-import { resolveHotel, validRoom, isFileHotel } from "../../lib/hotels";
-import { guestAccess, PAUSED_MESSAGE } from "../../lib/billing";
-import { verifyRoom } from "../../lib/token";
-import { rateLimit } from "../../lib/ratelimit";
-import { sanitizeMessages } from "../../lib/sanitize";
-import { answer, connect } from "../../lib/answer";
+import { resolveHotel, validRoom, isFileHotel } from "../../lib/hotels.js";
+import { guestAccess, PAUSED_MESSAGE } from "../../lib/billing.js";
+import { verifyRoom } from "../../lib/token.js";
+import { rateLimit } from "../../lib/ratelimit.js";
+import { sanitizeMessages } from "../../lib/sanitize.js";
+import { answer, connect } from "../../lib/answer.js";
+import { bumpQuestion } from "../../lib/stats.js";
 
 export const config = { api: { bodyParser: { sizeLimit: "16kb" } } };
 
@@ -26,6 +27,8 @@ export default async function handler(req, res) {
   if (!clean) return res.status(400).json({ error: "Invalid message" });
   try {
     const a = await answer(hotel, clean);
+    // Aggregate counter only — never stores message text.
+    await bumpQuestion({ hotelId: hotel.id, intent: a.intent || a.kind });
     return res.status(200).json({ kind: a.kind, text: a.text, call: !!a.call, source: a.source, intent: a.intent });
   } catch {
     return res.status(200).json({ ...connect(hotel, "Something went wrong on my side. "), source: "error" });
