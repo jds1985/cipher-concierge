@@ -170,6 +170,7 @@ export default function HotelSetupForm({ token, sessionMode = false, email = "" 
         <Mark size={30} /><span className="brand">CIPHER</span>
         <span className="spacer" />
         <span className="pill-label">Hotel setup</span>
+        {sessionMode && <a className="btn btn-ghost" href="/billing" style={{ marginLeft: 12 }}>Billing</a>}
         {sessionMode && (
           <form method="post" action="/api/auth/logout" style={{ marginLeft: 12 }}>
             <button className="btn btn-ghost" type="submit" title={email ? `Signed in as ${email}` : undefined}>Sign out</button>
