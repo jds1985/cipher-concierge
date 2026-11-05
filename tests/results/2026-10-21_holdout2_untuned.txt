@@ -1,0 +1,25 @@
+WRONG	checkout	locked_out	by what hour do we need to hand back the keys
+MATCH	wifi	wifi	is there free wireless and how do I log in
+WRONG	breakfast	dining	do you serve food in the morning
+MATCH	late_food	late_food	where can I get something to eat this late
+MATCH	housekeeping	housekeeping	could you send up a couple more bath towels
+WRONG	housekeeping	breakfast	we need more coffee pods
+SAFE-FALLBACK	locked_out	cipher_skipped	my door card isnt opening the door
+SAFE-FALLBACK	front_desk	cipher_skipped	who do I call for help
+SAFE-FALLBACK	parking	cipher_skipped	where should I put my rental car
+MATCH	gym	gym	is there a fitness room
+SAFE-FALLBACK	noise	cipher_skipped	the people upstairs are stomping around
+SAFE-FALLBACK	emergency	cipher_skipped	my kid is having an allergic reaction
+WRONG	late_checkout	checkout	any chance of a 1pm checkout
+SAFE-FALLBACK	checkin	unknown_hotel_question	what time can I get into my room
+MATCH	directions	directions	how far are you from the airport
+MATCH	local_recs	local_recs	what is there to do around here tonight
+MATCH	dining	dining	where can I get a cocktail
+MATCH	pets	pets	do you allow dogs
+MATCH	maintenance	maintenance	the toilet keeps running
+MATCH	front_desk	front_desk	can I get a wake-up call
+MATCH	smoking	smoking	where can I go to smoke
+SAFE-FALLBACK	checkout	cipher_skipped	do I need to stop by the desk when I leave
+MATCH	wifi	wifi	how do I connect my phone
+MATCH	maintenance	maintenance	my room is freezing and the heat wont turn on
+exact intent 13/24

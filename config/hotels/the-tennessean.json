@@ -1,0 +1,47 @@
+{
+  "id": "the-tennessean",
+  "name": "The Tennessean Hotel",
+  "location": {
+    "area": "Clinch Avenue",
+    "city": "Knoxville, TN",
+    "address": null,
+    "directions": null
+  },
+  "frontDesk": {
+    "phoneDisplay": "extension 0",
+    "phoneTel": null,
+    "inRoom": "Dial 0 from your room phone",
+    "hours": null
+  },
+  "emergency": "Dial 911 immediately, then let the front desk know.",
+  "wifi": {
+    "network": "TENNESSEAN_GUEST",
+    "password": "luxuryknoxville",
+    "notes": null
+  },
+  "checkIn": { "time": "4:00 PM" },
+  "checkOut": { "time": "11:00 AM", "late": null },
+  "dining": [
+    {
+      "name": "The Drawing Room",
+      "type": "Fine dining and lounge, known for prime steaks, classic cocktails and afternoon tea",
+      "location": null,
+      "meals": { "breakfast": "7:00 AM to 10:30 AM", "dinner": "4:00 PM to 10:00 PM (cocktails and dinner)" },
+      "hours": null
+    }
+  ],
+  "roomService": null,
+  "parking": null,
+  "fitness": null,
+  "pool": null,
+  "housekeeping": null,
+  "pets": null,
+  "smoking": null,
+  "quietHours": null,
+  "amenities": ["The Drawing Room (dining, cocktails, afternoon tea)"],
+  "localRecommendations": [],
+  "_meta": {
+    "source": "Migrated from Jim's the-tennessean.json. Fields set to null were not in the source; the concierge sends guests to the front desk for them.",
+    "confirmWithHotel": ["direct front desk phone number (needed for tap-to-call from a mobile phone)", "parking", "fitness", "pool", "housekeeping", "pets", "address", "Wi-Fi password publication"]
+  }
+}
