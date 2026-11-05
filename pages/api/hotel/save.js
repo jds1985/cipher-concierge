@@ -1,8 +1,8 @@
-// POST /api/hotel/save { token, ...form } — hotel manager saves facts; takes effect immediately.
-import { getHotelByEditToken, saveHotel, stripSecrets } from "../../../lib/store";
-import { sanitizeHotelForm } from "../../../lib/hotel-form";
-import { rateLimit } from "../../../lib/ratelimit";
-import { hashSecret } from "../../../lib/store";
+// POST /api/hotel/save { token?, ...form } (edit token or manager session cookie) — hotel manager saves facts; takes effect immediately.
+import { getHotelByEditToken, saveHotel, stripSecrets } from "../../../lib/store.js";
+import { sanitizeHotelForm } from "../../../lib/hotel-form.js";
+import { rateLimit } from "../../../lib/ratelimit.js";
+import { hotelForRequest, clientIp } from "../../../lib/auth.js";
 
 export const config = { api: { bodyParser: { sizeLimit: "64kb" } } };
 
@@ -10,17 +10,16 @@ export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const ip = (req.headers["x-forwarded-for"] || "").split(",")[0].trim() || req.socket.remoteAddress || "?";
-  const token = req.body?.token;
-  if (typeof token !== "string") return res.status(403).json({ error: "Invalid edit link." });
-
-  const tokHash = hashSecret(token).slice(0, 16);
-  const rlIp = rateLimit("hotel-save-ip:" + ip, { limit: 30, windowMs: 60 * 60_000 });
-  const rlTok = rateLimit("hotel-save-tok:" + tokHash, { limit: 40, windowMs: 60 * 60_000 });
-  if (!rlIp.ok || !rlTok.ok) return res.status(429).json({ error: "Too many saves. Please wait and try again." });
-
-  const existing = await getHotelByEditToken(token);
-  if (!existing) return res.status(403).json({ error: "Invalid or expired edit link." });
+  const ip = clientIp(req);
+  if (!rateLimit("hotel-save-ip:" + ip, { limit: 30, windowMs: 60 * 60_000 }).ok) {
+    return res.status(429).json({ error: "Too many saves. Please wait and try again." });
+  }
+  const auth = await hotelForRequest(req, { getHotelByEditToken });
+  if (!auth.hotel) return res.status(auth.status).json({ error: auth.error });
+  if (!rateLimit("hotel-save-" + auth.rlId, { limit: 40, windowMs: 60 * 60_000 }).ok) {
+    return res.status(429).json({ error: "Too many saves. Please wait and try again." });
+  }
+  const existing = auth.hotel;
 
   // Never allow editing a different hotel by spoofing id in the body
   const { ok, hotelPatch, errors } = sanitizeHotelForm(req.body);
@@ -35,6 +34,7 @@ export default async function handler(req, res) {
       ...(existing._meta || {}),
       source: "self-setup",
       editKeyHash: existing._meta?.editKeyHash,
+      managerEmail: existing._meta?.managerEmail,
       updatedAt: new Date().toISOString(),
     },
   };
