@@ -32,7 +32,7 @@ export default function BillingSuccess() {
         <Mark size={30} /><span className="brand">CIPHER</span>
       </div>
       <section className="ok-card" role="status" aria-live="polite">
-        <span className="ok-badge">Payment received</span>
+        <span className="ok-badge">Trial started</span>
         <h1>Your {TRIAL_DAYS}-day free trial has started</h1>
         <p className="ok-lede">Thanks — your card is on file. You will not be charged until the trial ends.</p>
         <p className="ok-note">
