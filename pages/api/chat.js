@@ -1,6 +1,6 @@
 // POST /api/chat  { hotelId, roomId, t, messages:[{role:"user"|"assistant",content}] }
 // Nothing is stored or logged: no conversation content is written anywhere on the server.
-import { getHotel, validRoom } from "../../lib/hotels";
+import { resolveHotel, validRoom } from "../../lib/hotels";
 import { verifyRoom } from "../../lib/token";
 import { rateLimit } from "../../lib/ratelimit";
 import { sanitizeMessages } from "../../lib/sanitize";
@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
   const ip = (req.headers["x-forwarded-for"] || "").split(",")[0].trim() || req.socket.remoteAddress || "?";
   const { hotelId, roomId, t, messages } = req.body || {};
-  const hotel = getHotel(hotelId);
+  const hotel = await resolveHotel(hotelId);
   if (!hotel || !validRoom(roomId)) return res.status(404).json({ error: "Unknown hotel or room" });
   if (!verifyRoom(hotelId, roomId, t)) return res.status(403).json({ error: "Please scan the QR code in your room to start." });
   const rl1 = rateLimit("ip:" + ip, { limit: 20, windowMs: 60_000 });

@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
-import { getHotel, publicHotel, validRoom } from "../../../lib/hotels";
+import { resolveHotel, publicHotel, validRoom } from "../../../lib/hotels";
 import { verifyRoom } from "../../../lib/token";
 import Mark from "../../../components/Mark";
 import RichText from "../../../components/RichText";
@@ -11,11 +11,11 @@ import { unsupportedReason, loadCipher, loadFactPack } from "../../../lib/onphon
 import crypto from "crypto";
 
 export async function getServerSideProps({ params, query, res }) {
-  const hotel = getHotel(params.hotelId);
+  const hotel = await resolveHotel(params.hotelId);
   if (!hotel || !validRoom(params.roomId)) return { notFound: true };
   const ok = verifyRoom(hotel.id, params.roomId, query.t);
   if (!ok) res.statusCode = 403;
-  const factVersion = crypto.createHash("sha256").update(JSON.stringify(getHotel(hotel.id))).digest("hex").slice(0, 12);
+  const factVersion = crypto.createHash("sha256").update(JSON.stringify(hotel)).digest("hex").slice(0, 12);
   return { props: { hotel: publicHotel(hotel), roomId: params.roomId, t: ok ? query.t : null, factVersion,
     openQuestions: process.env.CIPHER_OPEN_QUESTIONS !== "off", force: ["phone", "server"].includes(query.mode) ? query.mode : null,
     debug: query.debug === "1" && process.env.NODE_ENV !== "production" } };
