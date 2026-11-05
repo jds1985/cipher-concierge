@@ -177,3 +177,17 @@ test("admin key: header preferred, not required from URL for new pages", () => {
     else process.env.ADMIN_KEY = prev;
   }
 });
+
+test("place lines: keep hyphenated descriptions; bars not duplicated on-site", () => {
+  const ok = sanitizeHotelForm({
+    name: "Hyphen Hotel",
+    nearbyCoffee: "Pretentious Coffee — 3-minute walk",
+    nearbyBars: "Peter Kern Lounge — speakeasy cocktails",
+  });
+  assert.equal(ok.ok, true);
+  const coffee = ok.hotelPatch.localRecommendations.find((r) => r.kind === "coffee");
+  assert.equal(coffee.name, "Pretentious Coffee");
+  assert.match(coffee.description, /3-minute walk/);
+  assert.equal(ok.hotelPatch.dining.some((d) => d.kind === "bar"), false);
+  assert.ok(ok.hotelPatch.localRecommendations.some((r) => r.kind === "bar"));
+});
