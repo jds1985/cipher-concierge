@@ -144,4 +144,7 @@ vite.config.ts.timestamp-*
 
 # Cipher model weights (large; copy from cipher_wasm/web/models)
 public/cipher/models/
+# Liquid lab weights and Transformers.js runtime (npm run fetch-liquid-lab)
+public/lab/models/
+public/lab/vendor/
 .vercel
