@@ -29,6 +29,12 @@ test("frozen general set is 20 prompts with no hotel routing words", () => {
   assert.equal(pack.rubric.doNotSubstituteStoredAnswers, true);
 });
 
+test("general runner loads JSON with fetch and does not import it as a module", () => {
+  assert.equal(page.includes("from \"./general-v1.json\""), false);
+  assert.match(page, /fetch\("\.\/general-v1\.json"\)/);
+  assert.match(page, /cipher-worker-candidate\.js/);
+});
+
 test("general runner does not call the hotel router or replace raw text", () => {
   assert.equal(page.includes("decideTurn"), false);
   assert.equal(page.includes("judgeGeneration"), false);

@@ -1,8 +1,5 @@
-import pack from "./general-v1.json";
-
 const $ = (id) => document.getElementById(id);
-const SETTINGS = pack.settings;
-const SYSTEM = pack.system;
+let pack = null;
 let ai = null;
 let verified = null;
 let cancel = false;
@@ -14,7 +11,7 @@ function hex(buf) {
 }
 
 function openWorker() {
-  const w = new Worker("./cipher-worker.js");
+  const w = new Worker("./cipher-worker-candidate.js");
   let seq = 0;
   const pending = new Map();
   let onTok = null;
@@ -56,7 +53,7 @@ function mechanical(raw, stats, stopped, err) {
   if (err) return { flag: "error", note: "Runtime failure. Not a scored answer." };
   if (stopped) return { flag: "truncated", note: "User stop. Raw text is partial." };
   if (!raw) return { flag: "empty", note: "No tokens returned." };
-  if (stats && stats.genTokens >= SETTINGS.maxNew) return { flag: "truncated", note: "Hit maxNew. Raw text may be cut off." };
+  if (stats && stats.genTokens >= pack.settings.maxNew) return { flag: "truncated", note: "Hit maxNew. Raw text may be cut off." };
   return { flag: null, note: "No automatic score. Raw text is the result." };
 }
 
@@ -76,20 +73,20 @@ function renderTrial(t) {
     JSON.stringify(t.stats || null),
     "",
     "PLAIN STRING TOKEN IDS (not proven to be the full prompt)",
-    "system " + JSON.stringify(t.plainStringTokenIds.system),
-    "user " + JSON.stringify(t.plainStringTokenIds.user),
+    "system " + JSON.stringify(t.plainStringTokenIds && t.plainStringTokenIds.system),
+    "user " + JSON.stringify(t.plainStringTokenIds && t.plainStringTokenIds.user),
   ].join("\n");
   $("log").prepend(d);
 }
 
 async function onePrompt(item, pass) {
   await ai.reset();
-  const systemIds = await ai.tokenize(SYSTEM);
+  const systemIds = await ai.tokenize(pack.system);
   const userIds = await ai.tokenize(item.text);
-  await ai.setSystem(SYSTEM);
+  await ai.setSystem(pack.system);
   let raw = "";
   let stopped = false;
-  const gen = await ai.generate(item.text, SETTINGS.maxNew, (piece) => { raw += piece; });
+    const gen = await ai.generate(item.text, pack.settings.maxNew, (piece) => { raw += piece; });
   raw = gen.text || raw;
   stopped = !!gen.stopped || cancel;
   const row = {
@@ -97,9 +94,9 @@ async function onePrompt(item, pass) {
     family: item.family,
     pass,
     prompt: item.text,
-    system: SYSTEM,
+    system: pack.system,
     contextReset: true,
-    settings: SETTINGS,
+    settings: pack.settings,
     serialization: {
       setSystem: "_cw_begin(systemText, 1, 0)",
       generate: "_cw_begin(userText, 0, maxNew)",
@@ -137,8 +134,8 @@ async function runBatch() {
         renderTrial(row);
       } catch (err) {
         const row = {
-          id: item.id, family: item.family, pass, prompt: item.text, system: SYSTEM,
-          contextReset: true, settings: SETTINGS, raw: "", error: String(err && err.message || err),
+          id: item.id, family: item.family, pass, prompt: item.text, system: pack.system,
+          contextReset: true, settings: pack.settings, raw: "", error: String(err && err.message || err),
           stats: null, stopped: cancel, hotelGuard: { applicable: false },
           mechanical: mechanical("", null, cancel, err),
         };
@@ -161,8 +158,8 @@ function exportJson() {
     notReadyToMerge: true,
     model: pack.model,
     verified,
-    system: SYSTEM,
-    settings: SETTINGS,
+    system: pack.system,
+    settings: pack.settings,
     rubric: pack.rubric,
     trials,
   }, null, 2)], { type: "application/json" });
@@ -172,8 +169,20 @@ function exportJson() {
   a.click();
 }
 
+function failStart(err) {
+  const msg = "Page failed to start: " + (err && err.message ? err.message : err);
+  $("gate").textContent = msg;
+  $("progress").textContent = msg;
+  $("run").disabled = true;
+  $("export").disabled = true;
+}
+
 async function main() {
-  $("sys").textContent = SYSTEM;
+  const res = await fetch("./general-v1.json");
+  if (!res.ok) throw new Error("general-v1.json HTTP " + res.status + " " + (res.headers.get("content-type") || ""));
+  pack = await res.json();
+  $("gate").dataset.ready = "1";
+  $("sys").textContent = pack.system;
   $("count").textContent = String(pack.prompts.length);
   const spec = { ...pack.model, url: new URL(pack.model.url, location.href).href };
   verified = await verifyModel(spec);
@@ -183,25 +192,26 @@ async function main() {
     "expected " + pack.model.size + " " + pack.model.sha256,
     "verified " + (verified.size || 0) + " " + (verified.sha256 || "missing"),
     "match " + (verified.match ? "yes" : "no"),
-    "ctx " + SETTINGS.ctx + " temp " + SETTINGS.temp + " rep " + SETTINGS.rep + " topP " + SETTINGS.topP + " seed " + SETTINGS.seed + " maxNew " + SETTINGS.maxNew,
+    "ctx " + pack.settings.ctx + " temp " + pack.settings.temp + " rep " + pack.settings.rep + " topP " + pack.settings.topP + " seed " + pack.settings.seed + " maxNew " + pack.settings.maxNew,
   ].join("\n");
+  $("export").onclick = exportJson;
+  $("export").disabled = false;
   if (!verified.match) {
     $("progress").textContent = "Generation disabled until the targeted file matches. No smaller model is loaded.";
+    $("run").disabled = true;
     return;
   }
   ai = openWorker();
   const loaded = await ai.load({
     type: "load", url: spec.url, size: pack.model.size,
     threads: Math.min(4, navigator.hardwareConcurrency || 2),
-    ctx: SETTINGS.ctx, temp: SETTINGS.temp, rep: SETTINGS.rep,
-    topP: SETTINGS.topP, greedy: SETTINGS.greedy, seed: SETTINGS.seed,
+    ctx: pack.settings.ctx, temp: pack.settings.temp, rep: pack.settings.rep,
+    topP: pack.settings.topP, greedy: pack.settings.greedy, seed: pack.settings.seed,
   });
   $("gate").textContent += `\nruntime ${loaded.info.build} threads ${loaded.info.threads} heap ${Number(loaded.heapMB).toFixed(0)} MB`;
   $("run").disabled = false;
   $("run").onclick = () => runBatch();
   $("stop").onclick = () => { cancel = true; if (ai) ai.stop(); };
-  $("export").onclick = exportJson;
 }
 
-$("export").onclick = exportJson;
-main().catch((err) => { $("progress").textContent = "Could not start: " + err.message; });
+main().catch(failStart);

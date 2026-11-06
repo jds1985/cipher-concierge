@@ -14,6 +14,10 @@ The system string is exactly: `You are Cipher, a helpful assistant. Answer the u
 
 No hotel router runs. Raw text is the result. Export does not replace it.
 
+## Page startup
+
+`general-v1.json` is loaded with `fetch`. A module import of that file fails in the browser because the server sends `application/json`. If startup throws, the status line says `Page failed to start` and export stays disabled. Export turns on only after the prompt file and the weight check have finished.
+
 ## What the worker actually sends
 
 From `cipher-worker.js` (same bytes as `public/cipher/cipher-worker.js`):
@@ -22,7 +26,7 @@ From `cipher-worker.js` (same bytes as `public/cipher/cipher-worker.js`):
 - `generate` calls `_cw_begin(text, 0, maxNew)`
 - `raw` mode 2 is not used
 
-`cipher-st.wasm` contains no readable chat-marker strings. An attached audit note, not re-checked against `tokenizer.json` because that file is not in this repo, says role ids are system=4, user=2, assistant=3, EOT=0, PAD=1. This page tokenizes the plain system and user strings and labels those ids as incomplete. It does not claim `setSystem` inserts role 4.
+`cipher-worker-candidate.js` is used only here. It rewrites RNG byte 2224 only when the wasm sha256 is `3220b68e…` or `a28bdc23…`. `tests/wasm-rng-slot.test.js` instantiated those exact files: seed 0 is stored there, and calling the sampler again with seed 0 does not keep seed 0. A zero-length piece stops the visible text and records its token id. That id is not claimed to be a special. `tok.special` in the `.ctern` was not read. The tokenizer file is not in this repo.
 
 To verify the wrapper, the needed tree is `jds1985/Cipher_bot` branch `cipher-runtime`, the `cw_begin` implementation, plus the tokenizer cited as `/workspace/cipher2_final_eval/tokenizer.json`.
 
