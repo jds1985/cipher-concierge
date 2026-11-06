@@ -38,6 +38,10 @@ To repeat a desktop generation on the isolated preview, place those two files on
 - Compound questions still follow first matching intent. “wifi and checkout” does not answer both. That was not redesigned.
 - The old static preview will keep saying noon until it uses this router, this prompt, a per-turn reset, and this guard.
 
-## How to look
+## Static preview that can generate
 
-`/lab/parity` is 404 unless `CIPHER_PARITY_LAB=1`. It prints the fact path or the exact system prompt for the 12 browser questions and lets a pasted draft be judged. It does not load weights.
+`/opt/cursor/artifacts/cipher-parity-preview.zip` is a separate Vercel preview. It copies production `factpack.js` and the repo WASM. It does not contain weights.
+
+Overlay `models/sft.ctern` (73,231,828 bytes, `4f97a216…`) and `models/cipher2m_concierge_targeted.ctern` (144,672,788 bytes, `13790c5a…`). Open `?model=sft` or `?model=targeted`. Both use ctx 512, temp 0.3, repetition 1.15, topP 1, seed 0, maxNew 64, and reset before every model turn. Ctx 512 is not native ctx 1024.
+
+Generation stays off until the file size and sha256 match. Fact answers do not wait for weights. Each turn shows the system prompt, raw text, guard reason, and source. Do not deploy this over the existing dual or targeted-only previews.

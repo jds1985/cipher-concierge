@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { route, guardAnswer, buildPrompt, GEN } from "../lib/factpack.js";
+import { route, guardAnswer, buildPrompt, GEN, decideTurn, judgeGeneration } from "../lib/factpack.js";
 
 const silver = JSON.parse(readFileSync(new URL("./fixtures/silver-quill-browser.json", import.meta.url), "utf8"));
 const now = new Date("2026-11-06T16:00:00Z");
@@ -21,12 +21,14 @@ test("native and on-phone generation settings stay aligned", () => {
 test("browser leave-paraphrase is a checkout fact, not a model turn", () => {
   const q = "When do I need to leave tomorrow morning?";
   assert.equal(scratchWouldAnswerCheckout(q), false);
-  const r = route(silver, q, { now });
-  assert.equal(r.needsModel, undefined);
-  assert.equal(r.source, "facts");
-  assert.equal(r.intent, "checkout");
-  assert.match(r.text, /11:00 AM/);
-  assert.doesNotMatch(r.text, /noon/i);
+  const turn = decideTurn(silver, q, { now });
+  assert.equal(turn.path, "facts");
+  assert.equal(turn.intent, "checkout");
+  assert.match(turn.text, /11:00 AM/);
+  assert.doesNotMatch(turn.text, /noon/i);
+  const judged = judgeGeneration("Checkout is at **noon**.", [{ text: "Check-out is at 11:00 AM." }], q, silver);
+  assert.equal(judged.source, "guard");
+  assert.equal(judged.reason, "unverified-time");
 });
 
 test("get online stays on the wifi fact", () => {

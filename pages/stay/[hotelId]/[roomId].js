@@ -6,7 +6,7 @@ import Mark from "../../../components/Mark";
 import RichText from "../../../components/RichText";
 import CallButton from "../../../components/CallButton";
 import { Send, Lock } from "../../../components/Icons";
-import { route, guardAnswer, buildPrompt, connect, trimAnswer, GEN } from "../../../lib/factpack";
+import { decideTurn, judgeGeneration, GEN } from "../../../lib/factpack";
 import { unsupportedReason, loadCipher, loadFactPack } from "../../../lib/onphone";
 import crypto from "crypto";
 import { guestAccess } from "../../../lib/billing";
@@ -90,17 +90,17 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
   async function askPhone(q, next) {
     let H;
     try { H = await pack.current; } catch { return askServer(next); }   // no fact pack (first visit offline): use the server
-    const r = route(H, q, { now: new Date(), openQuestions });
-    if (!r.needsModel) { if (debug) dbg.stats.push({ q, source: r.source }); return { role: "assistant", content: r.text, kind: r.kind, call: r.call, source: r.source, intent: r.intent, where: "phone" }; }
+    const turn = decideTurn(H, q, { now: new Date(), openQuestions });
+    if (turn.path === "facts") { if (debug) dbg.stats.push({ q, source: "facts" }); return { role: "assistant", content: turn.text, kind: turn.kind, call: turn.call, source: "facts", intent: turn.intent, where: "phone" }; }
     const m = await aiReady.current;
     if (!m) return { ...(await askServer(next)) };                       // model failed to load: the hotel's server answers
-    await m.reset(); await m.setSystem(buildPrompt(H, r.facts));
+    await m.reset(); await m.setSystem(turn.system);
     let sofar = "";
-    const g = await m.generate(q, { maxNew: GEN.maxNew, onToken: (p) => { sofar += p; if (GEN.stops.some((s) => sofar.includes(s))) m.stop(); } });
-    const text = trimAnswer(g.text), ok = guardAnswer(text, r.facts, q, H.name).ok;
-    if (debug) dbg.stats.push({ q, source: ok ? "cipher" : "cipher-fallback", raw: g.text.slice(0, 300), ...g.stats });
-    return ok ? { role: "assistant", content: text, kind: "cipher", source: "cipher", where: "phone" }
-      : { role: "assistant", ...connect(H, "I'm not certain about that. "), content: connect(H, "I'm not certain about that. ").text, source: "cipher-fallback", where: "phone" };
+    const g = await m.generate(q, { maxNew: turn.maxNew, onToken: (p) => { sofar += p; if (GEN.stops.some((s) => sofar.includes(s))) m.stop(); } });
+    const judged = judgeGeneration(g.text, turn.facts, q, H);
+    if (debug) dbg.stats.push({ q, source: judged.ok ? "cipher" : "cipher-fallback", raw: g.text.slice(0, 300), reason: judged.reason, ...g.stats });
+    return judged.ok ? { role: "assistant", content: judged.finalText, kind: "cipher", source: "cipher", where: "phone" }
+      : { role: "assistant", content: judged.finalText, kind: "fallback", call: true, source: "cipher-fallback", where: "phone" };
   }
   useEffect(() => { end.current?.scrollIntoView({ behavior: "smooth", block: "end" }); }, [msgs, busy]);
 
