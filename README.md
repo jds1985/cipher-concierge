@@ -41,7 +41,8 @@ npm ci && npm run build && npm start      # http://localhost:3000
 There's one JSON file per hotel in `config/hotels/`, all with the same schema. Drop in a new file to add a hotel. Set a field to `null` when it's unknown, and the concierge will send guests to the front desk for it. `_meta.confirmWithHotel` lists what still needs confirming. (A web editor isn't built yet.)
 
 ## Tests
-- `npm test`: unit tests (tokens, SSE parser split-chunk fix, sanitizing, rate limit, hours, intents, guard, answer routing).
+- `npm test`: unit tests (tokens, SSE parser split-chunk fix, sanitizing, rate limit, hours, intents, guard, answer routing, liquid-lab planner).
+- `npm run test:liquid-lab`: isolated browser lab only. It is off unless `LIQUID_BROWSER_EXPERIMENT=1` and it is not the live `/stay` page. See [docs/LIQUID_LAB.md](docs/LIQUID_LAB.md).
 - `npm run testset -- <label>`: 44 realistic guest questions per hotel (including 2-3 AM scenarios), run against the live cipher-serve. Results go to `tests/results/<date>_<label>.md`. Rerun with the 369M and diff.
 - `node scripts/holdout2.js`: paraphrases that weren't used to tune the rules (honest generalization check).
 
