@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cipher general baseline</title>
+  <style>
+    body { margin: 0; background: #000; color: #fff; font: 18px/1.45 system-ui, sans-serif; }
+    main { max-width: 960px; margin: 0 auto; padding: 16px; }
+    .banner { background: #ff5a5a; color: #fff; font-weight: 800; padding: 12px; }
+    pre, article { white-space: pre-wrap; border: 3px solid #fff; padding: 10px; }
+    button { background: #fff; color: #000; font: 700 18px system-ui; min-height: 52px; margin: 6px 6px 6px 0; padding: 8px 12px; }
+    button:disabled { opacity: 0.45; }
+    .badge { color: #ffd000; font-weight: 800; }
+    label { display: block; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="banner">EXPERIMENTAL. NOT READY TO MERGE. General generation only. Not the guest hotel page.</p>
+    <h1>Cipher 369M general baseline</h1>
+    <p>Targeted weights only. The smaller model is not part of this test. Guest parity remains on <a href="./index.html">index.html</a>.</p>
+    <h2>System text sent</h2>
+    <pre id="sys"></pre>
+    <p><span id="count"></span> frozen prompts. Raw text is kept. The hotel guard is not applied.</p>
+    <pre id="gate">Checking the targeted file…</pre>
+    <label>Repeats at seed 0 <input id="repeats" type="number" min="1" max="2" value="1" /></label>
+    <button id="run" type="button" disabled>Run batch</button>
+    <button id="stop" type="button" hidden>Stop</button>
+    <button id="export" type="button">Export raw JSON</button>
+    <p id="progress" role="status"></p>
+    <div id="log"></div>
+  </main>
+  <script type="module" src="./general.js"></script>
+</body>
+</html>
