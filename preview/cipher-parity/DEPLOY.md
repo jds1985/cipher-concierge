@@ -19,3 +19,7 @@ Copy onto the deployed root:
 Open `?model=sft` or `?model=targeted`. Both use ctx 512, temp 0.3, repetition 1.15, topP 1, seed 0, maxNew 64, and a reset before every model turn. That is not native ctx 1024.
 
 Facts answer without the files. Generation stays disabled until the selected file’s size and sha256 match.
+
+## General baseline (experimental, not ready to merge)
+
+`general.html` loads only `models/cipher2m_concierge_targeted.ctern`. It does not run the hotel router and does not replace raw text with a guard answer. Batch run exports `cipher-general-v1-raw.json`. Settings are ctx 512, temp 0.3, repetition 1.15, topP 1, seed 0, maxNew 128, reset every prompt. See `GENERAL.md`.

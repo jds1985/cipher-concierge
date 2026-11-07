@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cipher SFTv3 pre-finetune control</title>
+  <style>
+    body { margin: 0; background: #000; color: #fff; font: 18px/1.45 system-ui, sans-serif; }
+    main { max-width: 960px; margin: 0 auto; padding: 16px; }
+    .banner { background: #ffd000; color: #000; font-weight: 800; padding: 12px; }
+    pre, article { white-space: pre-wrap; border: 3px solid #fff; padding: 10px; }
+    button { background: #fff; color: #000; font: 700 18px system-ui; min-height: 52px; margin: 6px 6px 6px 0; padding: 8px 12px; }
+    button:disabled { opacity: 0.45; }
+    .badge { color: #ffd000; font-weight: 800; }
+    label { display: block; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="banner">EXPERIMENTAL. NOT READY TO MERGE. PRE-FINETUNE SFTv3 control. Not the hotel-targeted checkpoint.</p>
+    <h1>Cipher 369M before hotel SFT</h1>
+    <p>Same 20 prompts, system text, settings, candidate worker, and two passes as <a href="./general.html">general.html</a>. This page accepts only <code>models/sft_v3.ctern</code>. The targeted file is rejected here.</p>
+    <h2>System text sent</h2>
+    <pre id="sys"></pre>
+    <p><span id="count"></span> frozen prompts. Raw text is kept. The hotel guard is not applied.</p>
+    <pre id="gate">Starting…</pre>
+    <label>Passes at seed 0 <input id="repeats" type="number" min="1" max="2" value="2" /></label>
+    <button id="run" type="button" disabled>Run batch</button>
+    <button id="stop" type="button" hidden>Stop</button>
+    <button id="export" type="button" disabled>Export raw JSON</button>
+    <p id="progress" role="status"></p>
+    <div id="log"></div>
+  </main>
+  <script>
+    window.__CIPHER_CHECKPOINT = "sftv3";
+    window.addEventListener("error", (ev) => {
+      if (ev.target && ev.target !== window) return;
+      const msg = String(ev.message || "");
+      if (!msg || /favicon/i.test(msg)) return;
+      const gate = document.getElementById("gate");
+      if (!gate || gate.dataset.ready === "1") return;
+      const text = "Page failed to start: " + msg;
+      gate.textContent = text;
+      const progress = document.getElementById("progress");
+      if (progress) progress.textContent = text;
+    });
+  </script>
+  <script type="module" src="./general.js"></script>
+</body>
+</html>

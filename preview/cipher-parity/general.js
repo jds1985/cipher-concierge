@@ -1,0 +1,228 @@
+const $ = (id) => document.getElementById(id);
+let pack = null;
+let ai = null;
+let verified = null;
+let cancel = false;
+let busy = false;
+const trials = [];
+
+function hex(buf) {
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function openWorker() {
+  const w = new Worker("./cipher-worker-candidate.js");
+  let seq = 0;
+  const pending = new Map();
+  let onTok = null;
+  w.onmessage = (ev) => {
+    const m = ev.data;
+    if (m.type === "progress") return;
+    if (m.type === "token") { if (onTok) onTok(m.piece); return; }
+    const key = m.id ?? "load";
+    const p = pending.get(key);
+    if (!p) return;
+    pending.delete(key);
+    m.type === "error" ? p.rej(new Error(m.msg)) : p.res(m);
+  };
+  const call = (msg, key) => new Promise((res, rej) => { pending.set(key, { res, rej }); w.postMessage(msg); });
+  return {
+    stop: () => w.postMessage({ type: "stop" }),
+    load: (msg) => call(msg, "load"),
+    reset: () => { const id = ++seq; return call({ type: "reset", id }, id); },
+    setSystem: (text) => { const id = ++seq; return call({ type: "system", id, text }, id); },
+    generate: (text, maxNew, onToken) => { const id = ++seq; onTok = onToken; return call({ type: "generate", id, text, maxNew }, id); },
+    tokenize: (text) => { const id = ++seq; return call({ type: "tokenize", id, text }, id).then((m) => m.ids); },
+  };
+}
+
+async function verifyModel(spec) {
+  const res = await fetch(spec.url);
+  if (!res.ok) return { present: false, status: res.status, sha256: null, size: 0, match: false };
+  const buf = await res.arrayBuffer();
+  const sha256 = hex(await crypto.subtle.digest("SHA-256", buf));
+  const match = buf.byteLength === spec.size && sha256 === spec.sha256;
+  if (match) {
+    const cache = await caches.open("cipher-models-v1");
+    await cache.put(spec.url, new Response(buf, { headers: { "content-type": "application/octet-stream" } }));
+  }
+  return { present: true, sha256, size: buf.byteLength, match };
+}
+
+function mechanical(raw, stats, stopped, err) {
+  if (err) return { flag: "error", note: "Runtime failure. Not a scored answer." };
+  if (stopped) return { flag: "truncated", note: "User stop. Raw text is partial." };
+  if (!raw) return { flag: "empty", note: "No tokens returned." };
+  if (stats && stats.genTokens >= pack.settings.maxNew) return { flag: "truncated", note: "Hit maxNew. Raw text may be cut off." };
+  return { flag: null, note: "No automatic score. Raw text is the result." };
+}
+
+function renderTrial(t) {
+  const d = document.createElement("article");
+  d.innerHTML = `<p class="badge">${t.id} · ${t.family} · pass ${t.pass} · ${t.mechanical.flag || "raw kept"}</p><pre></pre>`;
+  d.querySelector("pre").textContent = [
+    "RAW (this is the answer; nothing was substituted)",
+    t.raw || "",
+    "",
+    "MECHANICAL",
+    t.mechanical.flag || "none",
+    t.mechanical.note,
+    t.error || "",
+    "",
+    "STATS",
+    JSON.stringify(t.stats || null),
+    "",
+    "PLAIN STRING TOKEN IDS (not proven to be the full prompt)",
+    "system " + JSON.stringify(t.plainStringTokenIds && t.plainStringTokenIds.system),
+    "user " + JSON.stringify(t.plainStringTokenIds && t.plainStringTokenIds.user),
+  ].join("\n");
+  $("log").prepend(d);
+}
+
+async function onePrompt(item, pass) {
+  await ai.reset();
+  const systemIds = await ai.tokenize(pack.system);
+  const userIds = await ai.tokenize(item.text);
+  await ai.setSystem(pack.system);
+  let raw = "";
+  let stopped = false;
+    const gen = await ai.generate(item.text, pack.settings.maxNew, (piece) => { raw += piece; });
+  raw = gen.text || raw;
+  stopped = !!gen.stopped || cancel;
+  const row = {
+    id: item.id,
+    family: item.family,
+    pass,
+    prompt: item.text,
+    system: pack.system,
+    contextReset: true,
+    settings: pack.settings,
+    serialization: {
+      setSystem: "_cw_begin(systemText, 1, 0)",
+      generate: "_cw_begin(userText, 0, maxNew)",
+      rawModeNotUsed: true,
+      note: "Mode 1 and mode 0 are the worker calls. Whether they insert training role ids is not visible in this page.",
+    },
+    plainStringTokenIds: { system: systemIds, user: userIds },
+    raw,
+    stats: gen.stats || null,
+    stopped,
+    error: null,
+    hotelGuard: { applicable: false, reason: "General mode does not use the hotel guard as a score." },
+  };
+  row.mechanical = mechanical(raw, row.stats, stopped, null);
+  return row;
+}
+
+async function runBatch() {
+  if (!ai || !verified?.match || busy) return;
+  const repeats = Math.min(2, Math.max(1, Number($("repeats").value) || 1));
+  cancel = false;
+  busy = true;
+  $("run").disabled = true;
+  $("stop").hidden = false;
+  const stamp = new Date().toISOString();
+  for (let pass = 1; pass <= repeats; pass++) {
+    for (let i = 0; i < pack.prompts.length; i++) {
+      if (cancel) break;
+      const item = pack.prompts[i];
+      $("progress").textContent = `Pass ${pass}/${repeats} · ${i + 1}/${pack.prompts.length} · ${item.id}`;
+      try {
+        const row = await onePrompt(item, pass);
+        row.startedAt = stamp;
+        trials.push(row);
+        renderTrial(row);
+      } catch (err) {
+        const row = {
+          id: item.id, family: item.family, pass, prompt: item.text, system: pack.system,
+          contextReset: true, settings: pack.settings, raw: "", error: String(err && err.message || err),
+          stats: null, stopped: cancel, hotelGuard: { applicable: false },
+          mechanical: mechanical("", null, cancel, err),
+        };
+        trials.push(row);
+        renderTrial(row);
+      }
+    }
+    if (cancel) break;
+  }
+  $("progress").textContent = cancel ? "Stopped. Partial results kept." : `Done. ${trials.length} raw trials.`;
+  busy = false;
+  $("run").disabled = false;
+  $("stop").hidden = true;
+}
+
+function exportJson() {
+  const blob = new Blob([JSON.stringify({
+    packId: pack.id,
+    experimental: true,
+    notReadyToMerge: true,
+    model: pack.model,
+    verified,
+    system: pack.system,
+    settings: pack.settings,
+    rubric: pack.rubric,
+    trials,
+  }, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "cipher-general-v1-raw.json";
+  a.click();
+}
+
+function failStart(err) {
+  const msg = "Page failed to start: " + (err && err.message ? err.message : err);
+  $("gate").textContent = msg;
+  $("progress").textContent = msg;
+  $("run").disabled = true;
+  $("export").disabled = true;
+}
+
+async function main() {
+  const res = await fetch("./general-v1.json");
+  if (!res.ok) throw new Error("general-v1.json HTTP " + res.status + " " + (res.headers.get("content-type") || ""));
+  pack = await res.json();
+  $("gate").dataset.ready = "1";
+  $("sys").textContent = pack.system;
+  $("count").textContent = String(pack.prompts.length);
+  const requested = window.__CIPHER_CHECKPOINT || new URLSearchParams(location.search).get("checkpoint") || "targeted";
+  const chosen = (pack.checkpoints && pack.checkpoints[requested]) || null;
+  if (!chosen) throw new Error("Unknown checkpoint " + requested + ". Use targeted or sftv3.");
+  if (chosen.sha256 === pack.checkpoints.targeted.sha256 && chosen.key !== "targeted") {
+    throw new Error("Refusing to treat the targeted file as " + chosen.key);
+  }
+  pack.model = chosen;
+  if (chosen.key === "sftv3") {
+    document.querySelector(".banner").textContent = "EXPERIMENTAL. NOT READY TO MERGE. PRE-FINETUNE SFTv3 control. Not the hotel-targeted checkpoint. Not a smaller model.";
+  }
+  const spec = { ...chosen, url: new URL(chosen.url, location.href).href };
+  verified = await verifyModel(spec);
+  $("gate").textContent = [
+    chosen.label,
+    "checkpoint " + chosen.key + " role " + chosen.role,
+    spec.url,
+    "expected " + pack.model.size + " " + pack.model.sha256,
+    "verified " + (verified.size || 0) + " " + (verified.sha256 || "missing"),
+    "match " + (verified.match ? "yes" : "no"),
+    "ctx " + pack.settings.ctx + " temp " + pack.settings.temp + " rep " + pack.settings.rep + " topP " + pack.settings.topP + " seed " + pack.settings.seed + " maxNew " + pack.settings.maxNew,
+  ].join("\n");
+  $("export").onclick = exportJson;
+  $("export").disabled = false;
+  if (!verified.match) {
+    $("progress").textContent = "Generation disabled until " + chosen.key + " matches its own hash. Nothing else is loaded.";
+    $("run").disabled = true;
+    return;
+  }
+  ai = openWorker();
+  const loaded = await ai.load({
+    type: "load", url: spec.url, size: pack.model.size,
+    threads: Math.min(4, navigator.hardwareConcurrency || 2),
+    ctx: pack.settings.ctx, temp: pack.settings.temp, rep: pack.settings.rep,
+    topP: pack.settings.topP, greedy: pack.settings.greedy, seed: pack.settings.seed,
+  });
+  $("gate").textContent += `\nruntime ${loaded.info.build} threads ${loaded.info.threads} heap ${Number(loaded.heapMB).toFixed(0)} MB`;
+  $("run").disabled = false;
+  $("run").onclick = () => runBatch();
+  $("stop").onclick = () => { cancel = true; if (ai) ai.stop(); };
+}
+
+main().catch(failStart);
