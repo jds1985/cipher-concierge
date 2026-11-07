@@ -2,11 +2,19 @@
 
 Guest hotel mode stays on `index.html`. This page is `general.html`.
 
-Only the targeted file is loaded:
+`general.html` accepts only the after-hotel-SFT file:
 
 `models/cipher2m_concierge_targeted.ctern`  
 144672788 bytes  
 sha256 `13790c5a9d76d9ce226181d75840bfbb92e32ab1fa66722975ef401f5571c1d6`
+
+`general-sftv3.html` is the pre-finetune control. Same prompts, system text, settings, candidate worker, and two passes. It accepts only:
+
+`models/sft_v3.ctern`  
+144672788 bytes  
+sha256 `bc95f7455f60d2d85e16aa5abc4e1c01ccbadd4e1bdfe5881a7430de539f6bcb`
+
+That file is SFTv3 before the hotel SFT. It is not a smaller model and it is not labeled targeted. This machine did not have the file, so the hash was not recomputed here. The known train split is 192 train and 26 val.
 
 Settings for every prompt: ctx 512, temp 0.3, repetition 1.15, topP 1, greedy false, seed 0, maxNew 128, reset before the system text. Ctx 512 is not native ctx 1024. maxNew 128 is wider than the guest cap of 64 so a short explanation is less likely to be cut off. A hit on 128 tokens is recorded as truncated.
 

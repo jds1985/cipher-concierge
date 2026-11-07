@@ -29,9 +29,23 @@ const state = await page.evaluate(() => ({
   exportDisabled: document.getElementById("export").disabled,
   repeats: document.getElementById("repeats").value,
 }));
-console.log(JSON.stringify({ state, errors }, null, 2));
+const page2 = await browser.newPage();
+const errors2 = [];
+page2.on("pageerror", (err) => errors2.push(String(err)));
+page2.on("console", (msg) => { if (msg.type() === "error") errors2.push(msg.text()); });
+await page2.goto(`http://127.0.0.1:${port}/general-sftv3.html`, { waitUntil: "networkidle0", timeout: 20000 });
+await page2.waitForFunction(() => document.getElementById("gate").textContent.includes("match "), { timeout: 15000 });
+const base = await page2.evaluate(() => ({
+  banner: document.querySelector(".banner").textContent,
+  gate: document.getElementById("gate").textContent,
+  sys: document.getElementById("sys").textContent,
+  runDisabled: document.getElementById("run").disabled,
+  exportDisabled: document.getElementById("export").disabled,
+}));
+console.log(JSON.stringify({ state, errors, base, errors2 }, null, 2));
 await browser.close();
 server.kill("SIGTERM");
-const mime = errors.some((e) => /application\/json/.test(e));
-const started = state.sys.includes("helpful assistant") && state.gate.includes("match no") && state.exportDisabled === false && state.runDisabled === true && !mime;
-if (!started) process.exit(1);
+const mime = [...errors, ...errors2].some((e) => /application\/json/.test(e));
+const started = state.sys.includes("helpful assistant") && state.gate.includes("13790c5a") && state.gate.includes("match no") && state.exportDisabled === false && state.runDisabled === true && !mime;
+const control = base.banner.includes("PRE-FINETUNE SFTv3") && base.gate.includes("bc95f745") && base.gate.includes("sft_v3.ctern") && !base.gate.includes("13790c5a") && base.sys === state.sys && base.runDisabled === true && base.exportDisabled === false;
+if (!started || !control) process.exit(1);

@@ -9,6 +9,13 @@ const banned = /\b(hotel|wifi|wi-fi|checkout|check-in|checkin|front desk|concier
 test("frozen general set is 20 prompts with no hotel routing words", () => {
   assert.equal(pack.prompts.length, 20);
   assert.equal(pack.model.sha256, "13790c5a9d76d9ce226181d75840bfbb92e32ab1fa66722975ef401f5571c1d6");
+  assert.equal(pack.checkpoints.targeted.sha256, pack.model.sha256);
+  assert.equal(pack.checkpoints.sftv3.key, "sftv3");
+  assert.equal(pack.checkpoints.sftv3.url, "models/sft_v3.ctern");
+  assert.equal(pack.checkpoints.sftv3.size, 144672788);
+  assert.equal(pack.checkpoints.sftv3.sha256, "bc95f7455f60d2d85e16aa5abc4e1c01ccbadd4e1bdfe5881a7430de539f6bcb");
+  assert.notEqual(pack.checkpoints.sftv3.sha256, pack.checkpoints.targeted.sha256);
+  assert.match(pack.checkpoints.sftv3.label, /Pre-finetune SFTv3/);
   assert.equal(pack.model.size, 144672788);
   assert.equal(pack.settings.ctx, 512);
   assert.equal(pack.settings.temp, 0.3);

@@ -184,10 +184,21 @@ async function main() {
   $("gate").dataset.ready = "1";
   $("sys").textContent = pack.system;
   $("count").textContent = String(pack.prompts.length);
-  const spec = { ...pack.model, url: new URL(pack.model.url, location.href).href };
+  const requested = window.__CIPHER_CHECKPOINT || new URLSearchParams(location.search).get("checkpoint") || "targeted";
+  const chosen = (pack.checkpoints && pack.checkpoints[requested]) || null;
+  if (!chosen) throw new Error("Unknown checkpoint " + requested + ". Use targeted or sftv3.");
+  if (chosen.sha256 === pack.checkpoints.targeted.sha256 && chosen.key !== "targeted") {
+    throw new Error("Refusing to treat the targeted file as " + chosen.key);
+  }
+  pack.model = chosen;
+  if (chosen.key === "sftv3") {
+    document.querySelector(".banner").textContent = "EXPERIMENTAL. NOT READY TO MERGE. PRE-FINETUNE SFTv3 control. Not the hotel-targeted checkpoint. Not a smaller model.";
+  }
+  const spec = { ...chosen, url: new URL(chosen.url, location.href).href };
   verified = await verifyModel(spec);
   $("gate").textContent = [
-    pack.model.label,
+    chosen.label,
+    "checkpoint " + chosen.key + " role " + chosen.role,
     spec.url,
     "expected " + pack.model.size + " " + pack.model.sha256,
     "verified " + (verified.size || 0) + " " + (verified.sha256 || "missing"),
@@ -197,7 +208,7 @@ async function main() {
   $("export").onclick = exportJson;
   $("export").disabled = false;
   if (!verified.match) {
-    $("progress").textContent = "Generation disabled until the targeted file matches. No smaller model is loaded.";
+    $("progress").textContent = "Generation disabled until " + chosen.key + " matches its own hash. Nothing else is loaded.";
     $("run").disabled = true;
     return;
   }
