@@ -28,6 +28,20 @@ const labCsp = [
   "base-uri 'self'",
   "form-action 'self'",
 ].join("; ");
+// SmolLM trial only. The strict lab policy above still applies to Liquid and parity.
+// Asset hosts are the runtime and the weights. There is no chat API in this list.
+const smolCsp = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob:${dev ? " 'unsafe-eval'" : ""}`,
+  "worker-src 'self' blob:",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob:",
+  "font-src 'self'",
+  "connect-src 'self' https://unpkg.com https://huggingface.co https://cdn-lfs.huggingface.co https://cas-bridge.xethub.hf.co https://raw.githubusercontent.com",
+  "frame-ancestors 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join("; ");
 const security = (policy) => [
   { key: "Content-Security-Policy", value: policy },
   { key: "Referrer-Policy", value: "no-referrer" },
@@ -41,7 +55,8 @@ export default {
   async headers() {
     return [
       { source: "/:path((?!lab).*)", headers: security(csp) },
-      { source: "/lab/:path*", headers: security(labCsp) },
+      { source: "/lab/:path((?!smol$).*)", headers: security(labCsp) },
+      { source: "/lab/smol", headers: [...security(smolCsp), { key: "X-Robots-Tag", value: "noindex, nofollow" }, { key: "Cache-Control", value: "no-store" }] },
       { source: "/lab/liquid/:path*", headers: [
         { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
         { key: "X-Robots-Tag", value: "noindex, nofollow" },
