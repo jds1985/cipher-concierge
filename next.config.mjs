@@ -37,7 +37,7 @@ const smolCsp = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self'",
-  "connect-src 'self' https://unpkg.com https://huggingface.co https://cdn-lfs.huggingface.co https://cas-bridge.xethub.hf.co https://raw.githubusercontent.com",
+  "connect-src 'self' https://unpkg.com https://huggingface.co https://cdn-lfs.huggingface.co https://cas-bridge.xethub.hf.co https://us.aws.cdn.hf.co https://raw.githubusercontent.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
