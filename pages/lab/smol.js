@@ -20,12 +20,11 @@ export async function getServerSideProps() {
   };
 }
 
-const FLOW = [
+const ACTIONS = [
   { id: "ready-bare", label: "Ready, no hotel instructions" },
   { id: "ready-hotel", label: "Ready, with the hotel instructions" },
   { id: "compound-fresh", label: "Compound question only, after a waited reset" },
   { id: "six", label: "Six hotel questions" },
-  { id: "export", label: "Export the log" },
 ];
 
 function bytesToB64(buf) {
@@ -45,11 +44,12 @@ export default function SmolLab({ six, readyBare, readyHotel, compoundFresh, par
   const [loaded, setLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [step, setStep] = useState(0);
-  const [results, setResults] = useState([]);
+  const [runningId, setRunningId] = useState("");
+  const [byId, setById] = useState({});
   const [entries, setEntries] = useState([]);
   const engineRef = useRef(null);
   const stopRef = useRef(false);
+  const busyRef = useRef(false);
   const questionsRef = useRef([readyBare, readyHotel, compoundFresh, ...six, ...paraphrases].map((plan) => plan.q));
   const entriesRef = useRef([]);
 
@@ -100,6 +100,13 @@ export default function SmolLab({ six, readyBare, readyHotel, compoundFresh, par
 
   async function loadModel() {
     stopRef.current = false;
+    if (typeof window.__SMOL_CREATE_ENGINE === "function") {
+      engineRef.current = await window.__SMOL_CREATE_ENGINE();
+      setCompat({ ok: true, f16: true, fallback: false });
+      setLoaded(true);
+      setStatus("Test engine loaded.");
+      return;
+    }
     if (!compat?.ok) {
       setStatus((compat?.reason || "This browser cannot run the model.") + " No download started.");
       return;
@@ -143,22 +150,41 @@ export default function SmolLab({ six, readyBare, readyHotel, compoundFresh, par
     setStatus("Stopped. The model is unloaded.");
   }
 
+  function stopRun() {
+    stopRef.current = true;
+    try { engineRef.current?.interruptGenerate?.(); } catch { /* the run still records what it has */ }
+    setStatus("Stop requested. The model stays loaded.");
+  }
+
   async function runId(id) {
-    if (id === "export") { exportLog(); return; }
     const list = plans[id] || paraphrases.filter((plan) => plan.id === id);
+    if (!list.length) { setStatus("That button has no question."); return; }
     if (!engineRef.current) { setStatus("Load the model first. No request was sent."); return; }
+    if (busyRef.current) return;
+    busyRef.current = true;
+    const label = ACTIONS.find((item) => item.id === id)?.label || list[0].q;
     setBusy(true);
+    setRunningId(id);
     stopRef.current = false;
-    setStatus(id === "six" ? "Running six questions. Each one waits for a reset." : "Waiting for a reset, then asking the model.");
-    const result = await runSmolOnEngine(engineRef.current, list, runtime, {
-      realGeneration: true,
-      hotel: silver,
-      shouldStop: () => stopRef.current,
-    });
-    setResults((prev) => [...result.rows, ...prev]);
-    setBusy(false);
-    setStatus("Result is below. Generated text is not a correct-answer score.");
-    if (FLOW[step] && FLOW[step].id === id) setStep((value) => Math.min(value + 1, FLOW.length - 1));
+    setStatus("Running " + label + ". This button always sends that test.");
+    try {
+      const result = await runSmolOnEngine(engineRef.current, list, runtime, {
+        realGeneration: true,
+        hotel: silver,
+        shouldStop: () => stopRef.current,
+      });
+      setById((prev) => ({ ...prev, [id]: [...(prev[id] || []), ...result.rows.map((row) => ({ ...row, buttonId: id }))] }));
+      setStatus(label + " finished. Its result is under that button. Generated text is not a correct-answer score.");
+    } finally {
+      busyRef.current = false;
+      setBusy(false);
+      setRunningId("");
+    }
+  }
+
+  function savedRows() {
+    const ids = [...ACTIONS.map((item) => item.id), ...paraphrases.map((plan) => plan.id)];
+    return ids.flatMap((id) => byId[id] || []);
   }
 
   function exportLog() {
@@ -168,7 +194,7 @@ export default function SmolLab({ six, readyBare, readyHotel, compoundFresh, par
       privacyClaim: privacyClaim({ entries }),
       privacyNote: "Unverified unless a later capture covers every network path. cache.add and fetch are logged here. That is not a complete capture.",
       network: entries,
-      results: results.map((row) => ({ ...row, safety: safetyPanel(row) })),
+      results: savedRows().map((row) => ({ ...row, safety: safetyPanel(row) })),
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
@@ -177,7 +203,7 @@ export default function SmolLab({ six, readyBare, readyHotel, compoundFresh, par
     a.click();
   }
 
-  const next = FLOW[step];
+  const nextId = ACTIONS.find((item) => !(byId[item.id] || []).length)?.id || "";
   const claim = privacyClaim({ entries });
 
   return (
@@ -189,24 +215,27 @@ export default function SmolLab({ six, readyBare, readyHotel, compoundFresh, par
         <p style={note}>Privacy: {claim}. Logged requests are not every network path. A missing question in this log is not proof the question stayed on the phone.</p>
         {!loaded && !loading ? <button type="button" style={btn} onClick={loadModel}>Load the model</button> : null}
         {loading ? <button type="button" style={btn} onClick={cancelLoad}>Cancel the load</button> : null}
-        {loaded && !busy ? <button type="button" style={btn} onClick={() => runId(next.id)}>{next.label}</button> : null}
-        {busy ? <button type="button" style={btn} onClick={cancelLoad}>Stop</button> : null}
-        {loaded ? <p style={hint}>Load downloads about 220 MB. The upstream 376 MB figure is video memory, not total phone memory. Runtime {runtime.runtime} {runtime.runtimeVersion}, Apache-2.0. Context {runtime.contextWindow}. Temperature {runtime.temperature}. Repetition penalty is not sent.</p> : <p style={hint}>Load downloads about 220 MB only after you press the button, and only when shader-f16 is available.</p>}
-        {results[0] ? <Result row={results[0]} /> : null}
-        {loaded && !busy ? (
-          <section>
-            <h2 style={heading}>More tests</h2>
-            {FLOW.filter((item) => item.id !== next.id).map((item) => (
-              <button type="button" key={item.id} style={secondary} onClick={() => runId(item.id)}>{item.label}</button>
-            ))}
-            {paraphrases.map((plan) => (
-              <button type="button" key={plan.id} style={secondary} onClick={() => runId(plan.id)}>{plan.q}</button>
-            ))}
-          </section>
-        ) : null}
-        {results.slice(1).map((row, index) => <Result key={row.id + "-" + index} row={row} />)}
+        {busy ? <button type="button" style={stopBtn} onClick={stopRun}>Stop this run</button> : null}
+        {loaded ? <p style={hint}>The yellow button is the next test that has not run. Its words do not change. A result stays under the button that created it. Load is about 220 MB. Context {runtime.contextWindow}. Temperature {runtime.temperature}. Repetition penalty is not sent.</p> : <p style={hint}>Load downloads about 220 MB only after you press the button, and only when shader-f16 is available.</p>}
+        {loaded ? ACTIONS.map((item) => (
+          <Action key={item.id} id={item.id} label={item.label} runs={byId[item.id] || []} yellow={item.id === nextId} busy={busy} running={runningId === item.id} onRun={runId} />
+        )) : null}
+        {loaded ? paraphrases.map((plan) => (
+          <Action key={plan.id} id={plan.id} label={plan.q} runs={byId[plan.id] || []} yellow={false} busy={busy} running={runningId === plan.id} onRun={runId} />
+        )) : null}
+        {loaded ? <button type="button" style={secondary} onClick={exportLog}>Export the log</button> : null}
       </main>
     </>
+  );
+}
+
+function Action({ id, label, runs, yellow, busy, running, onRun }) {
+  return (
+    <section data-test={id} style={slot}>
+      <button type="button" data-run={id} style={yellow && !busy ? btn : secondary} onClick={() => onRun(id)}>{running ? "Running. " : ""}{label}</button>
+      {runs.length ? runs.map((row, index) => <Result key={row.id + "-" + index} row={row} />) : <p data-empty={id}>Not run yet.</p>}
+      {runs.length > 1 ? <p>{runs.length} runs kept for this button.</p> : null}
+    </section>
   );
 }
 
@@ -215,14 +244,14 @@ function Result({ row }) {
   const safety = safetyPanel(row);
   return (
     <section style={card}>
-      <h2 style={heading}>{row.id}</h2>
+      <h2 style={heading}>{row.buttonId || row.id}</h2>
+      <p>Result id: {row.id}. Hotel system sent: {row.system ? "yes" : "no"}.</p>
       <p>Generated text: {diagnosis.generatedText ? "yes" : "no"}. This is not a factual score.</p>
       <p>Model text. The model did not call anyone or send a message.</p>
       <p style={raw}>{row.raw || "No text."}</p>
       <p>Stop reason: {row.finishReason || "not returned"}.</p>
       <p>Prompt tokens: {row.usage?.prompt_tokens ?? "not returned"}. New tokens: {row.usage?.completion_tokens ?? "not returned"}.</p>
       <p>Reset waited: {row.resetEvidence?.ok ? "yes" : "no"}. Reply took {row.clientMs} ms.</p>
-      <p>Hotel system sent: {row.system ? "yes" : "no"}.</p>
       <p>Full-text guard: {diagnosis.fullGuard ? (diagnosis.fullGuard.ok ? "passed" : diagnosis.fullGuard.reason) : "not run"}.</p>
       <p>Two-sentence guard: {diagnosis.trimmedGuard ? (diagnosis.trimmedGuard.ok ? "passed" : diagnosis.trimmedGuard.reason) : "not run"}.</p>
       {diagnosis.trimChangedTheCheck ? <p>The two-sentence cut changed the guard result. The full model text is above.</p> : null}
@@ -248,7 +277,9 @@ const note = { background: "#111", color: "#fff", border: "3px solid #9cf", padd
 const hint = { fontSize: 20 };
 const btn = { display: "block", width: "100%", boxSizing: "border-box", background: "#ffe14a", color: "#000", fontSize: 26, fontWeight: 700, padding: "22px 16px", border: "4px solid #fff", margin: "16px 0", textAlign: "left" };
 const secondary = { display: "block", width: "100%", boxSizing: "border-box", background: "#111", color: "#ffe14a", fontSize: 22, padding: "18px 16px", border: "3px solid #ffe14a", margin: "10px 0", textAlign: "left" };
-const card = { borderTop: "3px solid #fff", marginTop: 20, paddingTop: 8, overflowWrap: "anywhere" };
+const stopBtn = { display: "block", width: "100%", boxSizing: "border-box", background: "#fff", color: "#000", fontSize: 26, fontWeight: 700, padding: "22px 16px", border: "4px solid #f66", margin: "16px 0", textAlign: "left" };
+const slot = { marginTop: 8 };
+const card = { borderTop: "3px solid #fff", marginTop: 8, paddingTop: 8, overflowWrap: "anywhere" };
 const raw = { whiteSpace: "pre-wrap", overflowWrap: "anywhere", background: "#111", padding: 12, border: "2px solid #fff" };
 const safetyBox = { background: "#300", border: "3px solid #f66", padding: 12 };
 const summary = { fontSize: 22, padding: "12px 0" };

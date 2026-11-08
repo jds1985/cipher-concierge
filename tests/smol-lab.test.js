@@ -125,6 +125,10 @@ test("the lab stays off in production and the page does not call generation a fa
   assert.doesNotMatch(page, /countsAsModelSuccess/);
   assert.match(page, /Privacy:/);
   assert.match(page, /Ready, no hotel instructions/);
+  assert.match(page, /Ready, with the hotel instructions/);
+  assert.match(page, /data-run=\{id\}/);
+  assert.match(page, /Not run yet/);
+  assert.doesNotMatch(page, /\{next\.label\}/);
   const prod = config.slice(config.indexOf("const csp ="), config.indexOf("const labCsp"));
   assert.doesNotMatch(prod, /huggingface/);
   const stay = readFileSync(new URL("../pages/stay/[hotelId]/[roomId].js", import.meta.url), "utf8");
