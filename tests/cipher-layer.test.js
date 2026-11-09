@@ -9,6 +9,7 @@ import heldout from "./fixtures/cipher-layer-heldout.json" with { type: "json" }
 
 const silver = JSON.parse(readFileSync(new URL("./fixtures/silver-quill-browser.json", import.meta.url), "utf8"));
 const harbor = JSON.parse(readFileSync(new URL("./fixtures/harbor-lantern.json", import.meta.url), "utf8"));
+const cedar = JSON.parse(readFileSync(new URL("./fixtures/cedar-blank.json", import.meta.url), "utf8"));
 const other = { ...silver, id: "other-inn", name: "Other Inn", wifi: { ...silver.wifi, network: "Other-Guest" } };
 
 test("the stand-in identity is the 135M file, not the targeted 369M", () => {
@@ -198,4 +199,18 @@ test("development phrasings supply vetted wifi and checkout facts", () => {
   file = resetCorrections(file);
   const reset = resolveTurn({ hotel: silver, question: "What's the Wi-Fi network?", raw: "", corrections: file });
   assert.equal(reset.resolution.text, "The Wi-Fi network is SilverQuill-Guest.");
+  const pets = resolveTurn({ hotel: silver, question: "Are pets allowed?", raw: "Yes, bring them.", corrections: none });
+  assert.equal(pets.raw, "Yes, bring them.");
+  assert.equal(pets.resolution.text, "Pets are not allowed.");
+  const fee = resolveTurn({ hotel: harbor, question: "What is the dog fee?", raw: "", corrections: none });
+  assert.match(fee.resolution.text, /\$25 per stay/);
+  assert.match(fee.resolution.text, /40 pounds/);
+  const missing = resolveTurn({ hotel: cedar, question: "Can I bring a dog?", raw: "Sure.", corrections: none });
+  assert.equal(missing.resolution.source, "withheld");
+  assert.equal(missing.resolution.text, "The approved file has no pet policy.");
+  assert.equal(missing.raw, "Sure.");
+  const bothPets = resolveTurn({ hotel: silver, question: "Tell me the wifi and whether pets are allowed", raw: "", corrections: none });
+  assert.equal(bothPets.resolution.source, "approved-facts");
+  assert.match(bothPets.resolution.text, /SilverQuill-Guest/);
+  assert.match(bothPets.resolution.text, /Pets are not allowed/);
 });

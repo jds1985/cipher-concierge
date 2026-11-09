@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import silver from "../../tests/fixtures/silver-quill-browser.json";
 import harbor from "../../tests/fixtures/harbor-lantern.json";
 import heldout from "../../tests/fixtures/cipher-layer-heldout.json";
-import factsHeldout from "../../tests/fixtures/cipher-facts-heldout-b.json";
+import cedar from "../../tests/fixtures/cedar-blank.json";
+import factsHeldout from "../../tests/fixtures/cipher-facts-heldout-c.json";
 import {
   CIPHER_2_STANDIN, emptyCorrections, approveCorrection, resetCorrections, exportCorrections,
   groundingSystem, resolveTurn, contextReport, gradeFactAnswer,
@@ -11,7 +12,7 @@ import {
 
 const KEY = "cipher-layer-corrections-v1";
 const FOUR = factsHeldout.realGenerationIds.map((id) => factsHeldout.items.find((item) => item.id === id)).filter(Boolean);
-const HOTELS = { [silver.id]: silver, [harbor.id]: harbor, [heldout.scopeHotel.id]: heldout.scopeHotel };
+const HOTELS = { [silver.id]: silver, [harbor.id]: harbor, [cedar.id]: cedar, [heldout.scopeHotel.id]: heldout.scopeHotel };
 const LOAD_LIMIT_MS = 120000;
 const STALL_MS = 45000;
 const QUESTION_LIMIT_MS = 60000;
@@ -197,7 +198,7 @@ export default function CipherLayerLab() {
       const fetches = await engine.fetches();
       setDiagnostics({ fetches: fetches.fetches, rows: finished });
       window.__FACT_ROWS = finished;
-      say("Completed. All 4 questions finished.", "completed");
+      say("Completed. All " + FOUR.length + " questions finished.", "completed");
     } catch (err) {
       const message = err && err.message ? err.message : String(err);
       say("Failed. " + message + " Finished questions are still listed below.", "failed");
@@ -236,7 +237,7 @@ export default function CipherLayerLab() {
     }
   }
 
-  const buttonLabel = phase === "failed" ? "Try again" : phase === "loading" || phase === "running" ? "Test is running" : phase === "completed" ? "Run the test again" : "Start the four-question test";
+  const buttonLabel = phase === "failed" ? "Try again" : phase === "loading" || phase === "running" ? "Test is running" : phase === "completed" ? "Run the test again" : "Start the " + FOUR.length + "-question test";
 
   return (
     <>
@@ -249,13 +250,13 @@ export default function CipherLayerLab() {
       `}</style>
       <main style={page}>
         <h1 style={title}>Hotel answer test</h1>
-        <p id="purpose" style={purpose}>Press Start. Cipher answers four hotel questions. Each result shows the approved answer, and Cipher&apos;s own words stay available underneath.</p>
+        <p id="purpose" style={purpose}>Press Start. Cipher answers {FOUR.length} hotel questions. Each result shows the approved answer, and Cipher&apos;s own words stay available underneath.</p>
         <p id="status" role="status" aria-live="assertive" aria-atomic="true" style={statusBox}>{status}</p>
         <button type="button" style={startBtn} aria-disabled={phase === "loading" || phase === "running"} onClick={start}>{buttonLabel}</button>
-        <p style={note}>This test uses Silver Quill Inn.</p>
+        <p style={note}>This test uses Silver Quill Inn, Harbor Lantern, and Cedar Blank.</p>
         {rows.map((row) => (
           <section key={row.number} style={card}>
-            <h2 style={questionTitle}>Question {row.number} of 4. Cipher finished this question.</h2>
+            <h2 style={questionTitle}>Question {row.number} of {FOUR.length}. Cipher finished this question.</h2>
             <p>{row.question}</p>
             <p style={grade}>{row.label}</p>
             <h3 style={answerHead}>{row.source === "withheld" || row.source === "safety" ? "What you should use" : "Approved answer"}</h3>

@@ -1,0 +1,13 @@
+{
+  "id": "cedar-blank",
+  "name": "Cedar Blank",
+  "location": { "city": "Testville", "area": "The hill" },
+  "frontDesk": { "inRoom": "Ask the front desk", "phoneDisplay": null, "phoneTel": null },
+  "wifi": { "network": "Cedar-Guest", "password": null, "notes": "" },
+  "checkIn": { "time": "2:00 PM" },
+  "checkOut": { "time": "12:00 PM" },
+  "dining": [],
+  "amenities": ["Wi-Fi"],
+  "pool": null,
+  "localRecommendations": []
+}

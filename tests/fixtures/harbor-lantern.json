@@ -9,6 +9,7 @@
   "dining": [],
   "amenities": ["Wi-Fi"],
   "pool": null,
-  "pets": "Pets not permitted.",
+  "pets": "Pets are allowed. The pet fee is $25 per stay. The size limit is 40 pounds.",
+  "petPolicy": { "allowed": true, "fee": "$25 per stay", "maxPounds": 40 },
   "localRecommendations": []
 }

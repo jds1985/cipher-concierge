@@ -9,6 +9,7 @@
   "dining": [],
   "amenities": ["Wi-Fi", "Parking"],
   "pool": null,
-  "pets": "Pets not permitted.",
+  "pets": "Pets are not allowed.",
+  "petPolicy": { "allowed": false, "fee": null, "maxPounds": null },
   "localRecommendations": []
 }
