@@ -3,8 +3,9 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
   CIPHER_2_STANDIN, emptyCorrections, approveCorrection, resetCorrections, exportCorrections,
-  findContradictions, findMissing, resolveTurn, groundingSystem,
+  findContradictions, findMissing, resolveTurn, groundingSystem, contextReport, classifyTurn,
 } from "../lib/cipher-layer.js";
+import heldout from "./fixtures/cipher-layer-heldout.json" with { type: "json" };
 
 const silver = JSON.parse(readFileSync(new URL("./fixtures/silver-quill-browser.json", import.meta.url), "utf8"));
 const other = { ...silver, id: "other-inn", name: "Other Inn", wifi: { ...silver.wifi, network: "Other-Guest" } };
@@ -57,6 +58,74 @@ test("an unrelated answer is not censored", () => {
   const result = resolveTurn({ hotel: silver, question: "Tell me a joke about pencils.", raw, corrections: emptyCorrections(silver.id) });
   assert.equal(result.resolution.source, "model");
   assert.equal(result.resolution.text, raw);
+});
+
+test("the real checkout and helicopter misses are withheld", () => {
+  const checkout = classifyTurn({
+    hotel: silver,
+    question: "What time tomorrow morning do I have to be out of the room?",
+    raw: "The time tomorrow morning is a great day for you. You can call it at 6:00 AM.",
+    corrections: emptyCorrections(silver.id),
+    kind: "includes-checkout",
+  });
+  assert.equal(checkout.source, "withheld");
+  assert.equal(checkout.countedAsFactualSuccess, false);
+  const right = classifyTurn({
+    hotel: silver,
+    question: "What time tomorrow morning do I have to be out of the room?",
+    raw: "You have to be out of the room at 11:00 AM.",
+    corrections: emptyCorrections(silver.id),
+    kind: "includes-checkout",
+  });
+  assert.equal(right.source, "model");
+  assert.equal(right.countedAsFactualSuccess, true);
+  const roof = classifyTurn({
+    hotel: silver,
+    question: "Can I land a helicopter on the roof?",
+    raw: "Yes, you can land a helicopter on the roof.",
+    corrections: emptyCorrections(silver.id),
+    kind: "no-invented-helicopter",
+  });
+  assert.equal(roof.source, "withheld");
+  assert.equal(roof.rawComplete, false);
+  const joke = classifyTurn({
+    hotel: silver,
+    question: "Tell me a very short joke about pencils.",
+    raw: "Hello, I'm Cipher! I'm an AI assistant. What can I do for you?",
+    corrections: emptyCorrections(silver.id),
+    kind: "general-passthrough",
+  });
+  assert.equal(joke.source, "model");
+  assert.equal(joke.countedAsFactualSuccess, false);
+});
+
+test("the measured context keeps the system tokens after the question begin", () => {
+  const report = contextReport({ systemTokens: 168, systemBegin: 170, systemPast: 170, userBegin: 14, userPast: 184 });
+  assert.equal(report.systemRemains, true);
+  assert.match(report.note, /does not mean the hotel text was dropped/);
+  const dropped = contextReport({ systemTokens: 168, systemBegin: 170, systemPast: 170, userBegin: 14, userPast: 14 });
+  assert.equal(dropped.systemRemains, false);
+});
+
+test("a withheld miss is not a factual success, and a guest line is not a correction", () => {
+  assert.equal(heldout.items.length, 8);
+  assert.equal(new Set(heldout.items.map((item) => item.question)).size, 8);
+  const miss = classifyTurn({
+    hotel: silver, question: heldout.items[0].question, raw: "The wireless network is a network of networks.",
+    corrections: emptyCorrections(silver.id), kind: "includes-network",
+  });
+  assert.equal(miss.source, "withheld");
+  assert.equal(miss.countedAsFactualSuccess, false);
+  const hit = classifyTurn({
+    hotel: silver, question: heldout.items[0].question, raw: "Join SilverQuill-Guest.",
+    corrections: emptyCorrections(silver.id), kind: "includes-network",
+  });
+  assert.equal(hit.source, "model");
+  assert.equal(hit.countedAsFactualSuccess, true);
+  const file = approveCorrection(emptyCorrections(silver.id), { id: "wifi-1", hotelId: silver.id, topic: "network", text: "The wireless network is SilverQuill-Guest." });
+  const other = classifyTurn({ hotel: heldout.scopeHotel, question: "Which network should a phone join in this building?", raw: "The wireless network is 4:00 PM.", corrections: file, kind: "includes-network" });
+  assert.notEqual(other.source, "approved-correction");
+  assert.equal(other.countedAsFactualSuccess, false);
 });
 
 test("approved corrections are hotel scoped, editable, and not taken from the guest", () => {
