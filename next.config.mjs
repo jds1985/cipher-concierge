@@ -42,6 +42,19 @@ const smolCsp = [
   "base-uri 'self'",
   "form-action 'self'",
 ].join("; ");
+// Qwen CPU trial only. The GGUF is not fetched until Load. Hugging Face is the opt-in weight host.
+const qwenCsp = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob:${dev ? " 'unsafe-eval'" : ""}`,
+  "worker-src 'self' blob:",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob:",
+  "font-src 'self'",
+  "connect-src 'self' https://huggingface.co https://us.aws.cdn.hf.co",
+  "frame-ancestors 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join("; ");
 const security = (policy) => [
   { key: "Content-Security-Policy", value: policy },
   { key: "Referrer-Policy", value: "no-referrer" },
@@ -55,8 +68,11 @@ export default {
   async headers() {
     return [
       { source: "/:path((?!lab).*)", headers: security(csp) },
-      { source: "/lab/:path((?!smol$).*)", headers: security(labCsp) },
+      { source: "/lab/:path((?!smol$|qwen$).*)", headers: security(labCsp) },
       { source: "/lab/smol", headers: [...security(smolCsp), { key: "X-Robots-Tag", value: "noindex, nofollow" }, { key: "Cache-Control", value: "no-store" }] },
+      { source: "/lab/qwen", headers: [...security(qwenCsp), { key: "X-Robots-Tag", value: "noindex, nofollow" }, { key: "Cache-Control", value: "no-store" }] },
+      { source: "/lab/wllama/:file*.wasm", headers: [{ key: "Content-Type", value: "application/wasm" }] },
+      { source: "/lab/wllama-compat/:file*.wasm", headers: [{ key: "Content-Type", value: "application/wasm" }] },
       { source: "/lab/liquid/:path*", headers: [
         { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
         { key: "X-Robots-Tag", value: "noindex, nofollow" },
