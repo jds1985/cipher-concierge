@@ -213,4 +213,18 @@ test("development phrasings supply vetted wifi and checkout facts", () => {
   assert.equal(bothPets.resolution.source, "approved-facts");
   assert.match(bothPets.resolution.text, /SilverQuill-Guest/);
   assert.match(bothPets.resolution.text, /Pets are not allowed/);
+  const meal = resolveTurn({ hotel: harbor, question: "What time is breakfast?", raw: "It is free.", corrections: none });
+  assert.match(meal.resolution.text, /7:00 AM to 10:00 AM/);
+  assert.match(meal.resolution.text, /\$18/);
+  assert.equal(meal.raw, "It is free.");
+  const lot = resolveTurn({ hotel: silver, question: "Where is parking?", raw: "", corrections: none });
+  assert.match(lot.resolution.text, /lot behind the inn/);
+  const noLot = resolveTurn({ hotel: harbor, question: "Where can I park the car?", raw: "", corrections: none });
+  assert.equal(noLot.resolution.source, "withheld");
+  assert.match(noLot.resolution.text, /no parking fact/);
+  const late = resolveTurn({ hotel: cedar, question: "Is late checkout allowed?", raw: "", corrections: none });
+  assert.equal(late.resolution.text, "Late checkout is not allowed.");
+  const noMeal = resolveTurn({ hotel: silver, question: "Is breakfast served?", raw: "", corrections: none });
+  assert.equal(noMeal.resolution.source, "withheld");
+  assert.match(noMeal.resolution.text, /no breakfast fact/);
 });

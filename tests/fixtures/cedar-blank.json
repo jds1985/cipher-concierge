@@ -8,6 +8,7 @@
   "checkOut": { "time": "12:00 PM" },
   "dining": [],
   "amenities": ["Wi-Fi"],
+  "lateCheckoutPolicy": { "allowed": false, "fee": null, "cutoff": null },
   "pool": null,
   "localRecommendations": []
 }

@@ -11,5 +11,7 @@
   "pool": null,
   "pets": "Pets are allowed. The pet fee is $25 per stay. The size limit is 40 pounds.",
   "petPolicy": { "allowed": true, "fee": "$25 per stay", "maxPounds": 40 },
+  "breakfastPolicy": { "hours": "7:00 AM to 10:00 AM", "location": "the pier room", "cost": "$18" },
+  "lateCheckoutPolicy": { "allowed": true, "fee": "$30", "cutoff": "1:00 PM" },
   "localRecommendations": []
 }

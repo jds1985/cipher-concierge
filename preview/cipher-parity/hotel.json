@@ -11,5 +11,6 @@
   "pool": null,
   "pets": "Pets are not allowed.",
   "petPolicy": { "allowed": false, "fee": null, "maxPounds": null },
+  "parkingPolicy": { "available": true, "fee": "free", "location": "the lot behind the inn" },
   "localRecommendations": []
 }
