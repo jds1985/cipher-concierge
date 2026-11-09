@@ -4,7 +4,7 @@ import silver from "../../tests/fixtures/silver-quill-browser.json";
 import harbor from "../../tests/fixtures/harbor-lantern.json";
 import heldout from "../../tests/fixtures/cipher-layer-heldout.json";
 import cedar from "../../tests/fixtures/cedar-blank.json";
-import factsHeldout from "../../tests/fixtures/cipher-facts-heldout-d.json";
+import factsHeldout from "../../tests/fixtures/cipher-facts-heldout-e.json";
 import {
   CIPHER_2_STANDIN, emptyCorrections, approveCorrection, resetCorrections, exportCorrections,
   groundingSystem, resolveTurn, contextReport, gradeFactAnswer,

@@ -13,5 +13,11 @@
   "petPolicy": { "allowed": true, "fee": "$25 per stay", "maxPounds": 40 },
   "breakfastPolicy": { "hours": "7:00 AM to 10:00 AM", "location": "the pier room", "cost": "$18" },
   "lateCheckoutPolicy": { "allowed": true, "fee": "$30", "cutoff": "1:00 PM" },
+  "amenityFacts": { "gym": "The gym is open 5:00 AM to 11:00 PM." },
+  "directionsFacts": {
+    "address": "4 Pier Road, Testville",
+    "shuttle": "The airport shuttle leaves the lobby at 8:00 AM and 6:00 PM.",
+    "landmark": "the lighthouse"
+  },
   "localRecommendations": []
 }

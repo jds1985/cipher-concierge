@@ -9,6 +9,7 @@
   "dining": [],
   "amenities": ["Wi-Fi"],
   "lateCheckoutPolicy": { "allowed": false, "fee": null, "cutoff": null },
+  "localSpots": [{ "name": "Hill Trail", "detail": "a ten-minute walk" }],
   "pool": null,
   "localRecommendations": []
 }
