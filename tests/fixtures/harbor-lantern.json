@@ -1,0 +1,14 @@
+{
+  "id": "harbor-lantern",
+  "name": "Harbor Lantern",
+  "location": { "city": "Testville", "area": "The water" },
+  "frontDesk": { "inRoom": "Ask the front desk", "phoneDisplay": null, "phoneTel": null },
+  "wifi": { "network": "Lantern-Guest", "password": "blue-pier", "notes": "" },
+  "checkIn": { "time": "4:00 PM" },
+  "checkOut": { "time": "10:00 AM" },
+  "dining": [],
+  "amenities": ["Wi-Fi"],
+  "pool": null,
+  "pets": "Pets not permitted.",
+  "localRecommendations": []
+}

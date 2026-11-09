@@ -8,6 +8,7 @@ import {
 import heldout from "./fixtures/cipher-layer-heldout.json" with { type: "json" };
 
 const silver = JSON.parse(readFileSync(new URL("./fixtures/silver-quill-browser.json", import.meta.url), "utf8"));
+const harbor = JSON.parse(readFileSync(new URL("./fixtures/harbor-lantern.json", import.meta.url), "utf8"));
 const other = { ...silver, id: "other-inn", name: "Other Inn", wifi: { ...silver.wifi, network: "Other-Guest" } };
 
 test("the stand-in identity is the 135M file, not the targeted 369M", () => {
@@ -19,13 +20,15 @@ test("the stand-in identity is the 135M file, not the targeted 369M", () => {
   assert.doesNotMatch(page, /cipher-layer/);
 });
 
-test("a wrong time binding is withheld and the raw text stays", () => {
+test("a wrong model time is replaced by the vetted wifi and checkout facts", () => {
   const raw = "The wireless network is 3:00 PM and checkout is 11:00 AM.";
   const result = resolveTurn({ hotel: silver, question: "What is the wireless network and when do I leave?", raw, corrections: emptyCorrections(silver.id) });
   assert.equal(result.raw, raw);
-  assert.equal(result.resolution.source, "withheld");
-  assert.match(result.resolution.text, /check-in/);
-  assert.doesNotMatch(result.resolution.text, /front desk can help/);
+  assert.equal(result.resolution.source, "approved-facts");
+  assert.match(result.resolution.label, /not model-generated/);
+  assert.match(result.resolution.text, /SilverQuill-Guest/);
+  assert.match(result.resolution.text, /11:00 AM/);
+  assert.doesNotMatch(result.resolution.text, /3:00 PM/);
 });
 
 test("pets polarity, invented amenities, and action promises are contradictions", () => {
@@ -48,7 +51,8 @@ test("emergency resolution is the safety line and does not hide the raw text", (
 test("a hotel answer that omits the trusted fact is not scored as resolved", () => {
   const raw = "The wireless network is a network of wireless networks.";
   const result = resolveTurn({ hotel: silver, question: "What is the wireless network and when do I leave?", raw, corrections: emptyCorrections(silver.id) });
-  assert.equal(result.resolution.source, "withheld");
+  assert.equal(result.resolution.source, "approved-facts");
+  assert.match(result.resolution.text, /SilverQuill-Guest/);
   assert.equal(findMissing(silver, "What is the wireless network and when do I leave?", raw).length, 2);
   assert.equal(result.raw, raw);
 });
@@ -68,7 +72,8 @@ test("the real checkout and helicopter misses are withheld", () => {
     corrections: emptyCorrections(silver.id),
     kind: "includes-checkout",
   });
-  assert.equal(checkout.source, "withheld");
+  assert.equal(checkout.source, "approved-facts");
+  assert.match(checkout.resolutionText, /11:00 AM/);
   assert.equal(checkout.countedAsFactualSuccess, false);
   const right = classifyTurn({
     hotel: silver,
@@ -77,8 +82,9 @@ test("the real checkout and helicopter misses are withheld", () => {
     corrections: emptyCorrections(silver.id),
     kind: "includes-checkout",
   });
-  assert.equal(right.source, "model");
-  assert.equal(right.countedAsFactualSuccess, true);
+  assert.equal(right.source, "approved-facts");
+  assert.equal(right.raw, "You have to be out of the room at 11:00 AM.");
+  assert.equal(right.countedAsFactualSuccess, false);
   const roof = classifyTurn({
     hotel: silver,
     question: "Can I land a helicopter on the roof?",
@@ -114,14 +120,16 @@ test("a withheld miss is not a factual success, and a guest line is not a correc
     hotel: silver, question: heldout.items[0].question, raw: "The wireless network is a network of networks.",
     corrections: emptyCorrections(silver.id), kind: "includes-network",
   });
-  assert.equal(miss.source, "withheld");
+  assert.equal(miss.source, "approved-facts");
+  assert.match(miss.resolutionText, /SilverQuill-Guest/);
   assert.equal(miss.countedAsFactualSuccess, false);
   const hit = classifyTurn({
     hotel: silver, question: heldout.items[0].question, raw: "Join SilverQuill-Guest.",
     corrections: emptyCorrections(silver.id), kind: "includes-network",
   });
-  assert.equal(hit.source, "model");
-  assert.equal(hit.countedAsFactualSuccess, true);
+  assert.equal(hit.source, "approved-facts");
+  assert.equal(hit.raw, "Join SilverQuill-Guest.");
+  assert.equal(hit.countedAsFactualSuccess, false);
   const file = approveCorrection(emptyCorrections(silver.id), { id: "wifi-1", hotelId: silver.id, topic: "network", text: "The wireless network is SilverQuill-Guest." });
   const other = classifyTurn({ hotel: heldout.scopeHotel, question: "Which network should a phone join in this building?", raw: "The wireless network is 4:00 PM.", corrections: file, kind: "includes-network" });
   assert.notEqual(other.source, "approved-correction");
@@ -135,15 +143,59 @@ test("approved corrections are hotel scoped, editable, and not taken from the gu
   const heldOut = "I need the wireless network name and also when I have to leave tomorrow.";
   const raw = "The wireless network is 3:00 PM.";
   const fixed = resolveTurn({ hotel: silver, question: heldOut, raw, corrections: file });
-  assert.equal(fixed.resolution.source, "approved-correction");
-  assert.equal(fixed.resolution.text, "The wireless network is SilverQuill-Guest.");
+  assert.equal(fixed.resolution.source, "approved-facts");
+  assert.match(fixed.resolution.text, /The wireless network is SilverQuill-Guest/);
+  assert.match(fixed.resolution.text, /11:00 AM/);
   assert.equal(fixed.raw, raw);
   const crossed = resolveTurn({ hotel: other, question: heldOut, raw, corrections: file });
-  assert.notEqual(crossed.resolution.source, "approved-correction");
+  assert.match(crossed.resolution.text, /Other-Guest/);
+  assert.doesNotMatch(crossed.resolution.text, /The wireless network is SilverQuill-Guest/);
   file = approveCorrection(file, { id: "wifi-1", hotelId: silver.id, topic: "network", text: "Use SilverQuill-Guest. There is no password in the file." });
   assert.equal(file.corrections.length, 1);
   assert.match(exportCorrections(file), /no password/);
   assert.equal(resetCorrections(file).corrections.length, 0);
   const grounded = groundingSystem(silver, heldOut, file);
   assert.match(grounded, /SilverQuill-Guest/);
+});
+
+test("development phrasings supply vetted wifi and checkout facts", () => {
+  const none = emptyCorrections(silver.id);
+  const name = resolveTurn({ hotel: silver, question: "What's the Wi-Fi network?", raw: "Some network.", corrections: none });
+  assert.equal(name.resolution.source, "approved-facts");
+  assert.equal(name.resolution.text, "The Wi-Fi network is SilverQuill-Guest.");
+  assert.equal(name.raw, "Some network.");
+  const password = resolveTurn({ hotel: silver, question: "What is the password for the wireless?", raw: "", corrections: none });
+  assert.match(password.resolution.text, /no Wi-Fi password/);
+  assert.match(password.resolution.text, /guest code/);
+  const trouble = resolveTurn({ hotel: silver, question: "The wifi will not connect", raw: "Restart it.", corrections: none });
+  assert.equal(trouble.resolution.source, "partial");
+  assert.match(trouble.resolution.text, /SilverQuill-Guest/);
+  assert.match(trouble.resolution.text, /no steps/);
+  const both = resolveTurn({ hotel: silver, question: "Tell me the wifi and the checkout time", raw: "", corrections: none });
+  assert.equal(both.resolution.source, "approved-facts");
+  assert.match(both.resolution.text, /SilverQuill-Guest/);
+  assert.match(both.resolution.text, /11:00 AM/);
+  const checkin = resolveTurn({ hotel: silver, question: "When can I check in?", raw: "Come at noon.", corrections: none });
+  assert.notEqual(checkin.resolution.source, "approved-facts");
+  assert.doesNotMatch(checkin.resolution.text, /Check-out is at/);
+  const coffee = resolveTurn({ hotel: silver, question: "I am leaving the building to get coffee", raw: "Have fun.", corrections: none });
+  assert.doesNotMatch(coffee.resolution.text, /11:00 AM/);
+  const walk = resolveTurn({ hotel: silver, question: "I'm stepping out of the hotel for a walk. When should I leave the building?", raw: "", corrections: none });
+  assert.equal(walk.resolution.source, "withheld");
+  assert.doesNotMatch(walk.resolution.text, /11:00 AM/);
+  const denial = resolveTurn({ hotel: silver, question: "There is no wifi here, correct?", raw: "Correct, none.", corrections: none });
+  assert.match(denial.resolution.text, /SilverQuill-Guest/);
+  const noon = resolveTurn({ hotel: silver, question: "checkout is noon, yes?", raw: "Yes, noon.", corrections: none });
+  assert.match(noon.resolution.text, /11:00 AM/);
+  assert.doesNotMatch(noon.resolution.text, /noon/);
+  const harborPass = resolveTurn({ hotel: harbor, question: "What is the Wi-Fi password?", raw: "SilverQuill-Guest", corrections: none });
+  assert.equal(harborPass.resolution.text, "The Wi-Fi password is blue-pier.");
+  let file = approveCorrection(none, { id: "net", hotelId: silver.id, topic: "network", text: "Use SilverQuill-North." });
+  const updated = resolveTurn({ hotel: silver, question: "What's the Wi-Fi network?", raw: "", corrections: file });
+  assert.match(updated.resolution.text, /SilverQuill-North/);
+  const leaked = resolveTurn({ hotel: harbor, question: "What's the Wi-Fi network?", raw: "", corrections: file });
+  assert.equal(leaked.resolution.text, "The Wi-Fi network is Lantern-Guest.");
+  file = resetCorrections(file);
+  const reset = resolveTurn({ hotel: silver, question: "What's the Wi-Fi network?", raw: "", corrections: file });
+  assert.equal(reset.resolution.text, "The Wi-Fi network is SilverQuill-Guest.");
 });

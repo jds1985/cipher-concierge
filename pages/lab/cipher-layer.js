@@ -1,14 +1,17 @@
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import silver from "../../tests/fixtures/silver-quill-browser.json";
+import harbor from "../../tests/fixtures/harbor-lantern.json";
 import heldout from "../../tests/fixtures/cipher-layer-heldout.json";
+import factsHeldout from "../../tests/fixtures/cipher-facts-heldout-b.json";
 import {
   CIPHER_2_STANDIN, emptyCorrections, approveCorrection, resetCorrections, exportCorrections,
-  groundingSystem, resolveTurn, contextReport, classifyTurn,
+  groundingSystem, resolveTurn, contextReport, classifyTurn, gradeFactAnswer,
 } from "../../lib/cipher-layer.js";
 
 const KEY = "cipher-layer-corrections-v1";
 const scopeHotel = heldout.scopeHotel;
+const hotels = { [silver.id]: silver, [harbor.id]: harbor };
 
 function openEngine() {
   return new Promise((resolve, reject) => {
@@ -53,7 +56,7 @@ export async function getServerSideProps() {
 export default function CipherLayerLab() {
   const [hotel, setHotel] = useState(silver);
   const [file, setFile] = useState(() => emptyCorrections(silver.id));
-  const [question, setQuestion] = useState(heldout.items[0].question);
+  const [question, setQuestion] = useState("Type a question.");
   const [raw, setRaw] = useState("");
   const [status, setStatus] = useState("No model text yet.");
   const [topic, setTopic] = useState("network");
@@ -171,6 +174,43 @@ export default function CipherLayerLab() {
     }
   }
 
+  async function runFactSample() {
+    if (busy) return;
+    setBusy(true);
+    setStatus("Generating the frozen Wi-Fi and checkout sample on the 135M stand-in.");
+    try {
+      const engine = await openEngine();
+      const sample = factsHeldout.items.filter((item) => factsHeldout.realGenerationIds.includes(item.id));
+      const out = [];
+      for (const item of sample) {
+        const hotelForItem = hotels[item.hotel];
+        await engine.reset();
+        await engine.reseed();
+        const system = groundingSystem(hotelForItem, item.question, emptyCorrections(hotelForItem.id));
+        const systemTokens = await engine.tokenize(system);
+        const systemCall = await engine.system(system);
+        const done = await engine.generate(item.question);
+        const graded = gradeFactAnswer({ hotel: hotelForItem, question: item.question, raw: done.text || "", corrections: emptyCorrections(hotelForItem.id), expect: item });
+        out.push({
+          id: item.id, question: item.question, expected: item.bucket, bucket: graded.bucket,
+          raw: done.text || "", layer: graded.text, source: graded.source, intents: graded.intents,
+          context: contextReport({ systemTokens: systemTokens.n, systemBegin: systemCall.nBegin, systemPast: systemCall.nPast, userBegin: done.stats.promptTokens, userPast: done.stats.nPastAfter }),
+          stats: done.stats,
+        });
+        setRows(out.slice());
+      }
+      const fetches = await engine.fetches();
+      window.__FACT_ROWS = out;
+      window.__FACT_FETCHES = fetches.fetches;
+      setStatus("Fact sample finished. The layer grade is separate from the raw model text.");
+      engine.worker.terminate();
+    } catch (err) {
+      setStatus("The fact sample stopped. " + (err && err.message ? err.message : String(err)));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   function addCorrection() {
     if (!topic.trim() || !correction.trim()) { setStatus("A vetted correction needs a topic and text."); return; }
     save(approveCorrection(file, { id: "c-" + Date.now(), hotelId: hotel.id, topic, text: correction }));
@@ -185,7 +225,7 @@ export default function CipherLayerLab() {
     a.click();
   }
 
-  const view = raw ? resolveTurn({ hotel, question, raw, corrections: file }) : null;
+  const view = question.trim() && question !== "Type a question." ? resolveTurn({ hotel, question, raw, corrections: file }) : null;
   const visibleCorrections = file.corrections.filter((item) => item.hotelId === hotel.id);
   const questionInRequests = network ? [...network.pageFetches, ...network.workerFetches.map((row) => row.url + " " + (row.bodyChars || ""))].some((line) => line.includes(network.question)) : null;
 
@@ -197,10 +237,12 @@ export default function CipherLayerLab() {
         <p style={box}>{CIPHER_2_STANDIN.displayName}. File {CIPHER_2_STANDIN.file}, {CIPHER_2_STANDIN.bytes} bytes, sha256 {CIPHER_2_STANDIN.sha256}. {CIPHER_2_STANDIN.provenance}</p>
         <p role="status" style={box}>{status}</p>
         <button type="button" style={hotel.id === silver.id ? btn : secondary} onClick={() => chooseHotel(silver)}>Hotel {silver.name}</button>
+        <button type="button" style={hotel.id === harbor.id ? btn : secondary} onClick={() => chooseHotel(harbor)}>Hotel {harbor.name}</button>
         <button type="button" style={hotel.id === scopeHotel.id ? btn : secondary} onClick={() => chooseHotel(scopeHotel)}>Hotel {scopeHotel.name}</button>
         <label style={label}>Question<textarea value={question} onChange={(e) => setQuestion(e.target.value)} rows={3} style={field} /></label>
         <button type="button" style={btn} onClick={generate} disabled={busy}>Generate with Cipher</button>
         <button type="button" style={btn} onClick={runFrozen} disabled={busy}>Run the frozen questions</button>
+        <button type="button" style={btn} onClick={runFactSample} disabled={busy}>Run four real Wi-Fi and checkout questions</button>
         {context ? (
           <section style={card}>
             <h2>Context the runtime reported</h2>
@@ -213,7 +255,7 @@ export default function CipherLayerLab() {
         {view ? (
           <section style={card}>
             <h2>Raw model</h2>
-            <p style={rawBox}>{view.raw || "No raw text."}</p>
+            <p style={rawBox}>{view.raw || "No raw text yet."}</p>
             <h2>{view.resolution.label}</h2>
             <p style={rawBox}>{view.resolution.text}</p>
           </section>
@@ -222,10 +264,10 @@ export default function CipherLayerLab() {
           <section key={row.id} style={card}>
             <h2>{row.id}</h2>
             <p>{row.question}</p>
-            <p>Layer source: {row.source}. Raw text contains the required fact: {row.rawComplete === null ? "not a fact score" : row.rawComplete ? "yes" : "no"}. Counted as a factual success: {row.countedAsFactualSuccess ? "yes" : "no"}.</p>
+            <p>Layer source: {row.source || row.bucket}. {row.bucket ? "Fact grade " + row.bucket + ". Expected " + row.expected + "." : ""} {row.rawComplete === undefined ? "" : "Raw text contains the required fact: " + (row.rawComplete === null ? "not a fact score" : row.rawComplete ? "yes" : "no") + "."}</p>
             <p style={rawBox}>With the hotel context: {row.raw}</p>
             {row.bareRaw != null ? <p style={rawBox}>Question only, no hotel context: {row.bareRaw}</p> : null}
-            <p style={rawBox}>{row.label} {row.resolutionText}</p>
+            <p style={rawBox}>{(row.source === "approved-facts" || row.source === "partial") ? "Approved hotel facts, not model-generated." : (row.label || row.source)} {row.resolutionText || row.layer}</p>
             <p>nPast before the question {row.stats.nPastBefore}, after {row.stats.nPastAfter}. Question tokens added {row.stats.promptTokens}. Generate {Math.round(row.stats.totalMs)} ms.</p>
           </section>
         ))}
