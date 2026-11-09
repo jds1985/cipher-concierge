@@ -6,6 +6,7 @@ import { guardAnswer } from "../lib/factpack.js";
 import {
   planSmolSet, planSmol, diagnoseGeneration, safetyPanel, privacyClaim, runSmolOnEngine,
   bareReadyPlan, hotelReadyPlan, freshCompoundPlan, paraphrasePlans, smolLabEnabled, SMOL_RUNTIME, READY_TEXT,
+  pinnedModelUrl, createEngineSlot, isDisposedRuntimeError,
 } from "../lib/smol-lab.js";
 
 const plans = planSmolSet(silver);
@@ -103,6 +104,47 @@ test("full text and the two-sentence cut can disagree, and 911 is rejected only 
   assert.equal(safetyPanel(byId.emergency).experimental, false);
 });
 
+test("a disposed engine is not a generation and is not asked to continue", async () => {
+  let creates = 0;
+  const engine = {
+    async resetChat() { throw new Error("The current Object has already been disposed"); },
+    chat: { completions: { async create() { creates += 1; return { choices: [{ message: { content: "should not run" } }] }; } } },
+  };
+  const result = await runSmolOnEngine(engine, [hotelReadyPlan(silver)], SMOL_RUNTIME, { liveEngine: true, hotel: silver });
+  const row = result.rows[0];
+  assert.equal(creates, 0);
+  assert.equal(row.modelInvoked, false);
+  assert.equal(row.realGeneration, false);
+  assert.equal(row.runtimeFailed, true);
+  assert.equal(row.createCalled, false);
+  assert.equal(row.finishReason, null);
+  assert.equal(row.usage, null);
+  assert.equal(row.raw, "");
+  assert.equal(row.diagnosis.generatedText, false);
+  assert.equal(isDisposedRuntimeError(row.error), true);
+  assert.match(row.messages[0].content, /Silver Quill/);
+  assert.equal(result.realGeneration, false);
+});
+
+test("a stale engine token cannot publish over a newer load", () => {
+  const slot = createEngineSlot();
+  const first = slot.begin();
+  const second = slot.begin();
+  assert.equal(slot.publish(first, { id: "old" }), false);
+  assert.equal(slot.publish(second, { id: "new" }), true);
+  assert.equal(slot.current().id, "new");
+  const token = slot.token();
+  slot.invalidate();
+  assert.equal(slot.isCurrent(token), false);
+  assert.equal(slot.current(), null);
+});
+
+test("the requested model url carries the claimed revision", () => {
+  const url = pinnedModelUrl(SMOL_RUNTIME);
+  assert.match(url, new RegExp(SMOL_RUNTIME.modelRevision));
+  assert.doesNotMatch(url, /resolve\/main/);
+});
+
 test("the noon guard on main still rejects a digit-free invented time", () => {
   const facts = [{ text: "Check-out is at 11:00 AM." }];
   assert.equal(guardAnswer("Check-out is at noon.", facts, "When do I leave?", "Silver Quill Inn").reason, "unverified-time");
@@ -128,6 +170,8 @@ test("the lab stays off in production and the page does not call generation a fa
   assert.match(page, /Ready, with the hotel instructions/);
   assert.match(page, /data-run=\{id\}/);
   assert.match(page, /Not run yet/);
+  assert.match(page, /Runtime failure/);
+  assert.match(page, /pinnedModelRecord/);
   assert.doesNotMatch(page, /\{next\.label\}/);
   const prod = config.slice(config.indexOf("const csp ="), config.indexOf("const labCsp"));
   assert.doesNotMatch(prod, /huggingface/);

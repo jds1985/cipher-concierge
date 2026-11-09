@@ -37,7 +37,16 @@ test("each button sends its own messages and keeps both ready results", { timeou
     await page.evaluateOnNewDocument(() => {
       const calls = [];
       window.__SMOL_CALLS = calls;
-      window.__SMOL_CREATE_ENGINE = async () => ({
+      window.__SMOL_CREATE_ENGINE = async () => {
+        if (sessionStorage.getItem("smol-mode") === "disposed") {
+          return {
+            async resetChat() { throw new Error("The current Object has already been disposed"); },
+            interruptGenerate() {},
+            async unload() {},
+            chat: { completions: { async create() { calls.push("create"); throw new Error("should not create"); } } },
+          };
+        }
+        return {
         async resetChat() {
           calls.push("reset");
           await new Promise((resolve) => setTimeout(resolve, 40));
@@ -52,7 +61,8 @@ test("each button sends its own messages and keeps both ready results", { timeou
             usage: { prompt_tokens: hotel ? 90 : 38, completion_tokens: 4, total_tokens: 42, extra: { e2e_latency_s: 0.1, time_to_first_token_s: 0.05 } },
           };
         } } },
-      });
+      };
+      };
     });
     await page.goto(origin + "/lab/smol", { waitUntil: "networkidle0", timeout: 30000 });
     await page.click("button");
@@ -75,6 +85,22 @@ test("each button sends its own messages and keeps both ready results", { timeou
     assert.match(await page.$eval("[data-test=ready-bare]", (node) => node.innerText), /Hotel system sent: no/);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1), true);
     assert.deepEqual(await page.evaluate(() => window.__SMOL_CALLS), ["reset", "bare", "reset", "hotel", "reset", "hotel"]);
+    await page.evaluate(() => sessionStorage.setItem("smol-mode", "disposed"));
+    await page.reload({ waitUntil: "networkidle0" });
+    await page.click("button");
+    await page.waitForSelector("[data-run=ready-hotel]");
+    await page.click("[data-run=ready-hotel]");
+    await page.waitForFunction(() => document.body.innerText.includes("Runtime failure. This is not a model answer."), { timeout: 10000 });
+    const after = await page.evaluate(() => ({
+      calls: window.__SMOL_CALLS,
+      text: document.body.innerText,
+      load: [...document.querySelectorAll("button")].some((button) => button.textContent === "Load the model"),
+    }));
+    assert.deepEqual(after.calls, []);
+    assert.match(after.text, /already been disposed/);
+    assert.match(after.text, /Generated text: no/);
+    assert.match(after.text, /Model invoked: no/);
+    assert.equal(after.load, true);
   } finally {
     await browser.close();
     child.kill("SIGTERM");
