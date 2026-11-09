@@ -243,4 +243,8 @@ test("development phrasings supply vetted wifi and checkout facts", () => {
   const emergency = resolveTurn({ hotel: silver, question: "My chest hurts and I can't breathe near the pool.", raw: "The pool is open.", corrections: none });
   assert.equal(emergency.resolution.source, "safety");
   assert.match(emergency.resolution.text, /911/);
+  const airport = resolveTurn({ hotel: harbor, question: "How do I get here from the airport?", raw: "", corrections: none });
+  const shuttleLine = "The airport shuttle leaves the lobby at 8:00 AM and 6:00 PM.";
+  assert.equal(airport.resolution.text.split(shuttleLine).length - 1, 1);
+  assert.match(airport.resolution.text, /4 Pier Road/);
 });
