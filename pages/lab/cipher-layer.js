@@ -1,51 +1,78 @@
 import Head from "next/head";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import silver from "../../tests/fixtures/silver-quill-browser.json";
 import harbor from "../../tests/fixtures/harbor-lantern.json";
 import heldout from "../../tests/fixtures/cipher-layer-heldout.json";
 import factsHeldout from "../../tests/fixtures/cipher-facts-heldout-b.json";
 import {
   CIPHER_2_STANDIN, emptyCorrections, approveCorrection, resetCorrections, exportCorrections,
-  groundingSystem, resolveTurn, contextReport, classifyTurn, gradeFactAnswer,
+  groundingSystem, resolveTurn, contextReport, gradeFactAnswer,
 } from "../../lib/cipher-layer.js";
 
 const KEY = "cipher-layer-corrections-v1";
-const scopeHotel = heldout.scopeHotel;
-const hotels = { [silver.id]: silver, [harbor.id]: harbor };
+const FOUR = factsHeldout.realGenerationIds.map((id) => factsHeldout.items.find((item) => item.id === id)).filter(Boolean);
+const HOTELS = { [silver.id]: silver, [harbor.id]: harbor, [heldout.scopeHotel.id]: heldout.scopeHotel };
+const LOAD_LIMIT_MS = 120000;
+const STALL_MS = 45000;
+const QUESTION_LIMIT_MS = 60000;
 
-function openEngine() {
-  return new Promise((resolve, reject) => {
-    const worker = new Worker("/lab/cipher-layer-worker.js");
+function plainResult(source) {
+  if (source === "approved-facts") return "Complete answer.";
+  if (source === "partial") return "Partial answer. Part of this question is not in the hotel file.";
+  if (source === "withheld") return "Not answered from the hotel file.";
+  if (source === "safety") return "Safety message. Not the model.";
+  return "The model ran. This is not an approved hotel fact.";
+}
+
+function openEngine(onProgress) {
+  const worker = new Worker("/lab/cipher-layer-worker.js");
+  const promise = new Promise((resolve, reject) => {
     let seq = 0;
     const pending = new Map();
-    worker.onerror = (event) => reject(new Error(event.message || "worker failed"));
+    let failed = false;
+    const fail = (error) => {
+      if (failed) return;
+      failed = true;
+      reject(error instanceof Error ? error : new Error(String(error)));
+    };
+    worker.onerror = (event) => fail(new Error(event.message || "The model program failed."));
     worker.onmessage = (event) => {
       const message = event.data;
-      if (message.type === "token") return;
+      if (message.type === "progress" || message.type === "token") {
+        if (onProgress) onProgress(message);
+        return;
+      }
       const waiter = pending.get(message.id);
       if (!waiter) return;
       pending.delete(message.id);
       if (message.type === "error") waiter.reject(new Error(message.msg));
       else waiter.resolve(message);
     };
-    const call = (message) => new Promise((resolveCall, rejectCall) => {
-      const id = message.id || ++seq;
-      pending.set(id, { resolve: resolveCall, reject: rejectCall });
+    const call = (message, ms, label) => new Promise((resolveCall, rejectCall) => {
+      const id = ++seq;
+      const timer = setTimeout(() => {
+        pending.delete(id);
+        rejectCall(new Error(label + " took longer than " + Math.round(ms / 1000) + " seconds."));
+      }, ms);
+      pending.set(id, {
+        resolve: (value) => { clearTimeout(timer); resolveCall(value); },
+        reject: (error) => { clearTimeout(timer); rejectCall(error); },
+      });
       worker.postMessage({ ...message, id });
     });
-    call({ type: "load", url: "/cipher/models/sft.ctern", size: CIPHER_2_STANDIN.bytes, ctx: 1024, temp: 0.3, topP: 0.9, rep: 1.15, seed: 1 })
-      .then(() => resolve({
+    call({ type: "load", url: "/cipher/models/sft.ctern", size: CIPHER_2_STANDIN.bytes, ctx: 1024, temp: 0.3, topP: 0.9, rep: 1.15, seed: 1 }, LOAD_LIMIT_MS, "Loading the model").then(() => resolve({
         worker,
-        tokenize: (text) => call({ type: "tokenize", text }),
-        reset: () => call({ type: "reset" }),
-        reseed: () => call({ type: "reseed", seed: 1, temp: 0.3, topP: 0.9, rep: 1.15 }),
-        system: (text) => call({ type: "system", text }),
-        generate: (text) => call({ type: "generate", text, maxNew: 64 }),
-        fetches: () => call({ type: "fetches" }),
+        reset: () => call({ type: "reset" }, 15000, "Reset"),
+        reseed: () => call({ type: "reseed", seed: 1, temp: 0.3, topP: 0.9, rep: 1.15 }, 15000, "Reset"),
+        tokenize: (text) => call({ type: "tokenize", text }, 15000, "Reading the prompt"),
+        system: (text) => call({ type: "system", text }, 20000, "Sending the hotel facts"),
+        generate: (text) => call({ type: "generate", text, maxNew: 64 }, QUESTION_LIMIT_MS, "The model answer"),
+        fetches: () => call({ type: "fetches" }, 10000, "Reading the request list"),
         stop: () => worker.postMessage({ type: "stop" }),
-      }))
-      .catch(reject);
+      }), fail);
   });
+  promise.worker = worker;
+  return promise;
 }
 
 export async function getServerSideProps() {
@@ -56,240 +83,252 @@ export async function getServerSideProps() {
 export default function CipherLayerLab() {
   const [hotel, setHotel] = useState(silver);
   const [file, setFile] = useState(() => emptyCorrections(silver.id));
-  const [question, setQuestion] = useState("Type a question.");
-  const [raw, setRaw] = useState("");
-  const [status, setStatus] = useState("No model text yet.");
+  const [status, setStatus] = useState("Not started.");
+  const [phase, setPhase] = useState("not-started");
+  const [rows, setRows] = useState([]);
+  const [extraQuestion, setExtraQuestion] = useState("");
+  const [extra, setExtra] = useState(null);
   const [topic, setTopic] = useState("network");
   const [correction, setCorrection] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [context, setContext] = useState(null);
-  const [rows, setRows] = useState([]);
-  const [network, setNetwork] = useState(null);
+  const [diagnostics, setDiagnostics] = useState(null);
+  const busyRef = useRef(false);
+  const statusLog = useRef(["Not started."]);
 
   useEffect(() => {
+    document.documentElement.style.background = "#000";
+    document.body.style.background = "#000";
+    document.body.style.color = "#fff";
+    document.body.style.margin = "0";
+    document.body.style.overflowX = "hidden";
     const saved = localStorage.getItem(KEY);
     if (!saved) return;
     try { setFile(JSON.parse(saved)); } catch { /* keep the empty vetted file */ }
   }, []);
+
+  function say(text, nextPhase) {
+    if (statusLog.current[statusLog.current.length - 1] !== text) {
+      statusLog.current = statusLog.current.concat(text);
+      window.__STATUS_LOG = statusLog.current;
+      setStatus(text);
+    }
+    if (nextPhase) setPhase(nextPhase);
+  }
 
   function save(next) {
     setFile(next);
     localStorage.setItem(KEY, JSON.stringify(next));
   }
 
-  function chooseHotel(next) {
-    setHotel(next);
-    setFile((current) => {
-      const updated = { ...current, hotelId: next.id };
-      localStorage.setItem(KEY, JSON.stringify(updated));
-      return updated;
+  async function loadEngine() {
+    if (window.__CIPHER_FORCE_ERROR) throw new Error("The test was stopped on purpose.");
+    let lastBeat = Date.now();
+    let rejectStall = () => {};
+    const stallPromise = new Promise((_, reject) => { rejectStall = reject; });
+    const stallTimer = setInterval(() => {
+      if (Date.now() - lastBeat > STALL_MS) rejectStall(new Error("Loading stalled. No new progress for 45 seconds."));
+    }, 1000);
+    const pending = openEngine((message) => {
+      lastBeat = Date.now();
+      if (message.type === "progress" && message.phase === "program") say("Loading the program that runs the model.", "loading");
+      if (message.type === "progress" && message.phase === "model") {
+        const got = Math.round((message.got || 0) / 1048576);
+        const total = Math.round((message.size || 0) / 1048576);
+        say("Loading the model. " + got + " of " + total + " megabytes.", "loading");
+      }
     });
+    try {
+      return await Promise.race([pending, stallPromise]);
+    } catch (err) {
+      if (pending.worker) pending.worker.terminate();
+      throw err;
+    } finally {
+      rejectStall = () => {};
+      clearInterval(stallTimer);
+    }
   }
 
-  async function generate() {
-    if (busy) return;
-    setBusy(true);
-    setStatus("Loading Cipher 2.0 (135M stand-in).");
-    const pageFetches = [];
-    const orig = window.fetch;
-    window.fetch = async (...args) => {
-      const url = typeof args[0] === "string" ? args[0] : (args[0] && args[0].url) || "";
-      pageFetches.push(String(url));
-      return orig(...args);
-    };
-    try {
-      const engine = await openEngine();
-      await engine.reset();
-      const system = groundingSystem(hotel, question, file);
-      const systemTokens = await engine.tokenize(system);
-      const questionTokens = await engine.tokenize(question);
-      const systemCall = await engine.system(system);
-      const done = await engine.generate(question);
-      const produced = done.text || "";
-      const report = contextReport({
+  async function askModel(engine, itemHotel, question, corrections) {
+    await engine.reset();
+    await engine.reseed();
+    const system = groundingSystem(itemHotel, question, corrections);
+    const systemTokens = await engine.tokenize(system);
+    const systemCall = await engine.system(system);
+    const done = await engine.generate(question);
+    const raw = done.text || "";
+    const resolution = resolveTurn({ hotel: itemHotel, question, raw, corrections });
+    return {
+      question,
+      raw,
+      answer: resolution.resolution.text,
+      source: resolution.resolution.source,
+      label: plainResult(resolution.resolution.source),
+      context: contextReport({
         systemTokens: systemTokens.n,
         systemBegin: systemCall.nBegin,
         systemPast: systemCall.nPast,
         userBegin: done.stats.promptTokens,
         userPast: done.stats.nPastAfter,
-      });
-      const workerFetches = await engine.fetches();
-      const result = resolveTurn({ hotel, question, raw: produced, corrections: file });
-      setRaw(produced);
-      setContext({ ...report, systemChars: system.length, questionTokens: questionTokens.n, stats: done.stats });
-      setNetwork({ pageFetches, workerFetches: workerFetches.fetches, question });
-      setStatus(result.resolution.label + " " + result.resolution.text);
-      const questionSeen = [...pageFetches, ...workerFetches.fetches.map((row) => row.url)].some((line) => String(line).includes(question));
-      window.__LAYER_RESULT = { ...result, generated: true, context: report, stats: done.stats, network: { pageFetches, workerFetches: workerFetches.fetches, questionSeen } };
-      engine.stop();
-      engine.worker.terminate();
-    } catch (err) {
-      setStatus("Cipher did not generate. " + (err && err.message ? err.message : String(err)));
-    } finally {
-      window.fetch = orig;
-      setBusy(false);
-    }
+      }),
+      stats: done.stats,
+      ran: true,
+    };
   }
 
-  async function runFrozen() {
-    if (busy) return;
-    setBusy(true);
-    setStatus("Running the frozen questions on the 135M stand-in.");
+  async function start() {
+    if (busyRef.current) return;
+    busyRef.current = true;
+    setRows([]);
+    setExtra(null);
+    say("Loading the model. Waiting for the first bytes.", "loading");
+    let engine = null;
+    const finished = [];
     try {
-      const engine = await openEngine();
-      const out = [];
-      for (const item of heldout.items) {
-        await engine.reset();
-        await engine.reseed();
-        const bare = item.id === "wifi-paraphrase" ? await engine.generate(item.question) : null;
-        await engine.reset();
-        await engine.reseed();
-        const system = groundingSystem(silver, item.question, emptyCorrections(silver.id));
-        const systemTokens = await engine.tokenize(system);
-        const systemCall = await engine.system(system);
-        const done = await engine.generate(item.question);
-        const graded = classifyTurn({ hotel: silver, question: item.question, raw: done.text || "", corrections: emptyCorrections(silver.id), kind: item.kind });
-        out.push({
-          id: item.id, kind: item.kind, question: item.question,
-          raw: done.text || "",
-          bareRaw: bare ? bare.text || "" : null,
-          source: graded.source, label: graded.label, resolutionText: graded.resolutionText,
-          rawComplete: graded.rawComplete, countedAsFactualSuccess: graded.countedAsFactualSuccess,
-          context: contextReport({
-            systemTokens: systemTokens.n, systemBegin: systemCall.nBegin, systemPast: systemCall.nPast,
-            userBegin: done.stats.promptTokens, userPast: done.stats.nPastAfter,
-          }),
-          stats: done.stats,
-          bareStats: bare ? bare.stats : null,
-        });
-        setRows(out.slice());
-      }
-      window.__LAYER_ROWS = out;
-      setStatus("Frozen run finished. A withheld row is not a correct answer.");
-      engine.worker.terminate();
-    } catch (err) {
-      setStatus("The frozen run stopped. " + (err && err.message ? err.message : String(err)));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function runFactSample() {
-    if (busy) return;
-    setBusy(true);
-    setStatus("Generating the frozen Wi-Fi and checkout sample on the 135M stand-in.");
-    try {
-      const engine = await openEngine();
-      const sample = factsHeldout.items.filter((item) => factsHeldout.realGenerationIds.includes(item.id));
-      const out = [];
-      for (const item of sample) {
-        const hotelForItem = hotels[item.hotel];
-        await engine.reset();
-        await engine.reseed();
-        const system = groundingSystem(hotelForItem, item.question, emptyCorrections(hotelForItem.id));
-        const systemTokens = await engine.tokenize(system);
-        const systemCall = await engine.system(system);
-        const done = await engine.generate(item.question);
-        const graded = gradeFactAnswer({ hotel: hotelForItem, question: item.question, raw: done.text || "", corrections: emptyCorrections(hotelForItem.id), expect: item });
-        out.push({
-          id: item.id, question: item.question, expected: item.bucket, bucket: graded.bucket,
-          raw: done.text || "", layer: graded.text, source: graded.source, intents: graded.intents,
-          context: contextReport({ systemTokens: systemTokens.n, systemBegin: systemCall.nBegin, systemPast: systemCall.nPast, userBegin: done.stats.promptTokens, userPast: done.stats.nPastAfter }),
-          stats: done.stats,
-        });
-        setRows(out.slice());
+      engine = await loadEngine();
+      for (let i = 0; i < FOUR.length; i += 1) {
+        const item = FOUR[i];
+        say("Running question " + (i + 1) + " of " + FOUR.length + ". " + item.question, "running");
+        if (window.__CIPHER_FAIL_ON === i + 1) throw new Error("Stopped on purpose during question " + (i + 1) + ".");
+        const itemHotel = HOTELS[item.hotel];
+        const row = await askModel(engine, itemHotel, item.question, emptyCorrections(itemHotel.id));
+        const graded = gradeFactAnswer({ hotel: itemHotel, question: item.question, raw: row.raw, corrections: emptyCorrections(itemHotel.id), expect: item });
+        finished.push({ ...row, grade: graded.bucket, number: i + 1 });
+        setRows(finished.slice());
       }
       const fetches = await engine.fetches();
-      window.__FACT_ROWS = out;
-      window.__FACT_FETCHES = fetches.fetches;
-      setStatus("Fact sample finished. The layer grade is separate from the raw model text.");
-      engine.worker.terminate();
+      setDiagnostics({ fetches: fetches.fetches, rows: finished });
+      window.__FACT_ROWS = finished;
+      say("Completed. All 4 questions finished.", "completed");
     } catch (err) {
-      setStatus("The fact sample stopped. " + (err && err.message ? err.message : String(err)));
+      const message = err && err.message ? err.message : String(err);
+      say("Failed. " + message + " Finished questions are still listed below.", "failed");
+      window.__FACT_ERROR = message;
+      window.__FACT_ROWS = finished.slice();
     } finally {
-      setBusy(false);
+      if (engine) {
+        try { engine.stop(); engine.worker.terminate(); } catch { /* the worker is already gone */ }
+      }
+      busyRef.current = false;
     }
   }
 
-  function addCorrection() {
-    if (!topic.trim() || !correction.trim()) { setStatus("A vetted correction needs a topic and text."); return; }
-    save(approveCorrection(file, { id: "c-" + Date.now(), hotelId: hotel.id, topic, text: correction }));
-    setCorrection("");
+  async function askOne() {
+    if (busyRef.current) return;
+    const question = extraQuestion.trim();
+    if (!question) { say("Type a question first.", phase); return; }
+    busyRef.current = true;
+    setExtra(null);
+    say("Loading the model for your question.", "loading");
+    let engine = null;
+    try {
+      engine = await loadEngine();
+      say("Running your question.", "running");
+      const row = await askModel(engine, hotel, question, file);
+      setExtra(row);
+      window.__ONE_RESULT = row;
+      say("Completed. Your question finished.", "completed");
+    } catch (err) {
+      say("Failed. " + (err && err.message ? err.message : String(err)), "failed");
+    } finally {
+      if (engine) {
+        try { engine.stop(); engine.worker.terminate(); } catch { /* already stopped */ }
+      }
+      busyRef.current = false;
+    }
   }
 
-  function download() {
-    const blob = new Blob([exportCorrections(file)], { type: "application/json" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "cipher-corrections.json";
-    a.click();
-  }
-
-  const view = question.trim() && question !== "Type a question." ? resolveTurn({ hotel, question, raw, corrections: file }) : null;
-  const visibleCorrections = file.corrections.filter((item) => item.hotelId === hotel.id);
-  const questionInRequests = network ? [...network.pageFetches, ...network.workerFetches.map((row) => row.url + " " + (row.bodyChars || ""))].some((line) => line.includes(network.question)) : null;
+  const buttonLabel = phase === "failed" ? "Try again" : phase === "loading" || phase === "running" ? "Test is running" : phase === "completed" ? "Run the test again" : "Start the four-question test";
 
   return (
     <>
-      <Head><title>Cipher correction layer</title><meta name="robots" content="noindex" /></Head>
+      <Head><title>Hotel answer test</title><meta name="robots" content="noindex" /></Head>
+      <style>{`
+        html, body { background: #000; color: #fff; overflow-x: hidden; margin: 0; }
+        .wisps { display: none; }
+        button:focus, summary:focus, textarea:focus, input:focus, a:focus { outline: 4px solid #fff; outline-offset: 3px; }
+        summary { font-size: 24px; font-weight: 700; padding: 16px 0; }
+      `}</style>
       <main style={page}>
-        <h1 style={title}>Cipher correction layer</h1>
-        <p style={box}>{CIPHER_2_STANDIN.displayName}. File {CIPHER_2_STANDIN.file}, {CIPHER_2_STANDIN.bytes} bytes, sha256 {CIPHER_2_STANDIN.sha256}. {CIPHER_2_STANDIN.provenance}</p>
-        <p role="status" style={box}>{status}</p>
-        <button type="button" style={hotel.id === silver.id ? btn : secondary} onClick={() => chooseHotel(silver)}>Hotel {silver.name}</button>
-        <button type="button" style={hotel.id === harbor.id ? btn : secondary} onClick={() => chooseHotel(harbor)}>Hotel {harbor.name}</button>
-        <button type="button" style={hotel.id === scopeHotel.id ? btn : secondary} onClick={() => chooseHotel(scopeHotel)}>Hotel {scopeHotel.name}</button>
-        <label style={label}>Question<textarea value={question} onChange={(e) => setQuestion(e.target.value)} rows={3} style={field} /></label>
-        <button type="button" style={btn} onClick={generate} disabled={busy}>Generate with Cipher</button>
-        <button type="button" style={btn} onClick={runFrozen} disabled={busy}>Run the frozen questions</button>
-        <button type="button" style={btn} onClick={runFactSample} disabled={busy}>Run four real Wi-Fi and checkout questions</button>
-        {context ? (
-          <section style={card}>
-            <h2>Context the runtime reported</h2>
-            <p style={rawBox}>System tokenize {context.systemTokens}. System begin added {context.systemBegin} and left nPast at {context.systemPast}. Question tokenize {context.questionTokens}. Question begin added {context.userBegin} and left nPast at {context.userPast}. System tokens still in context: {context.systemRemains ? "yes" : "no"}.</p>
-            <p>{context.note}</p>
-          </section>
-        ) : null}
-        {network ? <p style={box}>Question text inside a logged page or worker request: {questionInRequests ? "yes" : "no"}. Worker requests logged: {network.workerFetches.length}. This is the worker fetch list and the page fetch list, not a packet capture.</p> : null}
-        <label style={label}>Raw model text<textarea value={raw} onChange={(e) => setRaw(e.target.value)} rows={4} style={field} /></label>
-        {view ? (
-          <section style={card}>
-            <h2>Raw model</h2>
-            <p style={rawBox}>{view.raw || "No raw text yet."}</p>
-            <h2>{view.resolution.label}</h2>
-            <p style={rawBox}>{view.resolution.text}</p>
-          </section>
-        ) : null}
+        <h1 style={title}>Hotel answer test</h1>
+        <p id="purpose" style={purpose}>Press Start. Cipher answers four hotel questions. Each result shows the approved answer, and Cipher&apos;s own words stay available underneath.</p>
+        <p id="status" role="status" aria-live="assertive" aria-atomic="true" style={statusBox}>{status}</p>
+        <button type="button" style={startBtn} aria-disabled={phase === "loading" || phase === "running"} onClick={start}>{buttonLabel}</button>
+        <p style={note}>This test uses Silver Quill Inn.</p>
         {rows.map((row) => (
-          <section key={row.id} style={card}>
-            <h2>{row.id}</h2>
+          <section key={row.number} style={card}>
+            <h2 style={questionTitle}>Question {row.number} of 4. Cipher finished this question.</h2>
             <p>{row.question}</p>
-            <p>Layer source: {row.source || row.bucket}. {row.bucket ? "Fact grade " + row.bucket + ". Expected " + row.expected + "." : ""} {row.rawComplete === undefined ? "" : "Raw text contains the required fact: " + (row.rawComplete === null ? "not a fact score" : row.rawComplete ? "yes" : "no") + "."}</p>
-            <p style={rawBox}>With the hotel context: {row.raw}</p>
-            {row.bareRaw != null ? <p style={rawBox}>Question only, no hotel context: {row.bareRaw}</p> : null}
-            <p style={rawBox}>{(row.source === "approved-facts" || row.source === "partial") ? "Approved hotel facts, not model-generated." : (row.label || row.source)} {row.resolutionText || row.layer}</p>
-            <p>nPast before the question {row.stats.nPastBefore}, after {row.stats.nPastAfter}. Question tokens added {row.stats.promptTokens}. Generate {Math.round(row.stats.totalMs)} ms.</p>
+            <p style={grade}>{row.label}</p>
+            <h3 style={answerHead}>{row.source === "withheld" || row.source === "safety" ? "What you should use" : "Approved answer"}</h3>
+            <p style={answer}>{row.answer}</p>
+            <details>
+              <summary>Cipher&apos;s own words</summary>
+              <p style={rawBox}>{row.raw || "Cipher returned no words."}</p>
+            </details>
           </section>
         ))}
-        <h2>Approved corrections for {hotel.id}</h2>
-        <p>Guest sentences are not saved as truth. A correction stays on the hotel it was saved for.</p>
-        <label style={label}>Topic word<input value={topic} onChange={(e) => setTopic(e.target.value)} style={field} /></label>
-        <label style={label}>Correction<textarea value={correction} onChange={(e) => setCorrection(e.target.value)} rows={3} style={field} /></label>
-        <button type="button" style={btn} onClick={addCorrection}>Save vetted correction</button>
-        <button type="button" style={secondary} onClick={() => save(resetCorrections(file))}>Reset corrections</button>
-        <button type="button" style={secondary} onClick={download}>Export corrections</button>
-        {visibleCorrections.map((item) => <p key={item.id}>{item.topic}: {item.text}</p>)}
+        <h2 style={questionTitle}>Ask one more question</h2>
+        <label style={label}>Your question
+          <textarea value={extraQuestion} onChange={(event) => setExtraQuestion(event.target.value)} rows={3} style={field} />
+        </label>
+        <button type="button" style={secondBtn} onClick={askOne}>Ask this question</button>
+        {extra ? (
+          <section style={card}>
+            <p style={grade}>{extra.label} Cipher finished this question.</p>
+            <h3 style={answerHead}>{extra.source === "withheld" || extra.source === "safety" ? "What you should use" : "Approved answer"}</h3>
+            <p style={answer}>{extra.answer}</p>
+            <details>
+              <summary>Cipher&apos;s own words</summary>
+              <p style={rawBox}>{extra.raw || "Cipher returned no words."}</p>
+            </details>
+          </section>
+        ) : null}
+        <details>
+          <summary>More controls</summary>
+          <p>Hotel for the extra question: {hotel.name}.</p>
+          <button type="button" style={secondBtn} onClick={() => setHotel(silver)}>Use Silver Quill Inn</button>
+          <button type="button" style={secondBtn} onClick={() => setHotel(harbor)}>Use Harbor Lantern</button>
+          <button type="button" style={secondBtn} onClick={() => setHotel(heldout.scopeHotel)}>Use Scope Other Inn</button>
+          <h2 style={questionTitle}>Saved corrections for {hotel.name}</h2>
+          <p>A correction is typed here. A guest sentence is not saved as a fact.</p>
+          <label style={label}>Topic word<input value={topic} onChange={(event) => setTopic(event.target.value)} style={field} /></label>
+          <label style={label}>Correction<textarea value={correction} onChange={(event) => setCorrection(event.target.value)} rows={3} style={field} /></label>
+          <button type="button" style={secondBtn} onClick={() => {
+            if (!topic.trim() || !correction.trim()) { say("A correction needs a topic and text.", phase); return; }
+            save(approveCorrection(file, { id: "c-" + Date.now(), hotelId: hotel.id, topic, text: correction }));
+            setCorrection("");
+            say("Saved the correction on this browser.", phase);
+          }}>Save correction</button>
+          <button type="button" style={secondBtn} onClick={() => { save(resetCorrections({ ...file, hotelId: hotel.id })); say("Corrections reset.", phase); }}>Reset corrections</button>
+          <button type="button" style={secondBtn} onClick={() => {
+            const blob = new Blob([exportCorrections(file)], { type: "application/json" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "cipher-corrections.json";
+            link.click();
+          }}>Export corrections</button>
+          {file.corrections.filter((item) => item.hotelId === hotel.id).map((item) => <p key={item.id}>{item.topic}: {item.text}</p>)}
+          <h2 style={questionTitle}>Model file</h2>
+          <p style={rawBox}>{CIPHER_2_STANDIN.displayName}. {CIPHER_2_STANDIN.file}. {CIPHER_2_STANDIN.bytes} bytes. sha256 {CIPHER_2_STANDIN.sha256}. {CIPHER_2_STANDIN.provenance}</p>
+          {diagnostics ? <p style={rawBox}>Requests during the last four-question test: {diagnostics.fetches.map((item) => item.url).join(", ") || "none"}.</p> : null}
+          {rows[0] && rows[0].context ? <p style={rawBox}>Last context length after the hotel prompt: {rows[0].context.systemPast}. After the question: {rows[0].context.userPast}.</p> : null}
+        </details>
       </main>
     </>
   );
 }
 
-const page = { background: "#000", color: "#fff", minHeight: "100vh", padding: 16, fontFamily: "Arial, Helvetica, sans-serif", fontSize: 22, lineHeight: 1.45, overflowX: "hidden" };
-const title = { fontSize: 32, marginTop: 0 };
-const box = { background: "#111", border: "3px solid #fff", padding: 12, overflowWrap: "anywhere" };
+const page = { background: "#000", color: "#fff", minHeight: "100vh", padding: 16, fontFamily: "Arial, Helvetica, sans-serif", fontSize: 22, lineHeight: 1.45, overflowX: "hidden", boxSizing: "border-box" };
+const title = { fontSize: 36, lineHeight: 1.2, margin: "8px 0" };
+const purpose = { fontSize: 22, margin: "8px 0 12px" };
+const statusBox = { position: "sticky", top: 0, zIndex: 5, background: "#000", color: "#fff", border: "4px solid #ffe14a", fontSize: 28, fontWeight: 700, lineHeight: 1.3, padding: 16, margin: "12px 0" };
+const startBtn = { display: "block", width: "100%", boxSizing: "border-box", background: "#ffe14a", color: "#000", fontSize: 28, fontWeight: 700, lineHeight: 1.25, padding: "22px 16px", border: "4px solid #fff", margin: "12px 0", textAlign: "left" };
+const secondBtn = { display: "block", width: "100%", boxSizing: "border-box", background: "#000", color: "#ffe14a", fontSize: 22, fontWeight: 700, lineHeight: 1.3, padding: "18px 16px", border: "4px solid #fff", margin: "12px 0", textAlign: "left" };
+const note = { fontSize: 20 };
+const card = { borderTop: "4px solid #fff", marginTop: 20, paddingTop: 8 };
+const questionTitle = { fontSize: 26, lineHeight: 1.3 };
+const grade = { fontSize: 24, fontWeight: 700 };
+const answerHead = { fontSize: 24, marginBottom: 4 };
+const answer = { fontSize: 24, whiteSpace: "pre-wrap", overflowWrap: "anywhere" };
 const label = { display: "block", marginTop: 12 };
-const field = { display: "block", width: "100%", boxSizing: "border-box", marginTop: 8, background: "#111", color: "#fff", fontSize: 20, padding: 12, border: "2px solid #fff" };
-const btn = { display: "block", width: "100%", boxSizing: "border-box", background: "#ffe14a", color: "#000", fontSize: 24, fontWeight: 700, padding: "18px 16px", border: "4px solid #fff", margin: "12px 0", textAlign: "left" };
-const secondary = { ...btn, background: "#111", color: "#ffe14a" };
-const card = { borderTop: "3px solid #fff", marginTop: 16 };
+const field = { display: "block", width: "100%", boxSizing: "border-box", marginTop: 8, background: "#111", color: "#fff", fontSize: 22, padding: 12, border: "2px solid #fff" };
 const rawBox = { whiteSpace: "pre-wrap", overflowWrap: "anywhere" };

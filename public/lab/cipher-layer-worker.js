@@ -17,11 +17,32 @@ self.onmessage = async (ev) => {
   const m = ev.data;
   try {
     if (m.type === "load") {
+      post("progress", { phase: "program", got: 0, size: m.size });
       M = await CipherModule({ mainScriptUrlOrBlob: "/cipher/cipher-st.js", locateFile: (p) => "/cipher/" + p });
+      post("progress", { phase: "model", got: 0, size: m.size });
       const res = await origFetch(m.url);
       fetches.push({ url: m.url, method: "GET", bodyChars: 0, body: "", via: "model" });
       if (!res.ok) throw new Error("model HTTP " + res.status);
-      const bytes = new Uint8Array(await res.arrayBuffer());
+      const reader = res.body && res.body.getReader ? res.body.getReader() : null;
+      const chunks = [];
+      let got = 0;
+      if (reader) {
+        for (;;) {
+          const step = await reader.read();
+          if (step.done) break;
+          chunks.push(step.value);
+          got += step.value.length;
+          post("progress", { phase: "model", got, size: m.size });
+        }
+      } else {
+        const all = new Uint8Array(await res.arrayBuffer());
+        chunks.push(all);
+        got = all.length;
+        post("progress", { phase: "model", got, size: m.size });
+      }
+      const bytes = new Uint8Array(got);
+      let offset = 0;
+      for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.length; }
       if (bytes.length !== m.size) throw new Error("size " + bytes.length + "/" + m.size);
       const ptr = M._cw_alloc(bytes.length);
       if (!ptr) throw new Error("out of memory");
