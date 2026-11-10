@@ -2,6 +2,7 @@ import Head from "next/head";
 import { useEffect, useState } from "react";
 import Mark from "./Mark";
 import { SETUP_CSS } from "../lib/setup-css";
+import { layerTopicPreview } from "../lib/guest-facts";
 
 function linesFromRecs(recs, kind) {
   return (recs || [])
@@ -53,7 +54,7 @@ function emptyForm() {
   };
 }
 
-export default function HotelSetupForm({ token, sessionMode = false, email = "" }) {
+export default function HotelSetupForm({ token, sessionMode = false, email = "", layerPreview = false }) {
   const auth = sessionMode ? {} : { token };
   const [form, setForm] = useState(emptyForm());
   const [hotelId, setHotelId] = useState("");
@@ -180,6 +181,18 @@ export default function HotelSetupForm({ token, sessionMode = false, email = "" 
         )}
       </nav>
 
+      {layerPreview && (
+        <section aria-label="Facts the guest page will use" style={{ background: "#000", color: "#fff", border: "4px solid #ffe14a", padding: 16, margin: "16px 0", fontSize: 20, lineHeight: 1.4 }}>
+          <h2 style={{ fontSize: 28, margin: "0 0 8px" }}>What guests will hear</h2>
+          <p>These lines use the boxes already on this form. An empty box is not a fact. Saving still uses the same Save button.</p>
+          <ul style={{ paddingLeft: 20 }}>
+            {layerTopicPreview(form).map((row) => (
+              <li key={row.label} style={{ margin: "8px 0" }}><strong>{row.label}.</strong> {row.hears}{row.note ? " " + row.note : ""}</li>
+            ))}
+          </ul>
+          <p>This form does not collect laundry, elevators, accessible rooms, mobility help, or housekeeping details. Those questions are withheld. It also does not collect a street address, so direction questions are withheld.</p>
+        </section>
+      )}
       <h1 className="setup-h1">Tell Cipher about your hotel</h1>
       <p className="setup-lede">
         Fill this out once. Guests who scan a room QR get answers from what you save here — no developer needed.

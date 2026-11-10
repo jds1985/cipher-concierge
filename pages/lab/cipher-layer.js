@@ -4,7 +4,7 @@ import silver from "../../tests/fixtures/silver-quill-browser.json";
 import harbor from "../../tests/fixtures/harbor-lantern.json";
 import heldout from "../../tests/fixtures/cipher-layer-heldout.json";
 import cedar from "../../tests/fixtures/cedar-blank.json";
-import factsHeldout from "../../tests/fixtures/cipher-facts-heldout-g.json";
+import factsHeldout from "../../tests/fixtures/cipher-facts-heldout-h.json";
 import {
   CIPHER_2_STANDIN, emptyCorrections, approveCorrection, resetCorrections, exportCorrections,
   groundingSystem, resolveTurn, contextReport, gradeFactAnswer,
@@ -253,7 +253,7 @@ export default function CipherLayerLab() {
         <p id="purpose" style={purpose}>Press Start. Cipher answers {FOUR.length} hotel questions. Each result shows the approved answer, and Cipher&apos;s own words stay available underneath.</p>
         <p id="status" role="status" aria-live="assertive" aria-atomic="true" style={statusBox}>{status}</p>
         <button type="button" style={startBtn} aria-disabled={phase === "loading" || phase === "running"} onClick={start}>{buttonLabel}</button>
-        <p style={note}>This test uses Silver Quill Inn and Harbor Lantern.</p>
+        <p style={note}>This test uses Silver Quill Inn. One question has no mobility fact on file.</p>
         {rows.map((row) => (
           <section key={row.number} style={card}>
             <h2 style={questionTitle}>Question {row.number} of {FOUR.length}. Cipher finished this question.</h2>

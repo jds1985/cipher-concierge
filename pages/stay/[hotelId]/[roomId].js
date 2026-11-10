@@ -12,18 +12,20 @@ import crypto from "crypto";
 import { guestAccess } from "../../../lib/billing";
 import { PAUSED_MESSAGE } from "../../../lib/pricing";
 import { isFileHotel } from "../../../lib/hotels";
+import { cipherLayerGuestEnabled, guestLayerTurn, guestLayerApplies, guestLayerReply } from "../../../lib/guest-facts";
 
 export async function getServerSideProps({ params, query, res }) {
   const hotel = await resolveHotel(params.hotelId);
   if (!hotel || !validRoom(params.roomId)) return { notFound: true };
   const ok = verifyRoom(hotel.id, params.roomId, query.t);
   if (!ok) res.statusCode = 403;
+  const layerGuest = cipherLayerGuestEnabled();
   const access = await guestAccess(hotel.id, { isFile: isFileHotel(hotel.id) });
-  if (ok && !access.ok) return { props: { hotel: publicHotel(hotel), roomId: params.roomId, t: null, paused: true, factVersion: "", openQuestions: false, force: null, debug: false } };
+  if (ok && !access.ok) return { props: { hotel: publicHotel(hotel), roomId: params.roomId, t: null, paused: true, factVersion: "", openQuestions: false, force: null, debug: false, layerGuest } };
   const factVersion = crypto.createHash("sha256").update(JSON.stringify(hotel)).digest("hex").slice(0, 12);
   return { props: { hotel: publicHotel(hotel), roomId: params.roomId, t: ok ? query.t : null, factVersion,
     openQuestions: process.env.CIPHER_OPEN_QUESTIONS !== "off", force: ["phone", "server"].includes(query.mode) ? query.mode : null,
-    debug: query.debug === "1" && process.env.NODE_ENV !== "production" } };
+    debug: query.debug === "1" && process.env.NODE_ENV !== "production", layerGuest } };
 }
 
 const CHIPS = ["Checkout time", "Wi-Fi", "Breakfast", "Anything open now?", "Extra towels", "Parking", "Nearby food"];
@@ -31,7 +33,7 @@ const REQ_TYPES = [["towels", "Towels"], ["housekeeping", "Housekeeping"], ["mai
 const reqTypeFor = (m) => m.intent === "maintenance" ? "maintenance" : m.intent === "housekeeping" ? (/towel/i.test(m.q || "") ? "towels" : "housekeeping") : null;
 const hhmm = () => new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 
-export default function Stay({ hotel, roomId, t, paused = false, factVersion, openQuestions, force, debug }) {
+export default function Stay({ hotel, roomId, t, paused = false, factVersion, openQuestions, force, debug, layerGuest = false }) {
   // Debug info only in dev with ?debug=1; never exposed on window otherwise.
   const dbg = useRef({ stats: [] }).current;
   const welcome = { role: "assistant", kind: "fact", content: `Welcome to ${hotel.name}. I'm Cipher, your private concierge for Room ${roomId}. Ask me anything about your stay, day or night.`, at: "" };
@@ -44,6 +46,7 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
   const [reqType, setReqType] = useState("towels");
   const [reqNote, setReqNote] = useState("");
   const [reqState, setReqState] = useState({ busy: false, msg: "", err: false });
+  const [guestStatus, setGuestStatus] = useState("");
   async function sendRequest(type, note) {
     if (reqState.busy) return;
     setReqState({ busy: true, msg: "Sending…", err: false });
@@ -87,7 +90,38 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
     const j = await r.json();
     return r.ok ? { role: "assistant", content: j.text, kind: j.kind, call: j.call, source: j.source, intent: j.intent, where: "server" } : { role: "assistant", kind: "fallback", call: true, content: j.error || "Something went wrong.", where: "server" };
   }
+  async function askWithGuestFacts(q) {
+    let H;
+    try { H = await pack.current; } catch { return null; }
+    const pre = guestLayerTurn(H, q, "");
+    if (!guestLayerApplies(pre)) return null;
+    let raw = "";
+    if (pre.resolution.source !== "safety") {
+      setGuestStatus("Checking the hotel file.");
+      const m = await aiReady.current;
+      if (m) {
+        setGuestStatus("Cipher is answering.");
+        try {
+          const turn = decideTurn(H, q, { now: new Date(), openQuestions });
+          await m.reset();
+          if (turn.system) await m.setSystem(turn.system);
+          const g = await m.generate(q, { maxNew: 64 });
+          raw = g.text || "";
+        } catch {
+          setGuestStatus("Cipher did not finish. The hotel file answer is still shown.");
+        }
+      } else {
+        setGuestStatus("Cipher did not load. The hotel file answer is shown.");
+      }
+    }
+    const reply = guestLayerReply(H, q, raw);
+    return reply ? { ...reply, where: "phone" } : null;
+  }
   async function askPhone(q, next) {
+    if (layerGuest) {
+      const layered = await askWithGuestFacts(q);
+      if (layered) return layered;
+    }
     let H;
     try { H = await pack.current; } catch { return askServer(next); }   // no fact pack (first visit offline): use the server
     const turn = decideTurn(H, q, { now: new Date(), openQuestions });
@@ -128,30 +162,42 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
     if (!q || busy) return;
     const next = [...msgs, { role: "user", content: q, at: hhmm() }];
     setMsgs(next); setInput(""); setBusy(true);
+    if (layerGuest) setGuestStatus("Checking the hotel file.");
     let reply;
     try {
       reply = mode === "phone" ? await askPhone(q, next) : await askServer(next);
     } catch {
       reply = { role: "assistant", kind: "fallback", call: true, content: "I can't reach the concierge right now. The front desk can help." };
+      if (layerGuest) setGuestStatus("Failed. The front desk can help.");
+    }
+    if (layerGuest && reply) {
+      if (reply.source === "safety") setGuestStatus("Safety message. Not the model.");
+      else if (reply.source === "withheld") setGuestStatus("Not in the hotel file. This is not a success.");
+      else if (reply.source === "layer") setGuestStatus(reply.modelRan ? "Approved hotel facts. Not the model." : "Approved hotel facts. Cipher did not run on this answer.");
+      else setGuestStatus("Cipher finished. This is not an approved hotel fact.");
     }
     setMsgs((m) => [...m, { ...reply, q, at: hhmm() }]); setBusy(false);
   }
 
   return (
-    <div className="chat">
+    <div className={layerGuest ? "chat layer-guest" : "chat"}>
       <Head><title>{`${hotel.name} · Room ${roomId} · Concierge`}</title></Head>
+      {layerGuest && <style dangerouslySetInnerHTML={{ __html: ".layer-guest{background:#000;color:#fff}.layer-guest .chat-head,.layer-guest .dock,.layer-guest .bubble,.layer-guest .meta{background:#000;color:#fff}.layer-guest .bubble{max-width:100%;font-size:24px;line-height:1.4;border:3px solid #fff;border-radius:12px}.layer-guest .meta,.layer-guest .src{font-size:18px;color:#ffe14a}.layer-guest .chips{display:grid;overflow:visible;padding:12px;mask-image:none;-webkit-mask-image:none}.layer-guest .chip{width:100%;min-height:72px;font-size:22px;font-weight:700;background:#ffe14a;color:#000;border:4px solid #fff;border-radius:12px}.layer-guest .composer{border:3px solid #fff;border-radius:12px;background:#000}.layer-guest .composer input{font-size:22px;color:#fff}.layer-guest summary{font-size:22px;font-weight:700;color:#fff}" }} />}
       <header className="chat-head glass">
         <Mark size={34} small />
         <div className="who">
           <div className="hotel">{hotel.name.toUpperCase()}</div>
           <div className="room">Room {roomId} · <b>Private</b></div>
-          {mode === "phone" && <div className="onphone" data-testid="onphone-badge"><i />Running on your phone · nothing is sent</div>}
-          {mode === "server" && <div className="onphone server" data-testid="server-badge"><i />Answered by the hotel's server</div>}
+          {!layerGuest && mode === "phone" && <div className="onphone" data-testid="onphone-badge"><i />Running on your phone · nothing is sent</div>}
+          {!layerGuest && mode === "server" && <div className="onphone server" data-testid="server-badge"><i />Answered by the hotel's server</div>}
         </div>
         <CallButton frontDesk={hotel.frontDesk} compact />
       </header>
 
-      {mode === "phone" && !load.ready && (
+      {layerGuest ? (
+        <p id="guest-status" role="status" aria-live="assertive" aria-atomic="true" data-testid="guest-status" style={{ position: "sticky", top: 0, zIndex: 5, background: "#000", color: "#fff", border: "4px solid #ffe14a", fontSize: 28, fontWeight: 700, lineHeight: 1.3, padding: 16, margin: 0 }}>{guestStatus || (mode === "phone" && !load.ready ? load.text : "Not started. Ask a question.")}</p>
+      ) : null}
+      {!layerGuest && mode === "phone" && !load.ready && (
         <div className="dl glass" role="status" data-testid="download"><div>{load.text}{!load.failed && " Hotel questions answer right away."}</div>{!load.failed && <div className="dl-bar"><b style={{ width: `${load.pct}%` }} /></div>}</div>
       )}
       <main className="msgs" aria-live="polite" aria-label="Conversation">
@@ -163,12 +209,16 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
             <div style={{ minWidth: 0 }}>
               <div className={`bubble bot glass ${m.kind === "emergency" ? "emergency" : ""}`}>
                 <span className="sr-only">Concierge: </span><RichText text={m.content} />
+                {layerGuest && m.raw ? <details><summary>Cipher&apos;s own words</summary><p>{m.raw}</p></details> : null}
                 {reqTypeFor(m) && <div><button type="button" className="req-btn" disabled={reqState.busy}
                   onClick={() => sendRequest(reqTypeFor(m), "")}>Send to front desk</button></div>}
                 {m.call && <div><CallButton frontDesk={hotel.frontDesk} className="inline-call" /></div>}
               </div>
               <div className="meta">
                 {m.at}
+                {layerGuest && m.source === "layer" && <span className="src facts">Approved hotel facts, not model-generated</span>}
+                {layerGuest && m.source === "withheld" && <span className="src">Not in the hotel file. Not counted as a success.</span>}
+                {layerGuest && m.source === "safety" && <span className="src">Safety message. Not the model.</span>}
                 {m.source === "facts" && m.kind === "fact" && <span className="src facts">From {hotel.name}'s info{m.where === "phone" ? " · on this phone" : ""}</span>}
                 {m.source === "cipher" && <span className="src cipher">Cipher{m.where === "phone" ? " on this phone" : ""} · general answer, confirm details with the front desk</span>}
                 {m.where === "server" && <span className="src server">Answered by the hotel's server</span>}
@@ -181,13 +231,10 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
       </main>
 
       <nav className="chips" aria-label="Suggested questions">
-        {CHIPS.map((c) => <button key={c} className="chip" onClick={() => ask(c)} disabled={busy}>{c}</button>)}
+        {(layerGuest ? ["What is the Wi-Fi?", "What time is checkout?", "I can't breathe"] : CHIPS).map((c) => <button key={c} className="chip" onClick={() => ask(c)} disabled={busy}>{c}</button>)}
       </nav>
       <div className="dock">
-        <style>{`.req-btn{display:block;width:100%;min-height:56px;margin-top:10px;border:0;border-radius:16px;background:#fff;color:#0b1020;font:800 19px "Plus Jakarta Sans",sans-serif;cursor:pointer}
-.req-btn:disabled{opacity:.6}.req-panel{margin-bottom:8px;padding:14px;border-radius:18px;background:#0b1020;border:2px solid #fff;color:#fff}
-.req-panel label{display:block;font-size:18px;font-weight:700;margin:8px 0 6px}.req-panel select,.req-panel input{width:100%;min-height:52px;font-size:19px;border-radius:12px;border:2px solid #fff;background:#000;color:#fff;padding:0 12px}
-.req-status{margin:0 0 8px;padding:12px 14px;border-radius:14px;font-size:19px;font-weight:700;background:#123d1f;color:#fff}.req-status.err{background:#5a1010}`}</style>
+        <style dangerouslySetInnerHTML={{ __html: ".req-btn{display:block;width:100%;min-height:56px;margin-top:10px;border:0;border-radius:16px;background:#fff;color:#0b1020;font:800 19px 'Plus Jakarta Sans',sans-serif;cursor:pointer}.req-btn:disabled{opacity:.6}.req-panel{margin-bottom:8px;padding:14px;border-radius:18px;background:#0b1020;border:2px solid #fff;color:#fff}.req-panel label{display:block;font-size:18px;font-weight:700;margin:8px 0 6px}.req-panel select,.req-panel input{width:100%;min-height:52px;font-size:19px;border-radius:12px;border:2px solid #fff;background:#000;color:#fff;padding:0 12px}.req-status{margin:0 0 8px;padding:12px 14px;border-radius:14px;font-size:19px;font-weight:700;background:#123d1f;color:#fff}.req-status.err{background:#5a1010}" }} />
         {reqState.msg && <p className={`req-status ${reqState.err ? "err" : ""}`} role="status" aria-live="polite">{reqState.msg}</p>}
         {reqOpen ? (
           <form className="req-panel" onSubmit={(e) => { e.preventDefault(); sendRequest(reqType, reqNote); }}>
