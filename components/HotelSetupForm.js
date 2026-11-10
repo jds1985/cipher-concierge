@@ -182,14 +182,17 @@ export default function HotelSetupForm({ token, sessionMode = false, email = "",
       </nav>
 
       {layerPreview && (
-        <section aria-label="Facts the guest page will use" style={{ background: "#000", color: "#fff", border: "4px solid #ffe14a", padding: 16, margin: "16px 0", fontSize: 20, lineHeight: 1.4 }}>
-          <h2 style={{ fontSize: 28, margin: "0 0 8px" }}>What guests will hear</h2>
+        <section className="hear-panel" aria-label="Facts the guest page will use">
+          <style dangerouslySetInnerHTML={{ __html: ".hear-panel{background:#000;color:#fff;border:4px solid #ffe14a;padding:16px;margin:0 0 28px;font-size:22px;line-height:1.45;overflow-x:hidden}.hear-panel h2{font-size:32px;line-height:1.2;margin:0 0 16px}.hear-panel p{font-size:22px;line-height:1.45;margin:0 0 12px}.hear-panel article{display:block;border-top:4px solid #fff;margin-top:20px;padding-top:16px}.hear-panel h3{display:block;font-size:24px;line-height:1.3;margin:0 0 8px}" }} />
+          <h2>What guests will hear</h2>
           <p>These lines use the boxes already on this form. An empty box is not a fact. Saving still uses the same Save button.</p>
-          <ul style={{ paddingLeft: 20 }}>
-            {layerTopicPreview(form).map((row) => (
-              <li key={row.label} style={{ margin: "8px 0" }}><strong>{row.label}.</strong> {row.hears}{row.note ? " " + row.note : ""}</li>
-            ))}
-          </ul>
+          {layerTopicPreview(form).map((row) => (
+            <article key={row.label}>
+              <h3>{row.label}</h3>
+              <p>{row.hears}</p>
+              {row.note ? <p>{row.note}</p> : null}
+            </article>
+          ))}
           <p>This form does not collect laundry, elevators, accessible rooms, mobility help, or housekeeping details. Those questions are withheld. It also does not collect a street address, so direction questions are withheld.</p>
         </section>
       )}

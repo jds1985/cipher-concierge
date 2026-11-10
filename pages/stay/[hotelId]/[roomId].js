@@ -28,6 +28,98 @@ export async function getServerSideProps({ params, query, res }) {
     debug: query.debug === "1" && process.env.NODE_ENV !== "production", layerGuest } };
 }
 
+const GUEST_LAYOUT_CSS = `
+html, body { background:#000; color:#fff; overflow-x:hidden; }
+.wisps { display:none; }
+.chat.layer-guest {
+  display:block; height:auto; min-height:100dvh; max-width:100%; margin:0;
+  padding:16px 16px 32px; background:#000; color:#fff; overflow-x:hidden;
+  font-family:Arial, Helvetica, sans-serif; font-size:22px; line-height:1.45;
+}
+.chat.layer-guest .chat-head {
+  display:block; margin:0 0 24px; padding:0; border:0; border-radius:0;
+  background:#000; box-shadow:none;
+}
+.chat.layer-guest .chat-head .who { display:block; min-width:0; }
+.chat.layer-guest .chat-head .hotel {
+  display:block; margin:0 0 8px; font-size:32px; font-weight:700; line-height:1.2;
+  letter-spacing:0; white-space:normal; overflow:visible; text-overflow:clip; color:#fff;
+}
+.chat.layer-guest .chat-head .room { display:block; margin:0 0 16px; font-size:22px; line-height:1.35; color:#fff; }
+.chat.layer-guest .chat-head .room b { color:#fff; font-weight:700; }
+.chat.layer-guest .call-btn, .chat.layer-guest .inline-call {
+  display:flex; width:100%; height:auto; min-height:72px; margin:0 0 16px; padding:16px;
+  box-sizing:border-box; border-radius:0; border:4px solid #fff; background:#000; color:#ffe14a;
+  font-size:22px; font-weight:700; line-height:1.3; white-space:normal; justify-content:flex-start; gap:12px;
+}
+.chat.layer-guest .call-btn svg { width:28px; height:28px; flex:none; }
+.chat.layer-guest #guest-status { margin:0 0 28px; }
+.chat.layer-guest .msgs {
+  display:flex; flex-direction:column; gap:28px; overflow:visible; flex:none;
+  height:auto; padding:0; margin:0 0 32px;
+}
+.chat.layer-guest .row { display:block; margin:0; }
+.chat.layer-guest .avatar { display:none; }
+.chat.layer-guest .bubble, .chat.layer-guest .bubble.user, .chat.layer-guest .bubble.emergency {
+  display:block; width:100%; max-width:100%; box-sizing:border-box; margin:0;
+  padding:16px; background:#000; color:#fff; border:4px solid #fff; border-radius:0;
+  box-shadow:none; font-size:24px; line-height:1.45; white-space:pre-wrap; overflow-wrap:anywhere;
+}
+.chat.layer-guest .bubble.user { background:#ffe14a; color:#000; }
+.chat.layer-guest .meta, .chat.layer-guest .src {
+  display:block; width:100%; box-sizing:border-box; margin:12px 0 0; padding:0;
+  background:transparent; border:0; border-radius:0; letter-spacing:0;
+  font-size:20px; line-height:1.4; color:#ffe14a;
+}
+.chat.layer-guest details { display:block; margin-top:16px; }
+.chat.layer-guest summary { display:block; font-size:22px; font-weight:700; line-height:1.3; padding:12px 0; color:#fff; }
+.chat.layer-guest .chips {
+  display:flex; flex-direction:column; gap:16px; overflow:visible; height:auto;
+  padding:0; margin:0 0 32px; mask-image:none; -webkit-mask-image:none;
+}
+.chat.layer-guest .chip {
+  display:block; width:100%; flex:none; box-sizing:border-box; min-height:72px;
+  margin:0; padding:18px 16px; border-radius:0; border:4px solid #fff;
+  background:#ffe14a; color:#000; font-size:22px; font-weight:700; line-height:1.3;
+  text-align:left; white-space:normal;
+}
+.chat.layer-guest .dock { display:block; padding:0; margin:0; }
+.chat.layer-guest .req-btn {
+  display:block; width:100%; box-sizing:border-box; min-height:72px; margin:0 0 20px;
+  padding:18px 16px; border-radius:0; border:4px solid #fff; background:#000; color:#ffe14a;
+  font-size:22px; font-weight:700; line-height:1.3; text-align:left;
+}
+.chat.layer-guest .composer {
+  display:block; width:100%; box-sizing:border-box; margin:0 0 20px; padding:0;
+  border:0; border-radius:0; background:transparent; box-shadow:none;
+}
+.chat.layer-guest .composer input {
+  display:block; width:100%; box-sizing:border-box; min-height:72px; margin:0 0 16px;
+  padding:16px; border:4px solid #fff; border-radius:0; background:#000; color:#fff;
+  font-size:22px; line-height:1.3;
+}
+.chat.layer-guest .composer input::placeholder { color:#fff; }
+.chat.layer-guest .send, .chat.layer-guest .send:disabled {
+  display:block; width:100%; height:auto; min-height:72px; margin:0; padding:18px 16px;
+  border:4px solid #fff; border-radius:0; background:#ffe14a; color:#000; opacity:1;
+  box-shadow:none; font-size:22px; font-weight:700; line-height:1.3; text-align:left;
+}
+.chat.layer-guest .send:disabled { background:#000; color:#ffe14a; }
+.chat.layer-guest .send svg { display:none; }
+.chat.layer-guest .privacy {
+  display:flex; flex-direction:column; align-items:stretch; gap:16px;
+  margin:8px 0 0; text-align:left; font-size:20px; line-height:1.4; color:#fff;
+}
+.chat.layer-guest .privacy svg { width:24px; height:24px; }
+.chat.layer-guest .privacy button {
+  display:block; width:100%; box-sizing:border-box; min-height:64px; margin:0; padding:16px;
+  border:4px solid #fff; background:#000; color:#ffe14a; font-size:22px; font-weight:700;
+  line-height:1.3; text-align:left; text-decoration:none;
+}
+.chat.layer-guest button:focus, .chat.layer-guest a:focus, .chat.layer-guest summary:focus, .chat.layer-guest input:focus {
+  outline:4px solid #fff; outline-offset:3px;
+}
+`;
 const CHIPS = ["Checkout time", "Wi-Fi", "Breakfast", "Anything open now?", "Extra towels", "Parking", "Nearby food"];
 const REQ_TYPES = [["towels", "Towels"], ["housekeeping", "Housekeeping"], ["maintenance", "Something broken"]];
 const reqTypeFor = (m) => m.intent === "maintenance" ? "maintenance" : m.intent === "housekeeping" ? (/towel/i.test(m.q || "") ? "towels" : "housekeeping") : null;
@@ -182,7 +274,7 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
   return (
     <div className={layerGuest ? "chat layer-guest" : "chat"}>
       <Head><title>{`${hotel.name} · Room ${roomId} · Concierge`}</title></Head>
-      {layerGuest && <style dangerouslySetInnerHTML={{ __html: ".layer-guest{background:#000;color:#fff}.layer-guest .chat-head,.layer-guest .dock,.layer-guest .bubble,.layer-guest .meta{background:#000;color:#fff}.layer-guest .bubble{max-width:100%;font-size:24px;line-height:1.4;border:3px solid #fff;border-radius:12px}.layer-guest .meta,.layer-guest .src{font-size:18px;color:#ffe14a}.layer-guest .chips{display:grid;overflow:visible;padding:12px;mask-image:none;-webkit-mask-image:none}.layer-guest .chip{width:100%;min-height:72px;font-size:22px;font-weight:700;background:#ffe14a;color:#000;border:4px solid #fff;border-radius:12px}.layer-guest .composer{border:3px solid #fff;border-radius:12px;background:#000}.layer-guest .composer input{font-size:22px;color:#fff}.layer-guest summary{font-size:22px;font-weight:700;color:#fff}" }} />}
+      {layerGuest && <style dangerouslySetInnerHTML={{ __html: GUEST_LAYOUT_CSS }} />}
       <header className="chat-head glass">
         <Mark size={34} small />
         <div className="who">
@@ -191,11 +283,11 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
           {!layerGuest && mode === "phone" && <div className="onphone" data-testid="onphone-badge"><i />Running on your phone · nothing is sent</div>}
           {!layerGuest && mode === "server" && <div className="onphone server" data-testid="server-badge"><i />Answered by the hotel's server</div>}
         </div>
-        <CallButton frontDesk={hotel.frontDesk} compact />
+        <CallButton frontDesk={hotel.frontDesk} compact={!layerGuest} />
       </header>
 
       {layerGuest ? (
-        <p id="guest-status" role="status" aria-live="assertive" aria-atomic="true" data-testid="guest-status" style={{ position: "sticky", top: 0, zIndex: 5, background: "#000", color: "#fff", border: "4px solid #ffe14a", fontSize: 28, fontWeight: 700, lineHeight: 1.3, padding: 16, margin: 0 }}>{guestStatus || (mode === "phone" && !load.ready ? load.text : "Not started. Ask a question.")}</p>
+        <p id="guest-status" role="status" aria-live="assertive" aria-atomic="true" data-testid="guest-status" style={{ position: "static", background: "#000", color: "#fff", border: "4px solid #ffe14a", fontSize: 28, fontWeight: 700, lineHeight: 1.3, padding: 16, margin: "0 0 28px" }}>{guestStatus || (mode === "phone" && !load.ready ? load.text : "Not started. Ask a question.")}</p>
       ) : null}
       {!layerGuest && mode === "phone" && !load.ready && (
         <div className="dl glass" role="status" data-testid="download"><div>{load.text}{!load.failed && " Hotel questions answer right away."}</div>{!load.failed && <div className="dl-bar"><b style={{ width: `${load.pct}%` }} /></div>}</div>
@@ -248,12 +340,12 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
             <button type="button" className="req-btn" style={{ background: "transparent", color: "#fff", border: "2px solid #fff" }} onClick={() => setReqOpen(false)}>Cancel</button>
           </form>
         ) : (
-          <button type="button" className="req-btn" style={{ marginBottom: 8 }} onClick={() => { setReqOpen(true); setReqState({ busy: false, msg: "", err: false }); }}>Request help</button>
+          <button type="button" className="req-btn" style={layerGuest ? undefined : { marginBottom: 8 }} onClick={() => { setReqOpen(true); setReqState({ busy: false, msg: "", err: false }); }}>Request help</button>
         )}
         <form className="composer glass" onSubmit={(e) => { e.preventDefault(); ask(input); }}>
           <label htmlFor="q" className="sr-only">Ask the concierge</label>
-          <input id="q" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Ask about checkout, Wi-Fi, dining…" maxLength={500} autoComplete="off" enterKeyHint="send" />
-          <button className="send" type="submit" disabled={!input.trim() || busy} aria-label="Send"><Send /></button>
+          <input id="q" value={input} onChange={(e) => setInput(e.target.value)} placeholder={layerGuest ? "Ask a question" : "Ask about checkout, Wi-Fi, dining…"} maxLength={500} autoComplete="off" enterKeyHint="send" />
+          <button className="send" type="submit" disabled={!input.trim() || busy} aria-label="Send">{layerGuest ? "Send" : null}<Send /></button>
         </form>
         <div className="privacy">
           <Lock /> {mode === "phone" ? "Answers are worked out on this phone · Nothing stored" : "Nothing stored · No third-party AI"}
