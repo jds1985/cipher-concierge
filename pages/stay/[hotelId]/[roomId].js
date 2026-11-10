@@ -183,7 +183,7 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
     const r = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ hotelId: hotel.id, roomId, t, messages: next.slice(1).map(({ role, content }) => ({ role, content })) }) });
     const j = await r.json();
-    return r.ok ? { role: "assistant", content: j.text, kind: j.kind, call: j.call, source: j.source, intent: j.intent, where: "server" } : { role: "assistant", kind: "fallback", call: true, content: j.error || "Something went wrong.", where: "server" };
+    return r.ok ? { role: "assistant", content: j.text, kind: j.kind, call: j.call, source: j.source, intent: j.intent, asksDesk: !!j.asksDesk, where: "server" } : { role: "assistant", kind: "fallback", call: true, content: j.error || "Something went wrong.", where: "server" };
   }
   async function askWithGuestFacts(q) {
     let H;
@@ -192,10 +192,10 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
     if (!guestLayerApplies(pre)) return null;
     let raw = "";
     if (pre.resolution.source !== "safety") {
-      setGuestStatus("Checking the hotel file.");
+      setGuestStatus("One moment.");
       const m = await aiReady.current;
       if (m) {
-        setGuestStatus("Cipher is answering.");
+        setGuestStatus("One moment.");
         try {
           const turn = decideTurn(H, q, { now: new Date(), openQuestions });
           await m.reset();
@@ -203,10 +203,10 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
           const g = await m.generate(q, { maxNew: 64 });
           raw = g.text || "";
         } catch {
-          setGuestStatus("Cipher did not finish. The hotel file answer is still shown.");
+          setGuestStatus("One moment. Here is what I know so far.");
         }
       } else {
-        setGuestStatus("Cipher did not load. The hotel file answer is shown.");
+        setGuestStatus("I can still answer from what the hotel saved.");
       }
     }
     const reply = guestLayerReply(H, q, raw);
@@ -257,7 +257,7 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
     if (!q || busy) return;
     const next = [...msgs, { role: "user", content: q, at: hhmm() }];
     setMsgs(next); setInput(""); setBusy(true);
-    if (layerGuest) setGuestStatus("Checking the hotel file.");
+    if (layerGuest) setGuestStatus("One moment.");
     let reply;
     try {
       reply = mode === "phone" ? await askPhone(q, next) : await askServer(next);
@@ -267,9 +267,9 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
     }
     if (layerGuest && reply) {
       if (reply.source === "safety") setGuestStatus("Safety message.");
-      else if (reply.source === "withheld") setGuestStatus("Not in the hotel file. This is not a success.");
+      else if (reply.asksDesk) setGuestStatus("Ask the front desk.");
       else if (reply.source === "layer") setGuestStatus("From hotel info.");
-      else setGuestStatus("Cipher finished. This is not from the hotel file.");
+      else setGuestStatus("Please ask the front desk.");
     }
     setMsgs((m) => [...m, { ...reply, q, at: hhmm() }]); setBusy(false);
   }
@@ -290,7 +290,7 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
       </header>
 
       {layerGuest ? (
-        <p id="guest-status" role="status" aria-live="assertive" aria-atomic="true" data-testid="guest-status" style={{ position: "static", background: "#000", color: "#fff", border: "4px solid #ffe14a", fontSize: 28, fontWeight: 700, lineHeight: 1.3, padding: 16, margin: "0 0 28px" }}>{guestStatus || (mode === "phone" && !load.ready ? load.text : "Not started. Ask a question.")}</p>
+        <p id="guest-status" role="status" aria-live="assertive" aria-atomic="true" data-testid="guest-status" style={{ position: "static", background: "#000", color: "#fff", border: "4px solid #ffe14a", fontSize: 28, fontWeight: 700, lineHeight: 1.3, padding: 16, margin: "0 0 28px" }}>{guestStatus || (mode === "phone" && !load.ready ? (load.failed ? "I can still answer from what the hotel saved." : "One moment.") : "Not started. Ask a question.")}</p>
       ) : null}
       {!layerGuest && mode === "phone" && !load.ready && (
         <div className="dl glass" role="status" data-testid="download"><div>{load.text}{!load.failed && " Hotel questions answer right away."}</div>{!load.failed && <div className="dl-bar"><b style={{ width: `${load.pct}%` }} /></div>}</div>
@@ -310,8 +310,8 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
               </div>
               <div className="meta">
                 {m.at}
-                {layerGuest && m.source === "layer" && <span className="src facts">From hotel info</span>}
-                {layerGuest && m.source === "withheld" && <span className="src">Not in the hotel file. Not counted as a success.</span>}
+                {layerGuest && m.asksDesk && <span className="src">Ask the front desk</span>}
+                {layerGuest && m.source === "layer" && !m.asksDesk && <span className="src facts">From hotel info</span>}
                 {layerGuest && m.source === "safety" && <span className="src">Safety message</span>}
                 {m.source === "facts" && m.kind === "fact" && <span className="src facts">From {hotel.name}'s info{m.where === "phone" ? " · on this phone" : ""}</span>}
                 {m.source === "cipher" && <span className="src cipher">Cipher{m.where === "phone" ? " on this phone" : ""} · general answer, confirm details with the front desk</span>}
@@ -355,10 +355,12 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
           <button onClick={() => setMsgs([welcome])}>Clear chat</button>
         </div>
         {showPrivacy && (
-          <div className="glass" style={{ marginTop: 8, padding: "12px 14px", borderRadius: 16, fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>
+          <div className="glass" style={{ marginTop: 8, padding: "12px 14px", borderRadius: 16, fontSize: layerGuest ? 20 : 13, color: layerGuest ? "#fff" : "var(--muted)", lineHeight: 1.5 }}>
+            {layerGuest ? <>Your questions stay in this tab. Answers come from what {hotel.name} saved. Nothing is kept after you close the tab or tap Clear. No outside service is used.</> : <>
             {mode === "phone" && <>On this phone, Cipher and {hotel.name}'s fact sheet are downloaded once and every answer is worked out on the device: your questions are not sent anywhere. </>}
             {mode === "server" && <>This device can't run Cipher locally, so your questions go to the hotel's own server. </>}
             Your questions are answered from {hotel.name}'s own information and by Cipher, Cipher CTS's own AI model. No outside AI service is used. Messages are held in memory only long enough to answer and are never saved or logged. Your chat history lives only in this browser tab and is gone when you close it or tap Clear. To limit abuse, we keep a short-lived, anonymous request counter for about a minute. No accounts, no tracking, no ads.
+            </>}
           </div>
         )}
       </div>

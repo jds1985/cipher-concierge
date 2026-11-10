@@ -200,7 +200,7 @@ export default function HotelSetupForm({ token, sessionMode = false, email = "",
               {row.note ? <p>{row.note}</p> : null}
             </article>
           ))}
-          <p>Leave a box empty when the hotel has no fact. An empty box is withheld.</p>
+          <p>Leave a box empty when you do not have that information. Guests will be asked to call the front desk.</p>
         </section>
       )}
       <h1 className="setup-h1">Tell Cipher about your hotel</h1>

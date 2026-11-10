@@ -29,7 +29,7 @@ export default async function handler(req, res) {
     const a = await answer(hotel, clean);
     // Aggregate counter only — never stores message text.
     await bumpQuestion({ hotelId: hotel.id, intent: a.intent || a.kind });
-    return res.status(200).json({ kind: a.kind, text: a.text, call: !!a.call, source: a.source, intent: a.intent });
+    return res.status(200).json({ kind: a.kind, text: a.text, call: !!a.call, source: a.source, intent: a.intent, asksDesk: !!a.asksDesk });
   } catch {
     return res.status(200).json({ ...connect(hotel, "Something went wrong on my side. "), source: "error" });
   }
