@@ -19,5 +19,11 @@
     "shuttle": "The airport shuttle leaves the lobby at 8:00 AM and 6:00 PM.",
     "landmark": "the lighthouse"
   },
+  "roomService": {
+    "hours": "6:00 AM to 11:00 PM",
+    "menu": "soup and a sandwich",
+    "fee": "$5",
+    "delivery": "to the room"
+  },
   "localRecommendations": []
 }

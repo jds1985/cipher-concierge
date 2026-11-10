@@ -247,4 +247,22 @@ test("development phrasings supply vetted wifi and checkout facts", () => {
   const shuttleLine = "The airport shuttle leaves the lobby at 8:00 AM and 6:00 PM.";
   assert.equal(airport.resolution.text.split(shuttleLine).length - 1, 1);
   assert.match(airport.resolution.text, /4 Pier Road/);
+  for (const wording of ["I can't breathe.", "I CANT BREATHE", "cant breathe", "chest pain", "cant breath help"]) {
+    const safety = resolveTurn({ hotel: silver, question: wording, raw: "Try the pool.", corrections: none });
+    assert.equal(safety.resolution.source, "safety", wording);
+    assert.equal(safety.resolution.text, "Call 911 now. Then tell the front desk.");
+    assert.equal(safety.raw, "Try the pool.");
+  }
+  const withPhone = { ...silver, frontDesk: { ...silver.frontDesk, phoneDisplay: "555-0100", phoneTel: "+15550100" } };
+  assert.equal(resolveTurn({ hotel: withPhone, question: "I can't breathe.", raw: "", corrections: none }).resolution.text, "Call 911 now. Then tell the front desk at 555-0100.");
+  const towels = resolveTurn({ hotel: silver, question: "Where do I get towels?", raw: "They cost $20.", corrections: none });
+  assert.match(towels.resolution.text, /Extra towels are at the front desk/);
+  assert.doesNotMatch(towels.resolution.text, /\$20/);
+  const service = resolveTurn({ hotel: harbor, question: "What does room service cost?", raw: "It is free.", corrections: none });
+  assert.match(service.resolution.text, /\$5/);
+  assert.doesNotMatch(service.resolution.text, /is free/);
+  const noService = resolveTurn({ hotel: cedar, question: "Is room service available?", raw: "", corrections: none });
+  assert.equal(noService.resolution.source, "withheld");
+  const noHouse = resolveTurn({ hotel: harbor, question: "Where do I get towels?", raw: "", corrections: none });
+  assert.equal(noHouse.resolution.source, "withheld");
 });

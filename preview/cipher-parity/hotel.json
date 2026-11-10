@@ -23,5 +23,11 @@
     "landmark": "the town clock"
   },
   "localSpots": [{ "name": "Quill Cafe", "detail": "two blocks east" }],
+  "housekeepingPolicy": {
+    "towels": "Extra towels are at the front desk.",
+    "pillows": "Extra pillows are at the front desk.",
+    "cleaning": "Cleaning is from 9:00 AM to 3:00 PM.",
+    "doNotDisturb": "Hang the do-not-disturb sign on the door."
+  },
   "localRecommendations": []
 }
