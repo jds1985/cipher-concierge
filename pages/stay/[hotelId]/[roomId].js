@@ -53,6 +53,9 @@ html, body { background:#000; color:#fff; overflow-x:hidden; }
   font-size:22px; font-weight:700; line-height:1.3; white-space:normal; justify-content:flex-start; gap:12px;
 }
 .chat.layer-guest .call-btn svg { width:28px; height:28px; flex:none; }
+.chat.layer-guest #guest-status, .chat.layer-guest .chat-head, .chat.layer-guest .bubble, .chat.layer-guest .chip, .chat.layer-guest .dock, .chat.layer-guest .req-btn {
+  position:static; z-index:auto;
+}
 .chat.layer-guest #guest-status { margin:0 0 28px; }
 .chat.layer-guest .msgs {
   display:flex; flex-direction:column; gap:28px; overflow:visible; flex:none;
@@ -263,10 +266,10 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
       if (layerGuest) setGuestStatus("Failed. The front desk can help.");
     }
     if (layerGuest && reply) {
-      if (reply.source === "safety") setGuestStatus("Safety message. Not the model.");
+      if (reply.source === "safety") setGuestStatus("Safety message.");
       else if (reply.source === "withheld") setGuestStatus("Not in the hotel file. This is not a success.");
-      else if (reply.source === "layer") setGuestStatus(reply.modelRan ? "Approved hotel facts. Not the model." : "Approved hotel facts. Cipher did not run on this answer.");
-      else setGuestStatus("Cipher finished. This is not an approved hotel fact.");
+      else if (reply.source === "layer") setGuestStatus("From hotel info.");
+      else setGuestStatus("Cipher finished. This is not from the hotel file.");
     }
     setMsgs((m) => [...m, { ...reply, q, at: hhmm() }]); setBusy(false);
   }
@@ -301,16 +304,15 @@ export default function Stay({ hotel, roomId, t, paused = false, factVersion, op
             <div style={{ minWidth: 0 }}>
               <div className={`bubble bot glass ${m.kind === "emergency" ? "emergency" : ""}`}>
                 <span className="sr-only">Concierge: </span><RichText text={m.content} />
-                {layerGuest && m.raw ? <details><summary>Cipher&apos;s own words</summary><p>{m.raw}</p></details> : null}
                 {reqTypeFor(m) && <div><button type="button" className="req-btn" disabled={reqState.busy}
                   onClick={() => sendRequest(reqTypeFor(m), "")}>Send to front desk</button></div>}
                 {m.call && <div><CallButton frontDesk={hotel.frontDesk} className="inline-call" /></div>}
               </div>
               <div className="meta">
                 {m.at}
-                {layerGuest && m.source === "layer" && <span className="src facts">Approved hotel facts, not model-generated</span>}
+                {layerGuest && m.source === "layer" && <span className="src facts">From hotel info</span>}
                 {layerGuest && m.source === "withheld" && <span className="src">Not in the hotel file. Not counted as a success.</span>}
-                {layerGuest && m.source === "safety" && <span className="src">Safety message. Not the model.</span>}
+                {layerGuest && m.source === "safety" && <span className="src">Safety message</span>}
                 {m.source === "facts" && m.kind === "fact" && <span className="src facts">From {hotel.name}'s info{m.where === "phone" ? " · on this phone" : ""}</span>}
                 {m.source === "cipher" && <span className="src cipher">Cipher{m.where === "phone" ? " on this phone" : ""} · general answer, confirm details with the front desk</span>}
                 {m.where === "server" && <span className="src server">Answered by the hotel's server</span>}

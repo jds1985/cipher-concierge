@@ -33,13 +33,19 @@ function formFromHotel(h) {
     gym: h.fitness || "",
     spa: h.spa || "",
     pets: h.pets || "",
-    roomService: h.roomService || "",
+    roomService: typeof h.roomService === "string" ? h.roomService : "",
+    laundry: h.laundry || "",
+    elevator: h.elevator || "",
+    accessibleRooms: h.accessibleRooms || "",
+    mobilityHelp: h.mobilityHelp || "",
+    housekeeping: typeof h.housekeeping === "string" ? h.housekeeping : "",
     nearbyRestaurants: linesFromRecs(h.localRecommendations, "restaurant"),
     nearbyCoffee: linesFromRecs(h.localRecommendations, "coffee"),
     nearbyBars: linesFromRecs(h.localRecommendations, "bar"),
     faqs: faqsText,
     city: h.location?.city || "",
     area: h.location?.area || "",
+    address: h.location?.address || "",
   };
 }
 
@@ -50,7 +56,8 @@ function emptyForm() {
     breakfastHours: "", breakfastIncluded: "", breakfastLocation: "",
     parking: "", pool: "", gym: "", spa: "", pets: "", roomService: "",
     nearbyRestaurants: "", nearbyCoffee: "", nearbyBars: "", faqs: "",
-    city: "", area: "",
+    city: "", area: "", address: "",
+    laundry: "", elevator: "", accessibleRooms: "", mobilityHelp: "", housekeeping: "",
   };
 }
 
@@ -193,7 +200,7 @@ export default function HotelSetupForm({ token, sessionMode = false, email = "",
               {row.note ? <p>{row.note}</p> : null}
             </article>
           ))}
-          <p>This form does not collect laundry, elevators, accessible rooms, mobility help, or housekeeping details. Those questions are withheld. It also does not collect a street address, so direction questions are withheld.</p>
+          <p>Leave a box empty when the hotel has no fact. An empty box is withheld.</p>
         </section>
       )}
       <h1 className="setup-h1">Tell Cipher about your hotel</h1>
@@ -213,6 +220,8 @@ export default function HotelSetupForm({ token, sessionMode = false, email = "",
           <label className="field"><span>Neighborhood / area</span>
             <input value={form.area} onChange={(e) => set("area", e.target.value)} placeholder="Market Square" maxLength={80} /></label>
         </div>
+        <label className="field"><span>Street address</span>
+          <input value={form.address || ""} onChange={(e) => set("address", e.target.value)} placeholder="12 Market Square" maxLength={160} /></label>
         <label className="field"><span>Front desk phone</span>
           <input value={form.frontDeskPhone} onChange={(e) => set("frontDeskPhone", e.target.value)} placeholder="(865) 555-0100" inputMode="tel" maxLength={40} /></label>
 
@@ -269,6 +278,16 @@ export default function HotelSetupForm({ token, sessionMode = false, email = "",
           <textarea value={form.pets} onChange={(e) => set("pets", e.target.value)} placeholder="Pet-friendly rooms on floors 2–3 with prior registration" maxLength={400} /></label>
         <label className="field"><span>Room service</span>
           <textarea value={form.roomService} onChange={(e) => set("roomService", e.target.value)} maxLength={400} /></label>
+        <label className="field"><span>Laundry</span>
+          <textarea value={form.laundry || ""} onChange={(e) => set("laundry", e.target.value)} placeholder="Floor 2, $4 a load. Leave blank if none." maxLength={400} /></label>
+        <label className="field"><span>Elevators</span>
+          <textarea value={form.elevator || ""} onChange={(e) => set("elevator", e.target.value)} placeholder="The elevator runs all night." maxLength={400} /></label>
+        <label className="field"><span>Accessible rooms</span>
+          <textarea value={form.accessibleRooms || ""} onChange={(e) => set("accessibleRooms", e.target.value)} placeholder="Accessible rooms are on the first floor." maxLength={400} /></label>
+        <label className="field"><span>Mobility help</span>
+          <textarea value={form.mobilityHelp || ""} onChange={(e) => set("mobilityHelp", e.target.value)} placeholder="A wheelchair is at the front desk." maxLength={400} /></label>
+        <label className="field"><span>Housekeeping details</span>
+          <textarea value={form.housekeeping || ""} onChange={(e) => set("housekeeping", e.target.value)} placeholder="Extra towels are at the front desk. Cleaning is 9:00 AM to 3:00 PM." maxLength={400} /></label>
 
         <h2 className="section-title">Nearby</h2>
         <p className="hint">One place per line. Optional: Name — short description</p>

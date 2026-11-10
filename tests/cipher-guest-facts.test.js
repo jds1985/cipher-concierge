@@ -15,7 +15,9 @@ test("the guest fact layer stays off unless a non-production preview turns it on
   assert.equal(cipherLayerGuestEnabled({ VERCEL_ENV: "production", CIPHER_LAYER_GUEST: "1" }), false);
   assert.doesNotMatch(stay, /cipher-layer/);
   assert.match(stay, /cipherLayerGuestEnabled/);
-  assert.match(stay, /Cipher(?:'|&#39;|&apos;)s own words/);
+  assert.match(stay, /From hotel info/);
+  assert.match(stay, /Safety message/);
+  assert.doesNotMatch(stay, /Cipher's own words|Cipher&apos;s own words/);
   assert.match(stay, /Not in the hotel file\. This is not a success\./);
   assert.match(stay, /What is the Wi-Fi\?/);
   assert.match(stay, /I can't breathe/);
@@ -49,6 +51,9 @@ test("a real hotel file answers from its saved facts and withholds empty ones", 
   assert.match(breakfast.content, /7:00 AM to 10:30 AM/);
   const parking = guestLayerReply(oliver, "where is parking");
   assert.match(parking.content, /\$28/);
+  const noPassword = guestLayerReply(oliver, "what is the wifi password");
+  assert.match(noPassword.content, /There is no Wi-Fi password/);
+  assert.match(noPassword.content, /No password needed/);
   const hidden = guestLayerReply({
     id: "hide-pw",
     wifi: { network: "Hide-Guest", password: "secret-pass", showPassword: false, notes: "Ask the front desk." },
@@ -69,6 +74,8 @@ test("the manager preview lists saved form fields and withholds blank ones", () 
     pets: "Pets are not allowed.",
     parking: "",
     pool: "",
+    laundry: "Guest laundry is on floor 2 and costs $4.",
+    address: "12 Ink Street",
     frontDeskPhone: "(865) 555-0100",
   });
   const byLabel = Object.fromEntries(rows.map((row) => [row.label, row]));
@@ -81,6 +88,9 @@ test("the manager preview lists saved form fields and withholds blank ones", () 
   assert.equal(byLabel.Parking.hears, "Not in the file.");
   assert.equal(byLabel.Pool.hears, "Not in the file.");
   assert.equal(byLabel["Room service"].hears, "Not in the file.");
+  assert.match(byLabel.Laundry.hears, /floor 2/);
+  assert.match(byLabel["Street address"].hears, /12 Ink Street/);
+  assert.equal(byLabel.Elevator.hears, "Not in the file.");
   assert.match(byLabel["Front desk phone"].hears, /\(865\) 555-0100/);
   const blankWifi = layerTopicPreview({ name: "Preview Inn", wifiNetwork: "", checkOut: "" });
   const blank = Object.fromEntries(blankWifi.map((row) => [row.label, row]));

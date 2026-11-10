@@ -11,7 +11,9 @@ const frozen = JSON.parse(readFileSync(fixturePath, "utf8"));
 const silver = JSON.parse(readFileSync(new URL("../tests/fixtures/silver-quill-browser.json", import.meta.url), "utf8"));
 const harbor = JSON.parse(readFileSync(new URL("../tests/fixtures/harbor-lantern.json", import.meta.url), "utf8"));
 const cedar = JSON.parse(readFileSync(new URL("../tests/fixtures/cedar-blank.json", import.meta.url), "utf8"));
-const hotels = { [silver.id]: silver, [harbor.id]: harbor, [cedar.id]: cedar };
+const formInk = JSON.parse(readFileSync(new URL("../tests/fixtures/form-ink.json", import.meta.url), "utf8"));
+const formBlank = JSON.parse(readFileSync(new URL("../tests/fixtures/form-blank.json", import.meta.url), "utf8"));
+const hotels = { [silver.id]: silver, [harbor.id]: harbor, [cedar.id]: cedar, [formInk.id]: formInk, [formBlank.id]: formBlank };
 
 const jobs = frozen.items.map((item) => {
   const hotel = hotels[item.hotel];
