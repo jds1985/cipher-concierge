@@ -69,7 +69,7 @@ export default function HotelSetupForm({ token, sessionMode = false, email = "",
   const [saveMsg, setSaveMsg] = useState("");
   const [saveErr, setSaveErr] = useState("");
   const [busy, setBusy] = useState(false);
-  const [rooms, setRooms] = useState("301-304");
+  const [rooms, setRooms] = useState("");
   const [cards, setCards] = useState([]);
   const [qrErr, setQrErr] = useState("");
   const [loaded, setLoaded] = useState(false);
@@ -192,7 +192,7 @@ export default function HotelSetupForm({ token, sessionMode = false, email = "",
         <section className="hear-panel" aria-label="Facts the guest page will use">
           <style dangerouslySetInnerHTML={{ __html: ".hear-panel{background:#000;color:#fff;border:4px solid #ffe14a;padding:16px;margin:0 0 28px;font-size:22px;line-height:1.45;overflow-x:hidden;max-width:100%}.hear-panel h2{font-size:32px;line-height:1.2;margin:0 0 16px}.hear-panel p{font-size:22px;line-height:1.45;margin:0 0 12px;overflow-wrap:anywhere}.hear-panel article{display:block;border-top:4px solid #fff;margin-top:20px;padding-top:16px}.hear-panel h3{display:block;font-size:24px;line-height:1.3;margin:0 0 8px}.setup-page{overflow-x:hidden;max-width:100%}.setup-page .nav{flex-wrap:wrap;gap:8px}.setup-page .nav a,.setup-page .nav form{margin-left:0 !important}" }} />
           <h2>What guests will hear</h2>
-          <p>These lines use the boxes already on this form. An empty box is not a fact. Saving still uses the same Save button.</p>
+          <p>These lines use the boxes on this form. An empty box stays blank. Saving still uses the same Save button.</p>
           {layerTopicPreview(form).map((row) => (
             <article key={row.label}>
               <h3>{row.label}</h3>
@@ -205,8 +205,8 @@ export default function HotelSetupForm({ token, sessionMode = false, email = "",
       )}
       <h1 className="setup-h1">Tell Cipher about your hotel</h1>
       <p className="setup-lede">
-        Fill this out once. Guests who scan a room QR get answers from what you save here — no developer needed.
-        Leave a box blank if you don't know; Cipher will send those questions to your front desk.
+        Fill this out once. Guests who scan a room QR get answers from what you save here.
+        Leave a box blank if you don't know. Guests will be told to ask the front desk. Nothing is sent unless the guest taps Request help.
       </p>
       <p className="hint no-print">Hotel id: <code>{hotelId}</code> · Keep this page's link private.</p>
 
@@ -234,7 +234,7 @@ export default function HotelSetupForm({ token, sessionMode = false, email = "",
         </div>
         <label className="check">
           <input type="checkbox" checked={form.wifiShowPassword} onChange={(e) => set("wifiShowPassword", e.target.checked)} />
-          <span>Show the Wi-Fi password to guests in chat. If unchecked, Cipher tells them to ask the front desk.</span>
+          <span>Show the Wi-Fi password to guests. Leave this off to keep a saved password private. If the password box is empty, guests are told there is no password.</span>
         </label>
         <label className="field"><span>Wi-Fi notes (optional)</span>
           <input value={form.wifiNotes} onChange={(e) => set("wifiNotes", e.target.value)} placeholder="Join and accept the splash page terms" maxLength={280} /></label>

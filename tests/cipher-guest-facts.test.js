@@ -7,6 +7,7 @@ import { answer } from "../lib/answer.js";
 
 const oliver = JSON.parse(readFileSync(new URL("../config/hotels/the-oliver.json", import.meta.url), "utf8"));
 const stay = readFileSync(new URL("../pages/stay/[hotelId]/[roomId].js", import.meta.url), "utf8");
+const setupForm = readFileSync(new URL("../components/HotelSetupForm.js", import.meta.url), "utf8");
 
 test("the guest fact layer stays off unless a non-production preview turns it on", () => {
   assert.equal(cipherLayerGuestEnabled({}), false);
@@ -22,6 +23,10 @@ test("the guest fact layer stays off unless a non-production preview turns it on
   assert.doesNotMatch(stay, /approved file|Not counted as a success|Not in the hotel file/);
   assert.match(stay, /What is the Wi-Fi\?/);
   assert.match(stay, /I can't breathe/);
+  assert.match(setupForm, /If the password box is empty, guests are told there is no password/);
+  assert.match(setupForm, /Nothing is sent unless the guest taps Request help/);
+  assert.doesNotMatch(setupForm, /send those questions to your front desk/);
+  assert.doesNotMatch(setupForm, /useState\("301-304"\)/);
 });
 
 test("a real hotel file answers from its saved facts and withholds empty ones", () => {
