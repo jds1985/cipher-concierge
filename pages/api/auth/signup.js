@@ -6,6 +6,8 @@ import { setHotelLogin, createSession, sessionCookie, sameOrigin, clientIp, norm
 import { slugifyHotelId, cleanText } from "../../../lib/hotel-form.js";
 import { isFileHotel } from "../../../lib/hotels.js";
 import { rateLimit } from "../../../lib/ratelimit.js";
+import { baseUrl } from "../../../lib/admin.js";
+import { sendWelcomeEmail } from "../../../lib/welcome-email.js";
 
 export const config = { api: { bodyParser: { sizeLimit: "4kb" } } };
 
@@ -44,7 +46,9 @@ export default async function handler(req, res) {
     await setHotelLogin({ hotelId: hotel.id, email, password });
     const token = await createSession(await getUser(email));
     res.setHeader("Set-Cookie", sessionCookie(token));
-    return res.status(201).json({ ok: true, next: "/manage" });
+    const loginUrl = `${baseUrl(req).replace(/\/$/, "")}/login`;
+    const welcome = await sendWelcomeEmail({ to: email, hotelName, loginUrl });
+    return res.status(201).json({ ok: true, next: "/manage", welcome: welcome.sent ? "sent" : "skipped" });
   } catch (e) {
     if (e.status === 409) return res.status(409).json({ error: "That email already has a hotel login. Sign in instead." });
     console.error("signup failed", e?.status || e?.message);
