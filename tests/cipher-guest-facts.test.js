@@ -116,8 +116,12 @@ test("the manager preview lists saved form fields and withholds blank ones", () 
   assert.match(byLabel["Front desk phone"].hears, /\(865\) 555-0100/);
   const blankWifi = layerTopicPreview({ name: "Preview Inn", wifiNetwork: "", checkOut: "" });
   const blank = Object.fromEntries(blankWifi.map((row) => [row.label, row]));
-  assert.match(blank["Wi-Fi name"].note, /Guest Wi-Fi/);
-  assert.match(blank.Checkout.note, /11:00 AM/);
+  assert.match(blank["Wi-Fi name"].hears, /I don't have the Wi-Fi name yet/);
+  assert.doesNotMatch(blank["Wi-Fi name"].hears, /Guest Wi-Fi/);
+  assert.match(blank["Wi-Fi name"].note, /asked to call the front desk/);
+  assert.match(blank.Checkout.hears, /I don't have the checkout time yet/);
+  assert.doesNotMatch(blank.Checkout.hears, /11:00 AM/);
+  assert.match(blank.Checkout.note, /asked to call the front desk/);
   assert.match(blank["Front desk phone"].hears, /will not include a phone number/);
 });
 

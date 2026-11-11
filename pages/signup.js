@@ -66,7 +66,7 @@ export default function Signup() {
       <nav className="nav" aria-label="Create a hotel"><Mark size={30} /><span className="brand">CIPHER</span></nav>
       <main className="login-wrap">
         <h1>Create your hotel</h1>
-        <p className="lede">Make a manager login, then fill in what guests should hear. No owner key is needed.</p>
+        <p className="lede">Make a manager login, then fill in what guests should hear.</p>
         <form className="login-form" onSubmit={onSubmit} noValidate>
           <label>Hotel name
             <input name="hotelName" value={hotelName} onChange={(e) => setHotelName(e.target.value)} required autoComplete="organization" autoFocus />

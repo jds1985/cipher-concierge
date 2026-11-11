@@ -1,7 +1,7 @@
 // POST /api/auth/signup { hotelName, email, password, passwordAgain, website? }
 // Public hotel sign-up. Creates the hotel and the manager login, then starts a session.
 // The edit token stays on the server. A filled website field is ignored (bot trap).
-import { createHotelShell, getStoredHotel, kvIncrWindow, STORE_PREFIX, hashSecret } from "../../../lib/store.js";
+import { createHotelShell, getStoredHotel, kvIncrWindow, storePrefix, hashSecret } from "../../../lib/store.js";
 import { setHotelLogin, createSession, sessionCookie, sameOrigin, clientIp, normalizeEmail, passwordProblem, getUser } from "../../../lib/auth.js";
 import { slugifyHotelId, cleanText } from "../../../lib/hotel-form.js";
 import { isFileHotel } from "../../../lib/hotels.js";
@@ -21,7 +21,7 @@ export default async function handler(req, res) {
   if (!rateLimit("signup:" + ip, { limit: 5, windowMs: 60 * 60_000 }).ok) {
     return res.status(429).json({ error: "Too many sign-ups from this network. Wait an hour and try again." });
   }
-  const shared = await kvIncrWindow(`${STORE_PREFIX}rl:signup:${hashSecret(ip).slice(0, 24)}`, 3600);
+  const shared = await kvIncrWindow(`${storePrefix()}rl:signup:${hashSecret(ip).slice(0, 24)}`, 3600);
   if (shared > 5) return res.status(429).json({ error: "Too many sign-ups from this network. Wait an hour and try again." });
 
   const hotelName = cleanText(req.body?.hotelName, 80);

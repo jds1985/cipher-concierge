@@ -6,7 +6,7 @@ import { guestAccess, PAUSED_MESSAGE } from "../../../lib/billing.js";
 import { verifyRoom } from "../../../lib/token.js";
 import { rateLimit } from "../../../lib/ratelimit.js";
 import { sessionFromReq, clientIp } from "../../../lib/auth.js";
-import { kvIncrWindow, STORE_PREFIX, hashSecret } from "../../../lib/store.js";
+import { kvIncrWindow, storePrefix, hashSecret } from "../../../lib/store.js";
 import { createRequest, listRequests, REQUEST_TYPES } from "../../../lib/requests.js";
 
 export const config = { api: { bodyParser: { sizeLimit: "4kb" } } };
@@ -31,7 +31,7 @@ export default async function handler(req, res) {
   const rl1 = rateLimit("reqip:" + ip, { limit: 5, windowMs: 60_000 });
   const rl2 = rateLimit(`reqroom:${hotel.id}:${roomId}`, { limit: 3, windowMs: 60_000 });
   // Shared (Redis) per-room hourly cap so serverless instances can't be used to flood staff.
-  const n = await kvIncrWindow(`${STORE_PREFIX}rl:req:${hashSecret(hotel.id + "|" + roomId).slice(0, 24)}`, 3600);
+  const n = await kvIncrWindow(`${storePrefix()}rl:req:${hashSecret(hotel.id + "|" + roomId).slice(0, 24)}`, 3600);
   if (!rl1.ok || !rl2.ok || n > 12) return res.status(429).json({ error: "Too many requests. Please call the front desk." });
   const r = await createRequest({ hotelId: hotel.id, roomId, type, note });
   return res.status(200).json({ id: r.id, status: r.status });

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { _resetStoreClient, createHotelShell, STORE_PREFIX } from "../lib/store.js";
+import { _resetStoreClient, createHotelShell, storePrefix } from "../lib/store.js";
 import { setHotelLogin, createSession } from "../lib/auth.js";
 import { signRoom } from "../lib/token.js";
 import { cleanNote, listRequests } from "../lib/requests.js";
@@ -95,5 +95,5 @@ test("note sanitized and capped; intents no longer say they can't send", () => {
     assert.match(m.text, /Send to front desk/);
     assert.doesNotMatch(m.text, /can't/);
   }
-  assert.ok(STORE_PREFIX);
+  assert.equal(storePrefix(), "cc:v1:");
 });

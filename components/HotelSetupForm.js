@@ -23,7 +23,7 @@ function formFromHotel(h) {
     wifiShowPassword: !!h.wifi?.showPassword,
     wifiNotes: h.wifi?.notes || "",
     checkIn: h.checkIn?.time || "3:00 PM",
-    checkOut: h.checkOut?.time || "11:00 AM",
+    checkOut: h.checkOut?.time || "",
     lateCheckout: h.checkOut?.late || "",
     breakfastHours: h.breakfast?.hours || "",
     breakfastIncluded: h.breakfast?.included == null ? "" : h.breakfast.included ? "yes" : "no",
@@ -52,7 +52,7 @@ function formFromHotel(h) {
 function emptyForm() {
   return {
     name: "", frontDeskPhone: "", wifiNetwork: "", wifiPassword: "", wifiShowPassword: false, wifiNotes: "",
-    checkIn: "3:00 PM", checkOut: "11:00 AM", lateCheckout: "",
+    checkIn: "3:00 PM", checkOut: "", lateCheckout: "",
     breakfastHours: "", breakfastIncluded: "", breakfastLocation: "",
     parking: "", pool: "", gym: "", spa: "", pets: "", roomService: "",
     nearbyRestaurants: "", nearbyCoffee: "", nearbyBars: "", faqs: "",
