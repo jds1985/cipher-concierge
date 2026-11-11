@@ -25,6 +25,7 @@ const LOGIN_CSS = `
 .login-err{font-size:19px;background:#ffe3e3;color:#7a0010;border-radius:10px;padding:12px 14px;margin:0}
 .login-ok{font-size:19px;background:#e2f7e7;color:#0b4a1d;border-radius:10px;padding:12px 14px;margin:0}
 .login-help{font-size:18px;color:#e8ecf7;margin-top:22px}
+.login-help a{color:#ffe14a}
 `;
 
 export default function Login({ signedOut }) {
@@ -76,6 +77,7 @@ export default function Login({ signedOut }) {
           {err && <p className="login-err" role="alert">{err}</p>}
           <button type="submit" disabled={busy}>{busy ? "Signing in…" : "Sign in"}</button>
         </form>
+        <p className="login-help">New hotel? <a href="/signup">Create your hotel</a>.</p>
         <p className="login-help">Forgot your password? Call or email Cipher CTS and we'll reset it. Your private edit link still works too.</p>
       </main>
     </div>
