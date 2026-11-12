@@ -242,9 +242,9 @@ export default function HotelSetupForm({ token, sessionMode = false, email = "",
         <h2 className="section-title">Check-in and checkout</h2>
         <p className="time-ask" id="time-ask">Type your check-in time and your checkout time. Leave a box empty if you do not have that time yet. Guests will be asked to call the front desk.</p>
         <div className="grid2">
-          <label className="field"><span>Check-in time</span>
+          <label className="field field-ask"><span>Check-in time</span>
             <input value={form.checkIn} onChange={(e) => set("checkIn", e.target.value)} maxLength={40} aria-describedby="time-ask" /></label>
-          <label className="field"><span>Checkout time</span>
+          <label className="field field-ask"><span>Checkout time</span>
             <input value={form.checkOut} onChange={(e) => set("checkOut", e.target.value)} maxLength={40} aria-describedby="time-ask" /></label>
         </div>
         <label className="field"><span>Late checkout policy</span>
