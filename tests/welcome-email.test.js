@@ -52,6 +52,17 @@ test("a missing key or a failed send does not block sign-up", async () => {
   });
   assert.deepEqual(failed, { sent: false, reason: "error" });
 
+  const rejected = await sendWelcomeEmail({
+    to: "a@b.test",
+    hotelName: "Inn",
+    loginUrl: "https://x/login",
+    env: { RESEND_API_KEY: "re_test_key" },
+    fetchImpl: async () => ({ ok: false, status: 403, json: async () => ({ message: "The domain is not verified" }) }),
+  });
+  assert.equal(rejected.sent, false);
+  assert.equal(rejected.status, 403);
+  assert.match(rejected.error, /not verified/);
+
   let posted = null;
   const sent = await sendWelcomeEmail({
     to: "manager@hotel.test",
@@ -60,10 +71,11 @@ test("a missing key or a failed send does not block sign-up", async () => {
     env: { RESEND_API_KEY: "re_test_key" },
     fetchImpl: async (url, opts) => {
       posted = { url, body: JSON.parse(opts.body), auth: opts.headers.Authorization };
-      return { ok: true, status: 200 };
+      return { ok: true, status: 200, json: async () => ({ id: "email_test_1" }) };
     },
   });
-  assert.deepEqual(sent, { sent: true, reason: "sent" });
+  assert.equal(sent.sent, true);
+  assert.equal(sent.id, "email_test_1");
   assert.equal(posted.url, "https://api.resend.com/emails");
   assert.equal(posted.auth, "Bearer re_test_key");
   assert.deepEqual(posted.body.to, ["manager@hotel.test"]);

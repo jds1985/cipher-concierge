@@ -48,7 +48,13 @@ export default async function handler(req, res) {
     res.setHeader("Set-Cookie", sessionCookie(token));
     const loginUrl = `${baseUrl(req).replace(/\/$/, "")}/login`;
     const welcome = await sendWelcomeEmail({ to: email, hotelName, loginUrl });
-    return res.status(201).json({ ok: true, next: "/manage", welcome: welcome.sent ? "sent" : "skipped" });
+    return res.status(201).json({
+      ok: true,
+      next: "/manage",
+      welcome: welcome.sent ? "sent" : "skipped",
+      welcomeId: welcome.id || null,
+      welcomeError: welcome.error || null,
+    });
   } catch (e) {
     if (e.status === 409) return res.status(409).json({ error: "That email already has a hotel login. Sign in instead." });
     console.error("signup failed", e?.status || e?.message);
