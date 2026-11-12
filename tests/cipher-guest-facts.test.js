@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { cipherLayerGuestEnabled } from "../lib/layer-flag.js";
 import { guestLayerReply, layerTopicPreview } from "../lib/guest-facts.js";
 import { answer } from "../lib/answer.js";
+import { gradeFactAnswer, emptyCorrections } from "../lib/cipher-layer.js";
 
 const oliver = JSON.parse(readFileSync(new URL("../config/hotels/the-oliver.json", import.meta.url), "utf8"));
 const stay = readFileSync(new URL("../pages/stay/[hotelId]/[roomId].js", import.meta.url), "utf8");
@@ -123,6 +124,78 @@ test("the manager preview lists saved form fields and withholds blank ones", () 
   assert.doesNotMatch(blank.Checkout.hears, /11:00 AM/);
   assert.match(blank.Checkout.note, /asked to call the front desk/);
   assert.match(blank["Front desk phone"].hears, /will not include a phone number/);
+});
+
+test("a saved check-in or checkout time is told exactly, and a blank time goes to the desk", () => {
+  const hotel = {
+    id: "time-inn",
+    name: "Time Inn",
+    frontDesk: { phoneDisplay: "(865) 555-0142", phoneTel: "+18655550142" },
+    wifi: { network: "Time-Guest", password: null, showPassword: false, notes: null },
+    checkIn: { time: "4:15 PM" },
+    checkOut: { time: "10:45 AM" },
+  };
+  const checkIn = guestLayerReply(hotel, "what time is check-in");
+  assert.equal(checkIn.content, "Check-in is at 4:15 PM.");
+  assert.equal(checkIn.source, "layer");
+  assert.equal(checkIn.asksDesk, false);
+  assert.equal(checkIn.countedAsSuccess, true);
+  const checkOut = guestLayerReply(hotel, "what time is checkout");
+  assert.equal(checkOut.content, "Check-out is at 10:45 AM.");
+  assert.equal(checkOut.asksDesk, false);
+  const together = guestLayerReply(hotel, "what time is check-in and what time is checkout");
+  assert.match(together.content, /Check-in is at 4:15 PM/);
+  assert.match(together.content, /Check-out is at 10:45 AM/);
+  assert.equal(together.asksDesk, false);
+  const compound = guestLayerReply(hotel, "what time is checkout and what is the wifi");
+  assert.match(compound.content, /Check-out is at 10:45 AM/);
+  assert.match(compound.content, /Time-Guest/);
+  assert.equal(compound.asksDesk, false);
+  assert.doesNotMatch(compound.content, /3:00 PM|11:00 AM/);
+
+  const blank = {
+    ...hotel,
+    checkIn: { time: null },
+    checkOut: { time: null },
+  };
+  const blankIn = guestLayerReply(blank, "what time is check-in");
+  assert.match(blankIn.content, /I don't have check-in info yet/);
+  assert.match(blankIn.content, /Please ask the front desk at \(865\) 555-0142/);
+  assert.equal(blankIn.asksDesk, true);
+  assert.doesNotMatch(blankIn.content, /3:00 PM|4:15 PM|10:45 AM|11:00 AM/);
+  const blankOut = guestLayerReply(blank, "what time is checkout");
+  assert.match(blankOut.content, /I don't have the checkout time yet/);
+  assert.match(blankOut.content, /Please ask the front desk/);
+  assert.doesNotMatch(blankOut.content, /3:00 PM|4:15 PM|10:45 AM|11:00 AM/);
+  const blankCompound = guestLayerReply(blank, "what time is checkout and what is the wifi");
+  assert.match(blankCompound.content, /Time-Guest/);
+  assert.match(blankCompound.content, /I don't have the checkout time yet/);
+  assert.match(blankCompound.content, /Please ask the front desk/);
+  assert.equal((blankCompound.content.match(/Please ask the front desk/g) || []).length, 1);
+  assert.doesNotMatch(blankCompound.content, /3:00 PM|11:00 AM|10:45 AM/);
+
+  const silver = JSON.parse(readFileSync(new URL("./fixtures/silver-quill-browser.json", import.meta.url), "utf8"));
+  const frozen = JSON.parse(readFileSync(new URL("./fixtures/cipher-facts-heldout-b.json", import.meta.url), "utf8"));
+  const arrive = frozen.items.find((item) => item.id === "arrive");
+  const graded = gradeFactAnswer({
+    hotel: silver,
+    question: arrive.question,
+    raw: "",
+    corrections: emptyCorrections(silver.id),
+    expect: arrive,
+  });
+  assert.equal(graded.bucket, "withheld");
+  assert.doesNotMatch(graded.text, /3:00 PM/);
+  const guestArrive = guestLayerReply(silver, arrive.question);
+  assert.equal(guestArrive.content, "Check-in is at 3:00 PM.");
+  assert.equal(guestArrive.asksDesk, false);
+
+  const rows = layerTopicPreview({ name: "Time Inn", checkIn: "4:15 PM", checkOut: "", frontDeskPhone: "(865) 555-0142" });
+  const byLabel = Object.fromEntries(rows.map((row) => [row.label, row]));
+  assert.equal(byLabel["Check-in"].hears, "Check-in is at 4:15 PM.");
+  assert.equal(byLabel["Check-in"].empty, false);
+  assert.match(byLabel.Checkout.hears, /I don't have the checkout time yet/);
+  assert.match(byLabel.Checkout.note, /front desk/);
 });
 
 test("the server answer path uses the layer only when the preview flag is on", async () => {
