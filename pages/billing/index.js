@@ -20,7 +20,7 @@ const LABEL = { trialing: "Free trial", active: "Active", past_due: "Payment ove
   incomplete: "Waiting for payment", incomplete_expired: "Expired", paused: "Paused — add a card" };
 const fmt = (d) => (d ? new Date(d).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" }) : "");
 const BIG = `.bill-big{font-size:20px;line-height:1.5}.bill-status{font:800 30px "Plus Jakarta Sans";color:#fff}
-.bill-price{font:800 40px "Plus Jakarta Sans";color:var(--lime)}.btn-xl{min-height:60px;font-size:20px;padding:0 28px}`;
+.bill-price{font:800 40px "Plus Jakarta Sans";color:var(--lime)}.btn-xl{box-sizing:border-box;max-width:100%;min-height:60px;font-size:20px;padding:0 28px}`;
 
 export default function Billing({ email, configured, buttonVisible, done, canceled, billing }) {
   const [rooms, setRooms] = useState(billing.rooms || "");

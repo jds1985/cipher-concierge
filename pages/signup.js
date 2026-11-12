@@ -12,18 +12,19 @@ export async function getServerSideProps({ req, res }) {
 }
 
 const CSS = `
-.login-wrap{max-width:640px;margin:32px auto;padding:0 18px}
-.login-wrap h1{font-size:40px;line-height:1.15;margin:18px 0 8px;color:#fff}
-.login-wrap .lede{font-size:22px;color:#fff;margin:0 0 24px;line-height:1.4}
-.login-form{display:grid;gap:22px;padding:28px;border-radius:18px;background:#000;border:4px solid #fff}
-.login-form label{display:grid;gap:8px;font-size:22px;font-weight:700;color:#fff}
-.login-form input{font-size:22px;padding:16px 14px;border-radius:12px;border:3px solid #fff;background:#fff;color:#060b1a;min-height:64px;width:100%;box-sizing:border-box}
-.login-form input:focus{outline:4px solid #ffe14a;outline-offset:2px}
-.login-form button{font-size:24px;font-weight:800;min-height:72px;border-radius:12px;border:4px solid #fff;background:#ffe14a;color:#000;cursor:pointer;text-align:left;padding:0 18px}
-.login-form button:focus{outline:4px solid #fff;outline-offset:3px}
+.login-wrap{box-sizing:border-box;width:100%;max-width:640px;margin:32px auto;padding:0}
+.login-wrap h1{font-size:40px;line-height:1.15;margin:18px 0 8px;color:#fff;overflow-wrap:anywhere}
+.login-wrap .lede{font-size:22px;color:#fff;margin:0 0 24px;line-height:1.4;overflow-wrap:anywhere}
+.login-form{box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr);gap:22px;width:100%;max-width:100%;min-width:0;padding:20px;border-radius:18px;background:#000;border:4px solid #fff}
+.login-form label{display:grid;gap:8px;min-width:0;max-width:100%;font-size:22px;font-weight:700;color:#fff}
+.login-form input,.login-form button{box-sizing:border-box;display:block;width:100%;max-width:100%;min-width:0}
+.login-form input{font-size:22px;padding:16px 14px;border-radius:12px;border:3px solid #fff;background:#fff;color:#060b1a;min-height:64px}
+.login-form input:focus{outline:4px solid #ffe14a;outline-offset:0}
+.login-form button{font-size:24px;font-weight:800;min-height:72px;border-radius:12px;border:4px solid #fff;background:#ffe14a;color:#000;cursor:pointer;text-align:left;padding:16px 18px;white-space:normal}
+.login-form button:focus{outline:4px solid #fff;outline-offset:0}
 .login-form button[disabled]{opacity:.7}
-.login-err{font-size:20px;background:#ffe3e3;color:#7a0010;border-radius:10px;padding:14px 16px;margin:0}
-.login-help{font-size:20px;color:#fff;margin-top:22px;line-height:1.4}
+.login-err{font-size:20px;background:#ffe3e3;color:#7a0010;border-radius:10px;padding:14px 16px;margin:0;overflow-wrap:anywhere}
+.login-help{font-size:20px;color:#fff;margin-top:22px;line-height:1.4;overflow-wrap:anywhere}
 .login-help a{color:#ffe14a}
 .hp{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
 `;

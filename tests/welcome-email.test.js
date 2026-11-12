@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { _resetStoreClient } from "../lib/store.js";
 import { _reset as resetRate } from "../lib/ratelimit.js";
 import { welcomeEmailConfigured, welcomeEmailContent, sendWelcomeEmail, CIPHER_CTS_LOGO_URL } from "../lib/welcome-email.js";
@@ -18,6 +19,18 @@ function mockRes() {
   r.json = (b) => { r.body = b; return r; };
   return r;
 }
+
+test("the hotel sign-in card fits a narrow screen", () => {
+  const login = readFileSync(new URL("../pages/login.js", import.meta.url), "utf8");
+  const signup = readFileSync(new URL("../pages/signup.js", import.meta.url), "utf8");
+  for (const src of [login, signup]) {
+    assert.match(src, /grid-template-columns:minmax\(0,1fr\)/);
+    assert.match(src, /width:100%/);
+    assert.match(src, /max-width:100%/);
+    assert.match(src, /min-width:0/);
+    assert.match(src, /box-sizing:border-box/);
+  }
+});
 
 test("welcome email is large, high contrast, and includes the public Cipher CTS logo", () => {
   assert.equal(welcomeEmailConfigured({}), false);
