@@ -2,6 +2,7 @@ import Head from "next/head";
 import { useEffect, useState } from "react";
 import Mark from "./Mark";
 import { SETUP_CSS } from "../lib/setup-css";
+import { layerTopicPreview } from "../lib/guest-facts";
 
 function linesFromRecs(recs, kind) {
   return (recs || [])
@@ -21,8 +22,8 @@ function formFromHotel(h) {
     wifiPassword: h.wifi?.password || "",
     wifiShowPassword: !!h.wifi?.showPassword,
     wifiNotes: h.wifi?.notes || "",
-    checkIn: h.checkIn?.time || "3:00 PM",
-    checkOut: h.checkOut?.time || "11:00 AM",
+    checkIn: h.checkIn?.time || "",
+    checkOut: h.checkOut?.time || "",
     lateCheckout: h.checkOut?.late || "",
     breakfastHours: h.breakfast?.hours || "",
     breakfastIncluded: h.breakfast?.included == null ? "" : h.breakfast.included ? "yes" : "no",
@@ -32,28 +33,35 @@ function formFromHotel(h) {
     gym: h.fitness || "",
     spa: h.spa || "",
     pets: h.pets || "",
-    roomService: h.roomService || "",
+    roomService: typeof h.roomService === "string" ? h.roomService : "",
+    laundry: h.laundry || "",
+    elevator: h.elevator || "",
+    accessibleRooms: h.accessibleRooms || "",
+    mobilityHelp: h.mobilityHelp || "",
+    housekeeping: typeof h.housekeeping === "string" ? h.housekeeping : "",
     nearbyRestaurants: linesFromRecs(h.localRecommendations, "restaurant"),
     nearbyCoffee: linesFromRecs(h.localRecommendations, "coffee"),
     nearbyBars: linesFromRecs(h.localRecommendations, "bar"),
     faqs: faqsText,
     city: h.location?.city || "",
     area: h.location?.area || "",
+    address: h.location?.address || "",
   };
 }
 
 function emptyForm() {
   return {
     name: "", frontDeskPhone: "", wifiNetwork: "", wifiPassword: "", wifiShowPassword: false, wifiNotes: "",
-    checkIn: "3:00 PM", checkOut: "11:00 AM", lateCheckout: "",
+    checkIn: "", checkOut: "", lateCheckout: "",
     breakfastHours: "", breakfastIncluded: "", breakfastLocation: "",
     parking: "", pool: "", gym: "", spa: "", pets: "", roomService: "",
     nearbyRestaurants: "", nearbyCoffee: "", nearbyBars: "", faqs: "",
-    city: "", area: "",
+    city: "", area: "", address: "",
+    laundry: "", elevator: "", accessibleRooms: "", mobilityHelp: "", housekeeping: "",
   };
 }
 
-export default function HotelSetupForm({ token, sessionMode = false, email = "" }) {
+export default function HotelSetupForm({ token, sessionMode = false, email = "", layerPreview = false }) {
   const auth = sessionMode ? {} : { token };
   const [form, setForm] = useState(emptyForm());
   const [hotelId, setHotelId] = useState("");
@@ -61,7 +69,7 @@ export default function HotelSetupForm({ token, sessionMode = false, email = "" 
   const [saveMsg, setSaveMsg] = useState("");
   const [saveErr, setSaveErr] = useState("");
   const [busy, setBusy] = useState(false);
-  const [rooms, setRooms] = useState("301-304");
+  const [rooms, setRooms] = useState("");
   const [cards, setCards] = useState([]);
   const [qrErr, setQrErr] = useState("");
   const [loaded, setLoaded] = useState(false);
@@ -180,10 +188,25 @@ export default function HotelSetupForm({ token, sessionMode = false, email = "" 
         )}
       </nav>
 
+      {layerPreview && (
+        <section className="hear-panel" aria-label="Facts the guest page will use">
+          <style dangerouslySetInnerHTML={{ __html: ".hear-panel{background:#000;color:#fff;border:4px solid #ffe14a;padding:16px;margin:0 0 28px;font-size:22px;line-height:1.45;overflow-x:hidden;max-width:100%}.hear-panel h2{font-size:32px;line-height:1.2;margin:0 0 16px}.hear-panel p{font-size:22px;line-height:1.45;margin:0 0 12px;overflow-wrap:anywhere}.hear-panel article{display:block;border-top:4px solid #fff;margin-top:20px;padding-top:16px}.hear-panel h3{display:block;font-size:24px;line-height:1.3;margin:0 0 8px}.setup-page{overflow-x:hidden;max-width:100%}.setup-page .nav{flex-wrap:wrap;gap:8px}.setup-page .nav a,.setup-page .nav form{margin-left:0 !important}" }} />
+          <h2>What guests will hear</h2>
+          <p>These lines use the boxes on this form. An empty box stays blank. Saving still uses the same Save button.</p>
+          {layerTopicPreview(form).map((row) => (
+            <article key={row.label}>
+              <h3>{row.label}</h3>
+              <p>{row.hears}</p>
+              {row.note ? <p>{row.note}</p> : null}
+            </article>
+          ))}
+          <p>Leave a box empty when you do not have that information. Guests will be asked to call the front desk.</p>
+        </section>
+      )}
       <h1 className="setup-h1">Tell Cipher about your hotel</h1>
       <p className="setup-lede">
-        Fill this out once. Guests who scan a room QR get answers from what you save here — no developer needed.
-        Leave a box blank if you don't know; Cipher will send those questions to your front desk.
+        Fill this out once. Guests who scan a room QR get answers from what you save here.
+        Leave a box blank if you don't know. Guests will be told to ask the front desk. Nothing is sent unless the guest taps Request help.
       </p>
       <p className="hint no-print">Hotel id: <code>{hotelId}</code> · Keep this page's link private.</p>
 
@@ -197,6 +220,8 @@ export default function HotelSetupForm({ token, sessionMode = false, email = "" 
           <label className="field"><span>Neighborhood / area</span>
             <input value={form.area} onChange={(e) => set("area", e.target.value)} placeholder="Market Square" maxLength={80} /></label>
         </div>
+        <label className="field"><span>Street address</span>
+          <input value={form.address || ""} onChange={(e) => set("address", e.target.value)} placeholder="12 Market Square" maxLength={160} /></label>
         <label className="field"><span>Front desk phone</span>
           <input value={form.frontDeskPhone} onChange={(e) => set("frontDeskPhone", e.target.value)} placeholder="(865) 555-0100" inputMode="tel" maxLength={40} /></label>
 
@@ -209,17 +234,18 @@ export default function HotelSetupForm({ token, sessionMode = false, email = "" 
         </div>
         <label className="check">
           <input type="checkbox" checked={form.wifiShowPassword} onChange={(e) => set("wifiShowPassword", e.target.checked)} />
-          <span>Show the Wi-Fi password to guests in chat. If unchecked, Cipher tells them to ask the front desk.</span>
+          <span>Show the Wi-Fi password to guests. Leave this off to keep a saved password private. If the password box is empty, guests are told there is no password.</span>
         </label>
         <label className="field"><span>Wi-Fi notes (optional)</span>
           <input value={form.wifiNotes} onChange={(e) => set("wifiNotes", e.target.value)} placeholder="Join and accept the splash page terms" maxLength={280} /></label>
 
-        <h2 className="section-title">Check-in & checkout</h2>
+        <h2 className="section-title">Check-in and checkout</h2>
+        <p className="time-ask" id="time-ask">Type your check-in time and your checkout time. Leave a box empty if you do not have that time yet. Guests will be asked to call the front desk.</p>
         <div className="grid2">
-          <label className="field"><span>Check-in time</span>
-            <input value={form.checkIn} onChange={(e) => set("checkIn", e.target.value)} maxLength={40} /></label>
-          <label className="field"><span>Checkout time</span>
-            <input value={form.checkOut} onChange={(e) => set("checkOut", e.target.value)} maxLength={40} /></label>
+          <label className="field field-ask"><span>Check-in time</span>
+            <input value={form.checkIn} onChange={(e) => set("checkIn", e.target.value)} maxLength={40} aria-describedby="time-ask" /></label>
+          <label className="field field-ask"><span>Checkout time</span>
+            <input value={form.checkOut} onChange={(e) => set("checkOut", e.target.value)} maxLength={40} aria-describedby="time-ask" /></label>
         </div>
         <label className="field"><span>Late checkout policy</span>
           <textarea value={form.lateCheckout} onChange={(e) => set("lateCheckout", e.target.value)} maxLength={500}
@@ -253,6 +279,16 @@ export default function HotelSetupForm({ token, sessionMode = false, email = "" 
           <textarea value={form.pets} onChange={(e) => set("pets", e.target.value)} placeholder="Pet-friendly rooms on floors 2–3 with prior registration" maxLength={400} /></label>
         <label className="field"><span>Room service</span>
           <textarea value={form.roomService} onChange={(e) => set("roomService", e.target.value)} maxLength={400} /></label>
+        <label className="field"><span>Laundry</span>
+          <textarea value={form.laundry || ""} onChange={(e) => set("laundry", e.target.value)} placeholder="Floor 2, $4 a load. Leave blank if none." maxLength={400} /></label>
+        <label className="field"><span>Elevators</span>
+          <textarea value={form.elevator || ""} onChange={(e) => set("elevator", e.target.value)} placeholder="The elevator runs all night." maxLength={400} /></label>
+        <label className="field"><span>Accessible rooms</span>
+          <textarea value={form.accessibleRooms || ""} onChange={(e) => set("accessibleRooms", e.target.value)} placeholder="Accessible rooms are on the first floor." maxLength={400} /></label>
+        <label className="field"><span>Mobility help</span>
+          <textarea value={form.mobilityHelp || ""} onChange={(e) => set("mobilityHelp", e.target.value)} placeholder="A wheelchair is at the front desk." maxLength={400} /></label>
+        <label className="field"><span>Housekeeping details</span>
+          <textarea value={form.housekeeping || ""} onChange={(e) => set("housekeeping", e.target.value)} placeholder="Extra towels are at the front desk. Cleaning is 9:00 AM to 3:00 PM." maxLength={400} /></label>
 
         <h2 className="section-title">Nearby</h2>
         <p className="hint">One place per line. Optional: Name — short description</p>

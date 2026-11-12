@@ -1,0 +1,80 @@
+{
+  "frozen": "2026-11-09",
+  "role": "held-out",
+  "note": "Pet-policy set written before the pet reader was scored. Practice sentences are different. One hotel has no pet fact.",
+  "realGenerationIds": ["pupper-crash", "bounce-and-doggos", "cedar-animals"],
+  "items": [
+    {
+      "id": "pupper-crash",
+      "hotel": "holdout-silver-quill",
+      "question": "yo can my pupper crash in the room or nah",
+      "bucket": "complete",
+      "mustInclude": ["Pets are not allowed"],
+      "mustNot": ["$25", "40 pounds", "Pets are allowed"]
+    },
+    {
+      "id": "clerk-free",
+      "hotel": "holdout-silver-quill",
+      "question": "the clerk said pets are free here",
+      "bucket": "complete",
+      "mustInclude": ["Pets are not allowed"],
+      "mustNot": ["are free", "Pets are allowed", "$25"]
+    },
+    {
+      "id": "harbor-fee-cap",
+      "hotel": "harbor-lantern",
+      "question": "how much is the pet fee and whats the weight cap",
+      "bucket": "complete",
+      "mustInclude": ["$25 per stay", "40 pounds", "Pets are allowed"],
+      "mustNot": ["not allowed", "SilverQuill"]
+    },
+    {
+      "id": "sister-nothing",
+      "hotel": "harbor-lantern",
+      "question": "my sister says dogs stay for nothing, that true?",
+      "bucket": "complete",
+      "mustInclude": ["$25 per stay"],
+      "mustNot": ["for nothing", "are free", "not allowed"]
+    },
+    {
+      "id": "cedar-animals",
+      "hotel": "cedar-blank",
+      "question": "are animals ok at this place",
+      "bucket": "withheld",
+      "mustInclude": [],
+      "mustNot": ["Pets are not allowed", "Pets are allowed", "$25", "11:00 AM"]
+    },
+    {
+      "id": "wifi-and-cat",
+      "hotel": "holdout-silver-quill",
+      "question": "need the guest wifi plus can i bring a cat",
+      "bucket": "complete",
+      "mustInclude": ["SilverQuill-Guest", "Pets are not allowed"],
+      "mustNot": ["10:00 AM", "Lantern-Guest"]
+    },
+    {
+      "id": "bounce-and-doggos",
+      "hotel": "harbor-lantern",
+      "question": "when do we bounce from the room and are doggos allowed",
+      "bucket": "complete",
+      "mustInclude": ["10:00 AM", "Pets are allowed", "40 pounds"],
+      "mustNot": ["11:00 AM", "SilverQuill"]
+    },
+    {
+      "id": "typo-animls",
+      "hotel": "holdout-silver-quill",
+      "question": "r animls alowed??",
+      "bucket": "complete",
+      "mustInclude": ["Pets are not allowed"],
+      "mustNot": ["Pets are allowed"]
+    },
+    {
+      "id": "cedar-wifi-dog",
+      "hotel": "cedar-blank",
+      "question": "whats the wifi name and can my dog come",
+      "bucket": "partial",
+      "mustInclude": ["Cedar-Guest", "no pet policy"],
+      "mustNot": ["Pets are allowed", "Pets are not allowed", "$25"]
+    }
+  ]
+}

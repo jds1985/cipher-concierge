@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import bcrypt from "bcryptjs";
-import { _resetStoreClient, createHotelShell, getStoredHotel, guestHotel, kvGetJson, STORE_PREFIX } from "../lib/store.js";
+import { _resetStoreClient, createHotelShell, getStoredHotel, guestHotel, kvGetJson, storePrefix } from "../lib/store.js";
 import {
   setHotelLogin, checkLogin, createSession, sessionFromToken, destroySession, normalizeEmail,
   generatePassword, passwordProblem, sessionCookie, readCookie, hotelForRequest, sameOrigin,
@@ -44,7 +44,7 @@ test("password is bcrypt-hashed, login works, wrong password fails, email not le
   const { hotel } = await createHotelShell({ id: "inn-a", name: "Inn A" });
   const r = await setHotelLogin({ hotelId: hotel.id, email: "GM@InnA.com", password: "correct horse battery" });
   assert.equal(r.email, "gm@inna.com");
-  const u = await kvGetJson(`${STORE_PREFIX}user:gm@inna.com`);
+  const u = await kvGetJson(`${storePrefix()}user:gm@inna.com`);
   assert.ok(u.passHash.startsWith("$2"));
   assert.ok(!JSON.stringify(u).includes("correct horse"));
   assert.ok(await bcrypt.compare("correct horse battery", u.passHash));

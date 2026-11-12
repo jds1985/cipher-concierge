@@ -1,0 +1,15 @@
+{
+  "status": "Safety message. Not the model.",
+  "overflow": false,
+  "dialog": false,
+  "answers": [
+    "Concierge: Welcome to The Oliver Hotel. I'm Cipher, your private concierge for Room 101. Ask me anything about your stay, day or night.",
+    "You said: What is the Wi-Fi?",
+    "Concierge: The Wi-Fi network is Oliver-Guest. Cipher's own words",
+    "You said: What time is checkout?",
+    "Concierge: Check-out is at 11:00 AM. Cipher's own words",
+    "You said: I can't breathe",
+    "Concierge: Call 911 now. Then tell the front desk at (865) 521-0050. Call front desk · (865) 521-0050"
+  ],
+  "logs": []
+}

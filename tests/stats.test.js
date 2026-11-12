@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { _resetStoreClient, createHotelShell, STORE_PREFIX, kvGetJson } from "../lib/store.js";
+import { _resetStoreClient, createHotelShell, storePrefix, kvGetJson } from "../lib/store.js";
 import { setHotelLogin, createSession } from "../lib/auth.js";
 import { signRoom } from "../lib/token.js";
 import { bumpQuestion, getStats, utcDay, _getDay } from "../lib/stats.js";
@@ -67,7 +67,7 @@ test("chat answer increments counter without storing message text", async () => 
   assert.ok(Object.keys(day.byIntent).length >= 1);
 
   // Ensure the guest message text is not present anywhere in the day's stored stats object.
-  const raw = JSON.stringify(await kvGetJson(`${STORE_PREFIX}stat:the-oliver:day:${utcDay()}`));
+  const raw = JSON.stringify(await kvGetJson(`${storePrefix()}stat:the-oliver:day:${utcDay()}`));
   assert.ok(raw);
   assert.doesNotMatch(raw, /SECRET_GUEST_QUESTION/);
   assert.doesNotMatch(raw, new RegExp(secretText));
@@ -113,6 +113,6 @@ test("request create and done bump counters", async () => {
   assert.equal(stats.requestsCreated, 1);
   assert.equal(stats.requestsDone, 1);
   // Note text must not appear in stats storage.
-  const raw = JSON.stringify(await kvGetJson(`${STORE_PREFIX}stat:inn-a:day:${utcDay()}`));
+  const raw = JSON.stringify(await kvGetJson(`${storePrefix()}stat:inn-a:day:${utcDay()}`));
   assert.doesNotMatch(raw, /2 please/);
 });

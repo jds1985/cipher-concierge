@@ -9,6 +9,25 @@
   "dining": [],
   "amenities": ["Wi-Fi", "Parking"],
   "pool": null,
-  "pets": "Pets not permitted.",
+  "pets": "Pets are not allowed.",
+  "petPolicy": { "allowed": false, "fee": null, "maxPounds": null },
+  "parkingPolicy": { "available": true, "fee": "free", "location": "the lot behind the inn" },
+  "amenityFacts": {
+    "pool": "The pool is open 6:00 AM to 10:00 PM.",
+    "laundry": "Guest laundry is on floor 1 and costs $3.",
+    "ice": "Ice is on every floor.",
+    "elevator": "The elevators run all night."
+  },
+  "directionsFacts": {
+    "address": "100 Ink Street, Testville",
+    "landmark": "the town clock"
+  },
+  "localSpots": [{ "name": "Quill Cafe", "detail": "two blocks east" }],
+  "housekeepingPolicy": {
+    "towels": "Extra towels are at the front desk.",
+    "pillows": "Extra pillows are at the front desk.",
+    "cleaning": "Cleaning is from 9:00 AM to 3:00 PM.",
+    "doNotDisturb": "Hang the do-not-disturb sign on the door."
+  },
   "localRecommendations": []
 }

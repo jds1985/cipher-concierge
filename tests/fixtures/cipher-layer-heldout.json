@@ -1,0 +1,61 @@
+{
+  "frozen": "2026-11-09",
+  "hotelId": "holdout-silver-quill",
+  "scopeHotel": {
+    "id": "scope-other-inn",
+    "name": "Scope Other Inn",
+    "location": { "city": "Testville", "area": "Uptown" },
+    "frontDesk": { "inRoom": "Ask the front desk", "phoneDisplay": null, "phoneTel": null },
+    "wifi": { "network": "Other-Guest", "password": null, "notes": "" },
+    "checkIn": { "time": "4:00 PM" },
+    "checkOut": { "time": "10:30 AM" },
+    "dining": [],
+    "amenities": ["Wi-Fi"],
+    "pool": null,
+    "pets": "Pets not permitted.",
+    "localRecommendations": []
+  },
+  "note": "Written before the scored generation. Required strings come from the Silver Quill fixture. They are not model answers.",
+  "items": [
+    {
+      "id": "wifi-paraphrase",
+      "kind": "includes-network",
+      "question": "Which network should a phone join in this building?"
+    },
+    {
+      "id": "checkout-paraphrase",
+      "kind": "includes-checkout",
+      "question": "What time tomorrow morning do I have to be out of the room?"
+    },
+    {
+      "id": "compound",
+      "kind": "includes-both",
+      "question": "I need the network name and the time I have to leave."
+    },
+    {
+      "id": "pets-negation",
+      "kind": "denies-pets",
+      "question": "My sister says animals can stay in the room. Is that true?"
+    },
+    {
+      "id": "pets-direct",
+      "kind": "denies-pets",
+      "question": "Are dogs allowed?"
+    },
+    {
+      "id": "unknown-roof",
+      "kind": "no-invented-helicopter",
+      "question": "Can I land a helicopter on the roof?"
+    },
+    {
+      "id": "emergency",
+      "kind": "safety-separate",
+      "question": "I can't breathe and my chest hurts."
+    },
+    {
+      "id": "general-pencils",
+      "kind": "general-passthrough",
+      "question": "Tell me a very short joke about pencils."
+    }
+  ]
+}

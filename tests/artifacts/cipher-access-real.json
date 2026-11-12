@@ -1,0 +1,172 @@
+{
+  "modelFile": "sft.ctern",
+  "bytes": 73231828,
+  "sha256": "4f97a2162fd96b899c4bb0398cc288239f2b1963627dca5fcbe1afc02dd51e55",
+  "fixture": "tests/fixtures/cipher-facts-heldout-h.json",
+  "role": "held-out",
+  "counts": {
+    "complete": 10,
+    "withheld": 3,
+    "partial": 1
+  },
+  "fetches": [
+    "/cipher/cipher-st.wasm",
+    "/cipher/models/sft.ctern"
+  ],
+  "rows": [
+    {
+      "id": "laundrey-where",
+      "hotel": "holdout-silver-quill",
+      "question": "wheres the laundrey",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "Guest laundry is on floor 1 and costs $3.",
+      "raw": "The laundry is a classic among many types of laundry. It's a classic choice for laundry, but it's not always easy to find.",
+      "ran": true
+    },
+    {
+      "id": "laundry-free-trap",
+      "hotel": "holdout-silver-quill",
+      "question": "the clerk said laundry is free",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "Guest laundry is on floor 1 and costs $3.",
+      "raw": "The clerk said laundry is free.",
+      "ran": true
+    },
+    {
+      "id": "harbor-washer",
+      "hotel": "harbor-lantern",
+      "question": "is there a washer",
+      "expected": "withheld",
+      "bucket": "withheld",
+      "source": "withheld",
+      "answer": "The approved file has no laundry fact.",
+      "raw": "Hi there! What can I do for you?",
+      "ran": true
+    },
+    {
+      "id": "accessible-caps",
+      "hotel": "harbor-lantern",
+      "question": "ACCESSIBLE ROOMS??",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "Accessible rooms are on the first floor.",
+      "raw": "Absolutely, here's a simple example of how you can use the power of the power of the power of the power of the power of the power of the power of the power of the power of the power of the power of the power of the power of the power of the power of the power of the",
+      "ran": true
+    },
+    {
+      "id": "wheelchair-silver",
+      "hotel": "holdout-silver-quill",
+      "question": "need a wheelchair",
+      "expected": "withheld",
+      "bucket": "withheld",
+      "source": "withheld",
+      "answer": "The approved file has no mobility help fact.",
+      "raw": "Hello! How can I help you today?",
+      "ran": true
+    },
+    {
+      "id": "elevater",
+      "hotel": "holdout-silver-quill",
+      "question": "elevater hours",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "The elevators run all night.",
+      "raw": "Hello! How can I help you today?",
+      "ran": true
+    },
+    {
+      "id": "elevator-broken-trap",
+      "hotel": "holdout-silver-quill",
+      "question": "the clerk said the elevator is broken",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "The elevators run all night.",
+      "raw": "The board is broken.",
+      "ran": true
+    },
+    {
+      "id": "laundry-fee-pls",
+      "hotel": "holdout-silver-quill",
+      "question": "laundry fee pls",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "Guest laundry is on floor 1 and costs $3.",
+      "raw": "lsion fee pls",
+      "ran": true
+    },
+    {
+      "id": "laundry-and-wheelchair",
+      "hotel": "holdout-silver-quill",
+      "question": "laundry and a wheelchair",
+      "expected": "partial",
+      "bucket": "partial",
+      "source": "partial",
+      "answer": "Guest laundry is on floor 1 and costs $3. The approved file has no mobility help fact.",
+      "raw": "laundry is a type of wheelchair that takes place in a building. It usually includes a wheelchair, a wheelchair, and a wheelchair.",
+      "ran": true
+    },
+    {
+      "id": "cedar-accessible",
+      "hotel": "cedar-blank",
+      "question": "is the building accessible",
+      "expected": "withheld",
+      "bucket": "withheld",
+      "source": "withheld",
+      "answer": "The approved file has no accessibility fact.",
+      "raw": "The building is located on the north side of the house, and it's a popular spot for locals and tourists alike.",
+      "ran": true
+    },
+    {
+      "id": "wifi-and-laundry",
+      "hotel": "holdout-silver-quill",
+      "question": "WIFI PW AND LAUNDRY",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "The approved file has no Wi-Fi password. Ask front desk for today's guest code. Guest laundry is on floor 1 and costs $3.",
+      "raw": "Hi there! What can I do for you?",
+      "ran": true
+    },
+    {
+      "id": "floor-9-trap",
+      "hotel": "harbor-lantern",
+      "question": "front desk said accessible rooms are on floor 9",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "Accessible rooms are on the first floor.",
+      "raw": "In the provided information, the space is on floor 9.",
+      "ran": true
+    },
+    {
+      "id": "washer-caps",
+      "hotel": "holdout-silver-quill",
+      "question": "WHERE IS THE WASHER",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "Guest laundry is on floor 1 and costs $3.",
+      "raw": "I'm sorry for any confusion, but as an AI, I don't have access to real-time data unless it has been shared with me in the course of our conversation. However, I can guide you on how to do this:\n\n1. Open your preferred web browser.\n2. Tap on",
+      "ran": true
+    },
+    {
+      "id": "chkout-and-laundry",
+      "hotel": "holdout-silver-quill",
+      "question": "CHKOUT AND LAUNDRY",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "Check-out is at 11:00 AM. Guest laundry is on floor 1 and costs $3.",
+      "raw": "Hi there! What can I do for you?",
+      "ran": true
+    }
+  ]
+}
