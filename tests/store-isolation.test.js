@@ -23,6 +23,7 @@ test("preview and development use their own key prefix; production stays on the 
     assert.equal(storePrefix(), "cc:v1:");
     const live = await createHotelShell({ id: "live-only-hotel", name: "Live Only" });
     assert.equal(live.hotel.checkOut.time, null);
+    assert.equal(live.hotel.checkIn.time, null);
     assert.equal(live.hotel.wifi.network, null);
 
     process.env.VERCEL_ENV = "preview";
@@ -89,10 +90,11 @@ test("a preview Stripe event does not write the live billing key", async () => {
 });
 
 test("a blank Wi-Fi name and a blank checkout stay blank", () => {
-  const saved = sanitizeHotelForm({ name: "Blank Inn", wifiNetwork: "   ", checkOut: "  ", wifiPassword: "" });
+  const saved = sanitizeHotelForm({ name: "Blank Inn", wifiNetwork: "   ", checkOut: "  ", checkIn: "  ", wifiPassword: "" });
   assert.equal(saved.ok, true);
   assert.equal(saved.hotelPatch.wifi.network, null);
   assert.equal(saved.hotelPatch.checkOut.time, null);
+  assert.equal(saved.hotelPatch.checkIn.time, null);
   const filled = sanitizeHotelForm({ name: "Blank Inn", wifiNetwork: "Real-Guest", checkOut: "10:30 AM" });
   assert.equal(filled.hotelPatch.wifi.network, "Real-Guest");
   assert.equal(filled.hotelPatch.checkOut.time, "10:30 AM");
@@ -108,8 +110,16 @@ test("a blank Wi-Fi name and a blank checkout stay blank", () => {
   const checkout = matchIntent(hotel, "what time is checkout");
   assert.match(checkout.text, /don't have checkout/i);
   assert.doesNotMatch(checkout.text, /11:00 AM/);
+  const checkin = matchIntent(hotel, "what time is check-in");
+  assert.match(checkin.text, /don't have check-in/i);
+  assert.match(checkin.text, /front desk/i);
+  assert.doesNotMatch(checkin.text, /3:00 PM/);
+  const early = matchIntent(hotel, "can I check in early");
+  assert.doesNotMatch(early.text, /3:00 PM/);
+  const kept = matchIntent({ ...hotel, checkIn: { time: "4:00 PM" }, checkOut: { time: "11:00 AM" } }, "what time is check-in");
+  assert.match(kept.text, /4:00 PM/);
   const lines = factLines(hotel).map((line) => line.text).join(" ");
-  assert.doesNotMatch(lines, /Guest Wi-Fi|11:00 AM|Check-out is at null|Wi-Fi network: null/);
+  assert.doesNotMatch(lines, /Guest Wi-Fi|11:00 AM|3:00 PM|Check-out is at null|Check-in is at null|Wi-Fi network: null/);
 
   const guestWifi = guestLayerReply(hotel, "what is the wifi name");
   assert.match(guestWifi.content, /I don't have the Wi-Fi name yet/);
@@ -117,9 +127,14 @@ test("a blank Wi-Fi name and a blank checkout stay blank", () => {
   const guestOut = guestLayerReply(hotel, "what time is checkout");
   assert.match(guestOut.content, /I don't have the checkout time yet/);
   assert.doesNotMatch(guestOut.content, /11:00 AM/);
+  const guestIn = guestLayerReply(hotel, "what time is check-in");
+  assert.match(guestIn.content, /front desk/i);
+  assert.doesNotMatch(guestIn.content, /3:00 PM/);
 
   const signup = readFileSync(new URL("../pages/signup.js", import.meta.url), "utf8");
   assert.doesNotMatch(signup, /No owner key/);
   const form = readFileSync(new URL("../components/HotelSetupForm.js", import.meta.url), "utf8");
   assert.doesNotMatch(form, /checkOut: "11:00 AM"/);
+  assert.doesNotMatch(form, /checkIn: "3:00 PM"/);
+  assert.match(form, /Type your check-in time/);
 });

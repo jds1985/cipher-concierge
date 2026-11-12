@@ -116,15 +116,20 @@ const RULES = [
       return fallback(h, "late_checkout", "late checkout");
     }],
   ["early_checkin", /\b(early checkin|checkin early|arrive early|drop (off )?(my )?(bags|luggage)|store (my )?(bags|luggage)|luggage)\b/,
-    (h) => fact("early_checkin", `Check-in is at **${h.checkIn.time}**. For early check-in or luggage storage, ask the front desk: ${desk(h)}.`, true)],
+    (h) => h.checkIn?.time
+      ? fact("early_checkin", `Check-in is at **${h.checkIn.time}**. For early check-in or luggage storage, ask the front desk: ${desk(h)}.`, true)
+      : fallback(h, "early_checkin", "check-in")],
   ["checkout", /\b(checkout|what time .*(leave|out)|when (do|should|must) i (have to |need to )?leave|out of (the|my) room)\b/,
     (h) => h.checkOut?.time
       ? fact("checkout", `Checkout is at **${h.checkOut.time}**.${h.checkOut.late ? ` ${h.checkOut.late}` : " Ask the front desk if you need more time."}`)
       : fallback(h, "checkout", "checkout")],
   ["checkin", /\b(checkin|arrival time|when can i (get|go) (in|into) (my|the) room)\b/,
-    (h) => h.checkOut?.time
-      ? fact("checkin", `Check-in starts at **${h.checkIn.time}**. Checkout is at ${h.checkOut.time}.`)
-      : fact("checkin", `Check-in starts at **${h.checkIn.time}**.`)],
+    (h) => {
+      if (!h.checkIn?.time) return fallback(h, "checkin", "check-in");
+      return h.checkOut?.time
+        ? fact("checkin", `Check-in starts at **${h.checkIn.time}**. Checkout is at ${h.checkOut.time}.`)
+        : fact("checkin", `Check-in starts at **${h.checkIn.time}**.`);
+    }],
   ["wifi", /\b(wifi|internet|wireless|network|password|get online|connect)\b/,
     (h) => wifiAnswer(h)],
   ["room_service", /\b(room service|deliver(ed)? (food )?to (my )?room|order food)\b/,

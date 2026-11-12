@@ -22,7 +22,7 @@ function formFromHotel(h) {
     wifiPassword: h.wifi?.password || "",
     wifiShowPassword: !!h.wifi?.showPassword,
     wifiNotes: h.wifi?.notes || "",
-    checkIn: h.checkIn?.time || "3:00 PM",
+    checkIn: h.checkIn?.time || "",
     checkOut: h.checkOut?.time || "",
     lateCheckout: h.checkOut?.late || "",
     breakfastHours: h.breakfast?.hours || "",
@@ -52,7 +52,7 @@ function formFromHotel(h) {
 function emptyForm() {
   return {
     name: "", frontDeskPhone: "", wifiNetwork: "", wifiPassword: "", wifiShowPassword: false, wifiNotes: "",
-    checkIn: "3:00 PM", checkOut: "", lateCheckout: "",
+    checkIn: "", checkOut: "", lateCheckout: "",
     breakfastHours: "", breakfastIncluded: "", breakfastLocation: "",
     parking: "", pool: "", gym: "", spa: "", pets: "", roomService: "",
     nearbyRestaurants: "", nearbyCoffee: "", nearbyBars: "", faqs: "",
@@ -239,12 +239,13 @@ export default function HotelSetupForm({ token, sessionMode = false, email = "",
         <label className="field"><span>Wi-Fi notes (optional)</span>
           <input value={form.wifiNotes} onChange={(e) => set("wifiNotes", e.target.value)} placeholder="Join and accept the splash page terms" maxLength={280} /></label>
 
-        <h2 className="section-title">Check-in & checkout</h2>
+        <h2 className="section-title">Check-in and checkout</h2>
+        <p className="time-ask" id="time-ask">Type your check-in time and your checkout time. Leave a box empty if you do not have that time yet. Guests will be asked to call the front desk.</p>
         <div className="grid2">
           <label className="field"><span>Check-in time</span>
-            <input value={form.checkIn} onChange={(e) => set("checkIn", e.target.value)} maxLength={40} /></label>
+            <input value={form.checkIn} onChange={(e) => set("checkIn", e.target.value)} maxLength={40} aria-describedby="time-ask" /></label>
           <label className="field"><span>Checkout time</span>
-            <input value={form.checkOut} onChange={(e) => set("checkOut", e.target.value)} maxLength={40} /></label>
+            <input value={form.checkOut} onChange={(e) => set("checkOut", e.target.value)} maxLength={40} aria-describedby="time-ask" /></label>
         </div>
         <label className="field"><span>Late checkout policy</span>
           <textarea value={form.lateCheckout} onChange={(e) => set("lateCheckout", e.target.value)} maxLength={500}
