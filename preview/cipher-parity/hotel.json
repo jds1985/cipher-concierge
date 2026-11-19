@@ -1,0 +1,14 @@
+{
+  "id": "holdout-silver-quill",
+  "name": "Silver Quill Inn",
+  "location": { "city": "Testville", "area": "Downtown" },
+  "frontDesk": { "inRoom": "Ask the front desk", "phoneDisplay": null, "phoneTel": null },
+  "wifi": { "network": "SilverQuill-Guest", "password": null, "notes": "Ask front desk for today's guest code." },
+  "checkIn": { "time": "3:00 PM", "notes": "Photo ID required." },
+  "checkOut": { "time": "11:00 AM" },
+  "dining": [],
+  "amenities": ["Wi-Fi", "Parking"],
+  "pool": null,
+  "pets": "Pets not permitted.",
+  "localRecommendations": []
+}

@@ -1,0 +1,23 @@
+{
+  "hotel": "hotel.json",
+  "ctx": 512,
+  "nativeCtxNotUsed": 1024,
+  "topP": 1,
+  "seed": 0,
+  "greedy": false,
+  "note": "ctx 512 is fixed for both browser models so the 369M file can load. temp, repetition, and maxNew come from production GEN. This is not a claim of native ctx 1024 equivalence.",
+  "models": {
+    "sft": {
+      "url": "models/sft.ctern",
+      "size": 73231828,
+      "sha256": "4f97a2162fd96b899c4bb0398cc288239f2b1963627dca5fcbe1afc02dd51e55",
+      "label": "Live small sft.ctern"
+    },
+    "targeted": {
+      "url": "models/cipher2m_concierge_targeted.ctern",
+      "size": 144672788,
+      "sha256": "13790c5a9d76d9ce226181d75840bfbb92e32ab1fa66722975ef401f5571c1d6",
+      "label": "Targeted 369M cipher2m_concierge_targeted.ctern"
+    }
+  }
+}
