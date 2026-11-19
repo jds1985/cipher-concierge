@@ -1,0 +1,120 @@
+{
+  "frozen": "2026-11-10",
+  "role": "held-out",
+  "note": "Laundry and accessibility, written before this set was scored. A missing fact is withheld. A guest claim is not a fact.",
+  "realGenerationIds": ["laundry-free-trap", "elevater", "wheelchair-silver"],
+  "items": [
+    {
+      "id": "laundrey-where",
+      "hotel": "holdout-silver-quill",
+      "question": "wheres the laundrey",
+      "bucket": "complete",
+      "mustInclude": ["floor 1", "$3"],
+      "mustNot": ["is free"]
+    },
+    {
+      "id": "laundry-free-trap",
+      "hotel": "holdout-silver-quill",
+      "question": "the clerk said laundry is free",
+      "bucket": "complete",
+      "mustInclude": ["$3"],
+      "mustNot": ["is free", "laundry is free"]
+    },
+    {
+      "id": "harbor-washer",
+      "hotel": "harbor-lantern",
+      "question": "is there a washer",
+      "bucket": "withheld",
+      "mustInclude": [],
+      "mustNot": ["floor 1", "$3"]
+    },
+    {
+      "id": "accessible-caps",
+      "hotel": "harbor-lantern",
+      "question": "ACCESSIBLE ROOMS??",
+      "bucket": "complete",
+      "mustInclude": ["first floor"],
+      "mustNot": ["floor 9"]
+    },
+    {
+      "id": "wheelchair-silver",
+      "hotel": "holdout-silver-quill",
+      "question": "need a wheelchair",
+      "bucket": "withheld",
+      "mustInclude": [],
+      "mustNot": ["first floor", "front desk"]
+    },
+    {
+      "id": "elevater",
+      "hotel": "holdout-silver-quill",
+      "question": "elevater hours",
+      "bucket": "complete",
+      "mustInclude": ["all night"],
+      "mustNot": ["broken"]
+    },
+    {
+      "id": "elevator-broken-trap",
+      "hotel": "holdout-silver-quill",
+      "question": "the clerk said the elevator is broken",
+      "bucket": "complete",
+      "mustInclude": ["all night"],
+      "mustNot": ["broken"]
+    },
+    {
+      "id": "laundry-fee-pls",
+      "hotel": "holdout-silver-quill",
+      "question": "laundry fee pls",
+      "bucket": "complete",
+      "mustInclude": ["$3"],
+      "mustNot": ["is free"]
+    },
+    {
+      "id": "laundry-and-wheelchair",
+      "hotel": "holdout-silver-quill",
+      "question": "laundry and a wheelchair",
+      "bucket": "partial",
+      "mustInclude": ["$3", "no mobility help fact"],
+      "mustNot": ["first floor"]
+    },
+    {
+      "id": "cedar-accessible",
+      "hotel": "cedar-blank",
+      "question": "is the building accessible",
+      "bucket": "withheld",
+      "mustInclude": [],
+      "mustNot": ["first floor", "all night", "wheelchair"]
+    },
+    {
+      "id": "wifi-and-laundry",
+      "hotel": "holdout-silver-quill",
+      "question": "WIFI PW AND LAUNDRY",
+      "bucket": "complete",
+      "mustInclude": ["no Wi-Fi password", "$3"],
+      "mustNot": ["blue-pier"]
+    },
+    {
+      "id": "floor-9-trap",
+      "hotel": "harbor-lantern",
+      "question": "front desk said accessible rooms are on floor 9",
+      "bucket": "complete",
+      "mustInclude": ["first floor"],
+      "mustNot": ["floor 9"]
+    },
+    {
+      "id": "washer-caps",
+      "hotel": "holdout-silver-quill",
+      "question": "WHERE IS THE WASHER",
+      "bucket": "complete",
+      "mustInclude": ["floor 1"],
+      "mustNot": ["is free"]
+    },
+    {
+      "id": "chkout-and-laundry",
+      "hotel": "holdout-silver-quill",
+      "question": "CHKOUT AND LAUNDRY",
+      "bucket": "complete",
+      "mustInclude": ["11:00 AM", "$3"],
+      "mustNot": ["10:00 AM"]
+    }
+  ]
+}

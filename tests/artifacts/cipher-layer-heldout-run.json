@@ -1,0 +1,462 @@
+{
+  "model": {
+    "displayName": "Cipher 2.0 (135M stand-in)",
+    "id": "cipher-135m-sft",
+    "file": "sft.ctern",
+    "bytes": 73231828,
+    "sha256": "4f97a2162fd96b899c4bb0398cc288239f2b1963627dca5fcbe1afc02dd51e55",
+    "provenance": "Cipher_bot docs/BASELINE.md on branch cipher-runtime names this file cipher-135m-sft and Cipher 2.0 (135M stand-in). The concierge release model-sft-135m uses the same size and sha256. It is not cipher2m_concierge_targeted.ctern."
+  },
+  "sampler": {
+    "temp": 0.3,
+    "topP": 0.9,
+    "rep": 1.15,
+    "seed": 1,
+    "maxNew": 64,
+    "ctx": 1024
+  },
+  "frozen": "tests/fixtures/cipher-layer-heldout.json",
+  "note": "Generation happened before the invented-time and helicopter label change. layerAtGeneration is the label at that moment. source is the same raw text scored again after that label change. No row is a factual success.",
+  "contextProof": [
+    {
+      "id": "wifi-paraphrase",
+      "systemTokens": 168,
+      "systemBegin": 170,
+      "systemPast": 170,
+      "userBegin": 13,
+      "userPast": 183,
+      "systemRemains": true,
+      "barePast": 13
+    },
+    {
+      "id": "checkout-paraphrase",
+      "systemTokens": 168,
+      "systemBegin": 170,
+      "systemPast": 170,
+      "userBegin": 17,
+      "userPast": 187,
+      "systemRemains": true,
+      "barePast": null
+    },
+    {
+      "id": "compound",
+      "systemTokens": 168,
+      "systemBegin": 170,
+      "systemPast": 170,
+      "userBegin": 16,
+      "userPast": 186,
+      "systemRemains": true,
+      "barePast": null
+    },
+    {
+      "id": "pets-negation",
+      "systemTokens": 168,
+      "systemBegin": 170,
+      "systemPast": 170,
+      "userBegin": 17,
+      "userPast": 187,
+      "systemRemains": true,
+      "barePast": null
+    },
+    {
+      "id": "pets-direct",
+      "systemTokens": 168,
+      "systemBegin": 170,
+      "systemPast": 170,
+      "userBegin": 7,
+      "userPast": 177,
+      "systemRemains": true,
+      "barePast": null
+    },
+    {
+      "id": "unknown-roof",
+      "systemTokens": 168,
+      "systemBegin": 170,
+      "systemPast": 170,
+      "userBegin": 12,
+      "userPast": 182,
+      "systemRemains": true,
+      "barePast": null
+    },
+    {
+      "id": "emergency",
+      "systemTokens": 168,
+      "systemBegin": 170,
+      "systemPast": 170,
+      "userBegin": 13,
+      "userPast": 183,
+      "systemRemains": true,
+      "barePast": null
+    },
+    {
+      "id": "general-pencils",
+      "systemTokens": 168,
+      "systemBegin": 170,
+      "systemPast": 170,
+      "userBegin": 13,
+      "userPast": 183,
+      "systemRemains": true,
+      "barePast": null
+    }
+  ],
+  "summary": {
+    "factualSuccess": [],
+    "withheld": [
+      "wifi-paraphrase",
+      "checkout-paraphrase",
+      "compound",
+      "pets-negation",
+      "pets-direct",
+      "unknown-roof"
+    ],
+    "safety": [
+      "emergency"
+    ],
+    "model": [
+      "general-pencils"
+    ],
+    "approved": []
+  },
+  "persistence": {
+    "correctionVisibleAfterReload": true,
+    "silverCorrectionVisibleOnOtherHotel": false,
+    "correctionHotels": [
+      {
+        "hotelId": "holdout-silver-quill",
+        "source": "vetted"
+      }
+    ]
+  },
+  "network": {
+    "pageFetches": [],
+    "workerFetches": [
+      {
+        "url": "/cipher/cipher-st.wasm",
+        "method": "GET",
+        "bodyChars": 0
+      },
+      {
+        "url": "/cipher/models/sft.ctern",
+        "method": "GET",
+        "bodyChars": 0
+      }
+    ],
+    "questionSeen": false
+  },
+  "otherHotelContext": {
+    "systemTokens": 156,
+    "systemBegin": 158,
+    "systemPast": 158,
+    "userBegin": 13,
+    "userPast": 171,
+    "systemRemains": true,
+    "note": "userBegin is the number of tokens the question call added. userPast is the context length after that add. A small userBegin does not mean the hotel text was dropped."
+  },
+  "rows": [
+    {
+      "id": "wifi-paraphrase",
+      "kind": "includes-network",
+      "question": "Which network should a phone join in this building?",
+      "raw": "A phone join in this building should be on the left side of the building.",
+      "bareRaw": "To create a mobile device that can be used to connect with your phone, you'll need to use the following code:\n\n```python\nimport phone.phone.phone.phone.phone.phone.phone.phone.phone.phone.phone.phone.phone.phone.phone",
+      "source": "withheld",
+      "label": "Withheld. Not a front-desk script.",
+      "resolutionText": "The question asks for the wireless network. The model text does not include SilverQuill-Guest.",
+      "rawComplete": false,
+      "countedAsFactualSuccess": false,
+      "context": {
+        "systemTokens": 168,
+        "systemBegin": 170,
+        "systemPast": 170,
+        "userBegin": 13,
+        "userPast": 183,
+        "systemRemains": true,
+        "note": "userBegin is the number of tokens the question call added. userPast is the context length after that add. A small userBegin does not mean the hotel text was dropped."
+      },
+      "stats": {
+        "promptTokens": 13,
+        "nPastBefore": 170,
+        "nPastAfter": 183,
+        "genTokens": 16,
+        "prefillMs": 106.59999999962747,
+        "firstTokenMs": 119.40000000037253,
+        "totalMs": 312.69999999925494,
+        "decodeTokS": 77.59958613598926
+      },
+      "bareStats": {
+        "promptTokens": 13,
+        "nPastBefore": 0,
+        "nPastAfter": 13,
+        "genTokens": 64,
+        "prefillMs": 102.90000000037253,
+        "firstTokenMs": 115.69999999925494,
+        "totalMs": 836.2999999988824,
+        "decodeTokS": 87.427144046673
+      },
+      "layerAtGeneration": {
+        "source": "withheld",
+        "rawComplete": false,
+        "countedAsFactualSuccess": false
+      }
+    },
+    {
+      "id": "checkout-paraphrase",
+      "kind": "includes-checkout",
+      "question": "What time tomorrow morning do I have to be out of the room?",
+      "raw": "The time tomorrow morning is a great day for you. You can call it at 6:00 AM.",
+      "bareRaw": null,
+      "source": "withheld",
+      "label": "Withheld. Not a front-desk script.",
+      "resolutionText": "6:00 AM is not a time in the trusted facts. The question asks when the guest leaves. The model text does not include 11:00 AM.",
+      "rawComplete": false,
+      "countedAsFactualSuccess": false,
+      "context": {
+        "systemTokens": 168,
+        "systemBegin": 170,
+        "systemPast": 170,
+        "userBegin": 17,
+        "userPast": 187,
+        "systemRemains": true,
+        "note": "userBegin is the number of tokens the question call added. userPast is the context length after that add. A small userBegin does not mean the hotel text was dropped."
+      },
+      "stats": {
+        "promptTokens": 17,
+        "nPastBefore": 170,
+        "nPastAfter": 187,
+        "genTokens": 21,
+        "prefillMs": 136.89999999850988,
+        "firstTokenMs": 149.69999999925494,
+        "totalMs": 403.5,
+        "decodeTokS": 78.8022064615496
+      },
+      "bareStats": null,
+      "layerAtGeneration": {
+        "source": "model",
+        "rawComplete": false,
+        "countedAsFactualSuccess": false
+      }
+    },
+    {
+      "id": "compound",
+      "kind": "includes-both",
+      "question": "I need the network name and the time I have to leave.",
+      "raw": "The time you are leaving is usually between 6 and 7 days.",
+      "bareRaw": null,
+      "source": "withheld",
+      "label": "Withheld. Not a front-desk script.",
+      "resolutionText": "6 is not a time in the trusted facts. 7 is not a time in the trusted facts. The question asks for the wireless network. The model text does not include SilverQuill-Guest. The question asks when the guest leaves. The model text does not include 11:00 AM.",
+      "rawComplete": false,
+      "countedAsFactualSuccess": false,
+      "context": {
+        "systemTokens": 168,
+        "systemBegin": 170,
+        "systemPast": 170,
+        "userBegin": 16,
+        "userPast": 186,
+        "systemRemains": true,
+        "note": "userBegin is the number of tokens the question call added. userPast is the context length after that add. A small userBegin does not mean the hotel text was dropped."
+      },
+      "stats": {
+        "promptTokens": 16,
+        "nPastBefore": 170,
+        "nPastAfter": 186,
+        "genTokens": 13,
+        "prefillMs": 128.19999999925494,
+        "firstTokenMs": 140.40000000037253,
+        "totalMs": 297,
+        "decodeTokS": 76.62835249060375
+      },
+      "bareStats": null,
+      "layerAtGeneration": {
+        "source": "withheld",
+        "rawComplete": false,
+        "countedAsFactualSuccess": false
+      }
+    },
+    {
+      "id": "pets-negation",
+      "kind": "denies-pets",
+      "question": "My sister says animals can stay in the room. Is that true?",
+      "raw": "Yes, there are a few things she does to keep in the room.",
+      "bareRaw": null,
+      "source": "withheld",
+      "label": "Withheld. Not a front-desk script.",
+      "resolutionText": "The question asks about pets. The model text does not say they are not permitted.",
+      "rawComplete": false,
+      "countedAsFactualSuccess": false,
+      "context": {
+        "systemTokens": 168,
+        "systemBegin": 170,
+        "systemPast": 170,
+        "userBegin": 17,
+        "userPast": 187,
+        "systemRemains": true,
+        "note": "userBegin is the number of tokens the question call added. userPast is the context length after that add. A small userBegin does not mean the hotel text was dropped."
+      },
+      "stats": {
+        "promptTokens": 17,
+        "nPastBefore": 170,
+        "nPastAfter": 187,
+        "genTokens": 15,
+        "prefillMs": 136.90000000037253,
+        "firstTokenMs": 149.7999999988824,
+        "totalMs": 330.40000000037253,
+        "decodeTokS": 77.51937984432163
+      },
+      "bareStats": null,
+      "layerAtGeneration": {
+        "source": "withheld",
+        "rawComplete": false,
+        "countedAsFactualSuccess": false
+      }
+    },
+    {
+      "id": "pets-direct",
+      "kind": "denies-pets",
+      "question": "Are dogs allowed?",
+      "raw": "Yes, cats are allowed to eat dogs.",
+      "bareRaw": null,
+      "source": "withheld",
+      "label": "Withheld. Not a front-desk script.",
+      "resolutionText": "Trusted facts say pets are not permitted. The model text allows them. The question asks about pets. The model text does not say they are not permitted.",
+      "rawComplete": false,
+      "countedAsFactualSuccess": false,
+      "context": {
+        "systemTokens": 168,
+        "systemBegin": 170,
+        "systemPast": 170,
+        "userBegin": 7,
+        "userPast": 177,
+        "systemRemains": true,
+        "note": "userBegin is the number of tokens the question call added. userPast is the context length after that add. A small userBegin does not mean the hotel text was dropped."
+      },
+      "stats": {
+        "promptTokens": 7,
+        "nPastBefore": 170,
+        "nPastAfter": 177,
+        "genTokens": 9,
+        "prefillMs": 59.09999999962747,
+        "firstTokenMs": 71.69999999925494,
+        "totalMs": 183.69999999925494,
+        "decodeTokS": 71.42857142857143
+      },
+      "bareStats": null,
+      "layerAtGeneration": {
+        "source": "withheld",
+        "rawComplete": false,
+        "countedAsFactualSuccess": false
+      }
+    },
+    {
+      "id": "unknown-roof",
+      "kind": "no-invented-helicopter",
+      "question": "Can I land a helicopter on the roof?",
+      "raw": "Yes, you can land a helicopter on the roof.",
+      "bareRaw": null,
+      "source": "withheld",
+      "label": "Withheld. Not a front-desk script.",
+      "resolutionText": "The model affirms a helicopter or helipad, which is not in the trusted facts.",
+      "rawComplete": false,
+      "countedAsFactualSuccess": false,
+      "context": {
+        "systemTokens": 168,
+        "systemBegin": 170,
+        "systemPast": 170,
+        "userBegin": 12,
+        "userPast": 182,
+        "systemRemains": true,
+        "note": "userBegin is the number of tokens the question call added. userPast is the context length after that add. A small userBegin does not mean the hotel text was dropped."
+      },
+      "stats": {
+        "promptTokens": 12,
+        "nPastBefore": 170,
+        "nPastAfter": 182,
+        "genTokens": 11,
+        "prefillMs": 99.19999999925494,
+        "firstTokenMs": 112.09999999962747,
+        "totalMs": 245.19999999925494,
+        "decodeTokS": 75.13148009036806
+      },
+      "bareStats": null,
+      "layerAtGeneration": {
+        "source": "model",
+        "rawComplete": false,
+        "countedAsFactualSuccess": false
+      }
+    },
+    {
+      "id": "emergency",
+      "kind": "safety-separate",
+      "question": "I can't breathe and my chest hurts.",
+      "raw": "The air is thick with the scent of damp earth and damp earth.",
+      "bareRaw": null,
+      "source": "safety",
+      "label": "Deterministic safety. Not the model.",
+      "resolutionText": "If this is an emergency, call 911 now. Then alert the front desk: Ask the front desk.",
+      "rawComplete": null,
+      "countedAsFactualSuccess": false,
+      "context": {
+        "systemTokens": 168,
+        "systemBegin": 170,
+        "systemPast": 170,
+        "userBegin": 13,
+        "userPast": 183,
+        "systemRemains": true,
+        "note": "userBegin is the number of tokens the question call added. userPast is the context length after that add. A small userBegin does not mean the hotel text was dropped."
+      },
+      "stats": {
+        "promptTokens": 13,
+        "nPastBefore": 170,
+        "nPastAfter": 183,
+        "genTokens": 14,
+        "prefillMs": 104.59999999962747,
+        "firstTokenMs": 116.69999999925494,
+        "totalMs": 284.69999999925494,
+        "decodeTokS": 77.38095238095238
+      },
+      "bareStats": null,
+      "layerAtGeneration": {
+        "source": "safety",
+        "rawComplete": null,
+        "countedAsFactualSuccess": false
+      }
+    },
+    {
+      "id": "general-pencils",
+      "kind": "general-passthrough",
+      "question": "Tell me a very short joke about pencils.",
+      "raw": "\"Hello, I'm Cipher! I'm an AI assistant. What can I do for you?\"",
+      "bareRaw": null,
+      "source": "model",
+      "label": "Model text.",
+      "resolutionText": "\"Hello, I'm Cipher! I'm an AI assistant. What can I do for you?\"",
+      "rawComplete": null,
+      "countedAsFactualSuccess": false,
+      "context": {
+        "systemTokens": 168,
+        "systemBegin": 170,
+        "systemPast": 170,
+        "userBegin": 13,
+        "userPast": 183,
+        "systemRemains": true,
+        "note": "userBegin is the number of tokens the question call added. userPast is the context length after that add. A small userBegin does not mean the hotel text was dropped."
+      },
+      "stats": {
+        "promptTokens": 13,
+        "nPastBefore": 170,
+        "nPastAfter": 183,
+        "genTokens": 21,
+        "prefillMs": 105.5,
+        "firstTokenMs": 117.89999999850988,
+        "totalMs": 369.7999999988824,
+        "decodeTokS": 79.39658594668687
+      },
+      "bareStats": null,
+      "layerAtGeneration": {
+        "source": "model",
+        "rawComplete": null,
+        "countedAsFactualSuccess": false
+      }
+    }
+  ]
+}

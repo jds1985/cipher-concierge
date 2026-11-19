@@ -147,4 +147,6 @@ public/cipher/models/
 # Liquid lab weights and Transformers.js runtime (npm run fetch-liquid-lab)
 public/lab/models/
 public/lab/vendor/
+# Opt-in Qwen GGUF for the isolated CPU lab. Not part of the app bundle.
+public/lab/qwen/weights/
 .vercel

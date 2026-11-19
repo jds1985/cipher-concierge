@@ -1,0 +1,45 @@
+{
+  "opening": {
+    "status": "Not started.",
+    "button": "Start the 3-question test",
+    "hash": false
+  },
+  "widths": {
+    "280": false,
+    "320": false,
+    "390": false
+  },
+  "errors": [],
+  "done": {
+    "status": "Completed. All 3 questions finished.",
+    "rows": [
+      {
+        "n": 1,
+        "question": "yo can my pupper crash in the room or nah",
+        "label": "Complete answer.",
+        "source": "approved-facts",
+        "answer": "Pets are not allowed.",
+        "ran": true,
+        "raw": "Yu can't fly in the room or nah."
+      },
+      {
+        "n": 2,
+        "question": "when do we bounce from the room and are doggos allowed",
+        "label": "Complete answer.",
+        "source": "approved-facts",
+        "answer": "Check-out is at 10:00 AM. Pets are allowed. The pet fee is $25 per stay. The size limit is 40 pounds.",
+        "ran": true,
+        "raw": "When doggos allowed to pass through the room?"
+      },
+      {
+        "n": 3,
+        "question": "are animals ok at this place",
+        "label": "Not answered from the hotel file.",
+        "source": "withheld",
+        "answer": "The approved file has no pet policy.",
+        "ran": true,
+        "raw": "The answer is: \n- Cedar Blank"
+      }
+    ]
+  }
+}

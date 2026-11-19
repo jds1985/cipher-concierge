@@ -32,7 +32,7 @@ const INTENT_LABEL = {
 };
 
 const CSS = `
-.use-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:20px 0 28px}
+.use-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:16px;margin:20px 0 28px;min-width:0}
 .use-card{padding:22px 20px;border-radius:18px;background:#0b1020;border:2px solid #fff;color:#fff}
 .use-num{font:800 48px/1.1 "Plus Jakarta Sans";color:#fff;margin:8px 0 0}
 .use-label{font-size:22px;font-weight:700;color:#cfd8ea}

@@ -14,7 +14,7 @@ export async function getServerSideProps({ req, res }) {
 
 const LABEL = { towels: "Towels", housekeeping: "Housekeeping", maintenance: "Something broken" };
 const CSS = `.rq-list{list-style:none;padding:0;margin:0;display:grid;gap:14px}
-.rq-item{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:18px 20px;border-radius:18px;background:#0b1020;border:2px solid #fff;color:#fff}
+.rq-item{box-sizing:border-box;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;width:100%;max-width:100%;min-width:0;padding:18px 20px;border-radius:18px;background:#0b1020;border:2px solid #fff;color:#fff}
 .rq-room{font:800 30px "Plus Jakarta Sans";color:#fff}.rq-type{font-size:22px;font-weight:700}.rq-note{font-size:20px;margin-top:4px}.rq-time{font-size:18px;color:#cfd8ea;margin-top:4px}
 .rq-done{min-height:64px;min-width:130px;font-size:22px}.rq-big{font-size:22px;line-height:1.5}.btn-xl{min-height:60px;font-size:20px;padding:0 28px}`;
 const ago = (d) => { const m = Math.round((Date.now() - new Date(d)) / 60000); return m < 1 ? "just now" : m < 60 ? `${m} min ago` : new Date(d).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); };

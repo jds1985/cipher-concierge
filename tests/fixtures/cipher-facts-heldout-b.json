@@ -1,0 +1,96 @@
+{
+  "frozen": "2026-11-09",
+  "role": "held-out",
+  "note": "Second set, written after the first set was retired. Scored once. Practice sentences and the retired set are different.",
+  "realGenerationIds": ["guest-wireless-b", "vacate-room", "departure-and-ssid", "arrive"],
+  "items": [
+    {
+      "id": "guest-wireless-b",
+      "hotel": "holdout-silver-quill",
+      "question": "could you tell me the guest wireless name please",
+      "bucket": "complete",
+      "mustInclude": ["SilverQuill-Guest"],
+      "mustNot": ["Lantern-Guest", "blue-pier", "11:00 AM"]
+    },
+    {
+      "id": "pasword",
+      "hotel": "holdout-silver-quill",
+      "question": "whats the pasword for wifi",
+      "bucket": "complete",
+      "mustInclude": ["no Wi-Fi password", "guest code"],
+      "mustNot": ["blue-pier", "Lantern-Guest"]
+    },
+    {
+      "id": "cutting",
+      "hotel": "holdout-silver-quill",
+      "question": "the connection keeps cutting out, what should I do",
+      "bucket": "partial",
+      "mustInclude": ["SilverQuill-Guest", "no steps"],
+      "mustNot": ["I will", "I'll"]
+    },
+    {
+      "id": "vacate-room",
+      "hotel": "holdout-silver-quill",
+      "question": "what hour tomorrow do we need to vacate the room",
+      "bucket": "complete",
+      "mustInclude": ["11:00 AM"],
+      "mustNot": ["3:00 PM", "10:00 AM"]
+    },
+    {
+      "id": "departure-and-ssid",
+      "hotel": "holdout-silver-quill",
+      "question": "need both the departure time from the room and the ssid",
+      "bucket": "complete",
+      "mustInclude": ["11:00 AM", "SilverQuill-Guest"],
+      "mustNot": ["Lantern-Guest", "blue-pier"]
+    },
+    {
+      "id": "arrive",
+      "hotel": "holdout-silver-quill",
+      "question": "when do guests usually arrive?",
+      "bucket": "withheld",
+      "mustInclude": [],
+      "mustNot": ["11:00 AM", "Check-out is at"]
+    },
+    {
+      "id": "outside-door",
+      "hotel": "holdout-silver-quill",
+      "question": "heading outside for some air. what time should I go out the door?",
+      "bucket": "withheld",
+      "mustInclude": [],
+      "mustNot": ["11:00 AM", "Check-out is at"]
+    },
+    {
+      "id": "isnt-wireless",
+      "hotel": "holdout-silver-quill",
+      "question": "there isn't a wireless network here, is there?",
+      "bucket": "complete",
+      "mustInclude": ["SilverQuill-Guest"],
+      "mustNot": ["there is no wireless", "Lantern-Guest"]
+    },
+    {
+      "id": "checkout-12",
+      "hotel": "holdout-silver-quill",
+      "question": "checkout's at 12, yeah?",
+      "bucket": "complete",
+      "mustInclude": ["11:00 AM"],
+      "mustNot": ["12", "Yeah", "yes"]
+    },
+    {
+      "id": "arrange-departure",
+      "hotel": "holdout-silver-quill",
+      "question": "please arrange a later departure and also the network name",
+      "bucket": "partial",
+      "mustInclude": ["SilverQuill-Guest", "will not book"],
+      "mustNot": ["I'll arrange", "I will arrange"]
+    },
+    {
+      "id": "harbor-phone",
+      "hotel": "harbor-lantern",
+      "question": "my phone needs the hotel network name",
+      "bucket": "complete",
+      "mustInclude": ["Lantern-Guest"],
+      "mustNot": ["SilverQuill-Guest", "11:00 AM"]
+    }
+  ]
+}

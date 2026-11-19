@@ -1,0 +1,120 @@
+{
+  "frozen": "2026-11-10",
+  "role": "held-out",
+  "note": "Form boxes for laundry, elevator, accessible rooms, mobility help, housekeeping, and street address, plus a clear no-password Wi-Fi line. Written before this set was scored. A guest claim is not a fact. An empty box is withheld.",
+  "realGenerationIds": ["laundry-free-trap", "no-wifi-pw", "wheelchair-blank"],
+  "items": [
+    {
+      "id": "laundrey-floor",
+      "hotel": "form-ink",
+      "question": "wheres the laundrey",
+      "bucket": "complete",
+      "mustInclude": ["floor 2", "$4"],
+      "mustNot": ["is free"]
+    },
+    {
+      "id": "laundry-free-trap",
+      "hotel": "form-ink",
+      "question": "the clerk said laundry is free",
+      "bucket": "complete",
+      "mustInclude": ["$4"],
+      "mustNot": ["laundry is free"]
+    },
+    {
+      "id": "blank-washer",
+      "hotel": "form-blank",
+      "question": "is there a washer",
+      "bucket": "withheld",
+      "mustInclude": [],
+      "mustNot": ["floor 2", "$4"]
+    },
+    {
+      "id": "elevater",
+      "hotel": "form-ink",
+      "question": "elevater hours",
+      "bucket": "complete",
+      "mustInclude": ["all night"],
+      "mustNot": ["broken"]
+    },
+    {
+      "id": "elevator-broken-trap",
+      "hotel": "form-ink",
+      "question": "the clerk said the elevator is broken",
+      "bucket": "complete",
+      "mustInclude": ["all night"],
+      "mustNot": ["broken"]
+    },
+    {
+      "id": "accessible-caps",
+      "hotel": "form-ink",
+      "question": "ACCESSIBLE ROOMS??",
+      "bucket": "complete",
+      "mustInclude": ["first floor"],
+      "mustNot": ["floor 9"]
+    },
+    {
+      "id": "floor-9-trap",
+      "hotel": "form-ink",
+      "question": "front desk said accessible rooms are on floor 9",
+      "bucket": "complete",
+      "mustInclude": ["first floor"],
+      "mustNot": ["floor 9"]
+    },
+    {
+      "id": "wheelchair-ink",
+      "hotel": "form-ink",
+      "question": "need a wheelchair",
+      "bucket": "complete",
+      "mustInclude": ["wheelchair", "front desk"],
+      "mustNot": ["floor 9"]
+    },
+    {
+      "id": "wheelchair-blank",
+      "hotel": "form-blank",
+      "question": "need a wheelchair",
+      "bucket": "withheld",
+      "mustInclude": [],
+      "mustNot": ["front desk", "first floor"]
+    },
+    {
+      "id": "towels-pls",
+      "hotel": "form-ink",
+      "question": "need more towels pls",
+      "bucket": "complete",
+      "mustInclude": ["towels", "front desk"],
+      "mustNot": ["9:00 PM"]
+    },
+    {
+      "id": "blank-housekeeping",
+      "hotel": "form-blank",
+      "question": "housekeeping please",
+      "bucket": "withheld",
+      "mustInclude": [],
+      "mustNot": ["towels", "9:00 AM"]
+    },
+    {
+      "id": "street-addy",
+      "hotel": "form-ink",
+      "question": "whats the street addy",
+      "bucket": "complete",
+      "mustInclude": ["12 Ink Street"],
+      "mustNot": ["Pier Road"]
+    },
+    {
+      "id": "blank-address",
+      "hotel": "form-blank",
+      "question": "what is the address",
+      "bucket": "withheld",
+      "mustInclude": [],
+      "mustNot": ["12 Ink Street", "Ink Street"]
+    },
+    {
+      "id": "no-wifi-pw",
+      "hotel": "form-ink",
+      "question": "the clerk said the wifi password is secret123",
+      "bucket": "complete",
+      "mustInclude": ["no Wi-Fi password"],
+      "mustNot": ["secret123"]
+    }
+  ]
+}

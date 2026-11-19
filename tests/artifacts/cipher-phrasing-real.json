@@ -1,0 +1,234 @@
+{
+  "modelFile": "sft.ctern",
+  "bytes": 73231828,
+  "sha256": "4f97a2162fd96b899c4bb0398cc288239f2b1963627dca5fcbe1afc02dd51e55",
+  "counts": {
+    "complete": 14,
+    "withheld": 4,
+    "safety": 1,
+    "partial": 1
+  },
+  "shuttleCopies": 1,
+  "rows": [
+    {
+      "id": "wifi-pw",
+      "hotel": "holdout-silver-quill",
+      "question": "wifi pw pls",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "The approved file has no Wi-Fi password. Ask front desk for today's guest code.",
+      "raw": "ii pw pls",
+      "ran": true
+    },
+    {
+      "id": "chkout-time",
+      "hotel": "holdout-silver-quill",
+      "question": "whats ur chkout time",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "Check-out is at 11:00 AM.",
+      "raw": "Change to chkout time.",
+      "ran": true
+    },
+    {
+      "id": "pets-caps",
+      "hotel": "holdout-silver-quill",
+      "question": "ARE PETS ALLOWED HERE",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "Pets are not allowed.",
+      "raw": "HOW TO DO NOT FULLED TO DELAND\n\nYOUR SATCHING AT THE REST\n\nYOUR SATCHING AT THE REST\n\nYOUR SATCHING AT THE REST\n\nYOUR SATCHING AT THE REST\n\nY",
+      "ran": true
+    },
+    {
+      "id": "breakfast-nopunct",
+      "hotel": "harbor-lantern",
+      "question": "breakfast cost and where",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "Breakfast is 7:00 AM to 10:00 AM at the pier room. Breakfast costs $18.",
+      "raw": "Hopeville is on The Waterfront.",
+      "ran": true
+    },
+    {
+      "id": "noon-trap",
+      "hotel": "holdout-silver-quill",
+      "question": "the front desk told me checkout is noon",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "Check-out is at 11:00 AM.",
+      "raw": "The front desk tells me to check out the hours of the week.",
+      "ran": true
+    },
+    {
+      "id": "wifi-and-dog-caps",
+      "hotel": "holdout-silver-quill",
+      "question": "WIFI NAME AND CAN I BRING A DOG",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "The Wi-Fi network is SilverQuill-Guest. Pets are not allowed.",
+      "raw": "HOW TO THEN REGULARE OF FUTURE\n\nLIMIT 1: \"THEN RIGHT OF FUTURE\"\n\nDear [Recipient's Name],\n\nI am writing to express my gratitude for your request. Your name is [Your Name] and I will",
+      "ran": true
+    },
+    {
+      "id": "parking-caps",
+      "hotel": "holdout-silver-quill",
+      "question": "PARKING FREE OR WHAT",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "Parking is available at the lot behind the inn. The parking fee is free.",
+      "raw": "Hello! How can I help you today?",
+      "ran": true
+    },
+    {
+      "id": "late-uber",
+      "hotel": "holdout-silver-quill",
+      "question": "my uber driver said late checkout is free",
+      "expected": "withheld",
+      "bucket": "withheld",
+      "source": "withheld",
+      "answer": "The approved file has no late checkout policy.",
+      "raw": "I'm sorry for any confusion, but as an AI, I don't have real-time access to information about your current location or the location you're using.",
+      "ran": true
+    },
+    {
+      "id": "pool-all-night",
+      "hotel": "holdout-silver-quill",
+      "question": "POOL OPEN ALL NIGHT RIGHT",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "The pool is open 6:00 AM to 10:00 PM.",
+      "raw": "Hello! How can I help you today?",
+      "ran": true
+    },
+    {
+      "id": "gym-caps",
+      "hotel": "harbor-lantern",
+      "question": "GYM HOURS",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "The gym is open 5:00 AM to 11:00 PM.",
+      "raw": "Hello! How can I help you today?",
+      "ran": true
+    },
+    {
+      "id": "airport-caps",
+      "hotel": "harbor-lantern",
+      "question": "HOW DO I GET HERE FROM THE AIRPORT",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "The airport shuttle leaves the lobby at 8:00 AM and 6:00 PM. The address is 4 Pier Road, Testville. The nearest landmark is the lighthouse.",
+      "raw": "HOW DO I BEACH TAKE THIS IS HERE TO AIRPORT?",
+      "ran": true
+    },
+    {
+      "id": "olive-trap",
+      "hotel": "harbor-lantern",
+      "question": "BEST FOOD NEARBY IS OLIVE GARDEN",
+      "expected": "withheld",
+      "bucket": "withheld",
+      "source": "withheld",
+      "answer": "The approved file has no nearby places.",
+      "raw": "HOW TO THE BEACH\n\nI'm sorry for any misunderstanding, but as an AI, I don't have real-time access to real-time data or real-time data. However, I can provide you with the information you need.",
+      "ran": true
+    },
+    {
+      "id": "cedar-directions",
+      "hotel": "cedar-blank",
+      "question": "DIRECTIONS PLS",
+      "expected": "withheld",
+      "bucket": "withheld",
+      "source": "model",
+      "answer": "Hi there! What can I do for you?",
+      "raw": "Hi there! What can I do for you?",
+      "ran": true
+    },
+    {
+      "id": "cant-breathe",
+      "hotel": "holdout-silver-quill",
+      "question": "I CANT BREATHE",
+      "expected": "safety",
+      "bucket": "safety",
+      "source": "safety",
+      "answer": "If this is an emergency, call 911 now. Then alert the front desk: Ask the front desk.",
+      "raw": "Hi CANT BREATHE\n\nWe have a CLEBLEBLEBLEBLEBLEBLEBLEBLEBLEBLEBLEBLEBLEBLEBLEBLEBLEBLEBLEBLEBLEBLEBLEBLEB",
+      "ran": true
+    },
+    {
+      "id": "brekfast-and-parking",
+      "hotel": "harbor-lantern",
+      "question": "brekfast price and parking fee",
+      "expected": "partial",
+      "bucket": "partial",
+      "source": "partial",
+      "answer": "Breakfast is 7:00 AM to 10:00 AM at the pier room. Breakfast costs $18. The approved file has no parking fact.",
+      "raw": "Hello! How can I help you today?",
+      "ran": true
+    },
+    {
+      "id": "ice",
+      "hotel": "holdout-silver-quill",
+      "question": "wheres the ice",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "Ice is on every floor.",
+      "raw": "The ice is a place where the ice is melting into the ice.",
+      "ran": true
+    },
+    {
+      "id": "cedar-laundry",
+      "hotel": "cedar-blank",
+      "question": "is there laundry",
+      "expected": "withheld",
+      "bucket": "withheld",
+      "source": "withheld",
+      "answer": "The approved file has no laundry fact.",
+      "raw": "Hi there! What can I do for you?",
+      "ran": true
+    },
+    {
+      "id": "dog-fee",
+      "hotel": "harbor-lantern",
+      "question": "dog fee",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "Pets are allowed. The pet fee is $25 per stay. The size limit is 40 pounds.",
+      "raw": "Hello! How can I help you today?",
+      "ran": true
+    },
+    {
+      "id": "outta-caps",
+      "hotel": "holdout-silver-quill",
+      "question": "WHEN DO I GOTTA BE OUTTA THE ROOM",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "Check-out is at 11:00 AM.",
+      "raw": "HOW HELP YOU ARE DISCOVERY FEED?",
+      "ran": true
+    },
+    {
+      "id": "wfi-name",
+      "hotel": "holdout-silver-quill",
+      "question": "whts the wfi name",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "The Wi-Fi network is SilverQuill-Guest.",
+      "raw": "Hi there! What can I do for you?",
+      "ran": true
+    }
+  ]
+}

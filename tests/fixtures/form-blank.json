@@ -1,0 +1,21 @@
+{
+  "id": "form-blank",
+  "name": "Form Blank",
+  "location": { "city": "Testville", "area": "", "address": null },
+  "frontDesk": { "inRoom": "Dial 0", "phoneDisplay": null, "phoneTel": null },
+  "wifi": { "network": "Blank-Guest", "password": null, "showPassword": false, "notes": "" },
+  "checkIn": { "time": "3:00 PM" },
+  "checkOut": { "time": "12:00 PM", "late": "" },
+  "dining": [],
+  "laundry": "",
+  "elevator": "",
+  "accessibleRooms": "",
+  "mobilityHelp": "",
+  "housekeeping": "",
+  "pets": "",
+  "parking": "",
+  "pool": "",
+  "fitness": "",
+  "roomService": "",
+  "localRecommendations": []
+}

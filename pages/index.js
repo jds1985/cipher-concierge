@@ -46,6 +46,7 @@ export default function Home({ demo }) {
           <p className="lede">Guests scan the QR card in their room and ask: checkout time, Wi-Fi, "is anything open?", "where do I park?". Cipher answers instantly from <b>your hotel's own information</b>, and hands anything it can't answer straight to your front desk with one tap.</p>
           <div className="ctas">
             {demo && <Link className="btn btn-primary" href="/demo">Try it as a guest →</Link>}
+            <Link className="btn btn-primary" href="/signup">Create your hotel</Link>
             <a className="btn btn-ghost" href="#privacy">How privacy works</a>
           </div>
         </div>

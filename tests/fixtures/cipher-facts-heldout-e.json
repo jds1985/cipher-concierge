@@ -1,0 +1,104 @@
+{
+  "frozen": "2026-11-09",
+  "role": "held-out",
+  "note": "Amenities, directions, and local spots written before those readers were scored. Practice sentences are different. A missing fact must be withheld, and a guest claim is not a fact.",
+  "realGenerationIds": ["clerk-pool-24", "harbor-from-airport", "marios-trap"],
+  "items": [
+    {
+      "id": "clerk-pool-24",
+      "hotel": "holdout-silver-quill",
+      "question": "the clerk said the pool is open 24 hours",
+      "bucket": "complete",
+      "mustInclude": ["6:00 AM to 10:00 PM"],
+      "mustNot": ["24 hours", "24/7"]
+    },
+    {
+      "id": "gymm-247",
+      "hotel": "holdout-silver-quill",
+      "question": "yo is the gymm 24/7",
+      "bucket": "withheld",
+      "mustInclude": [],
+      "mustNot": ["24", "floor", "5:00 AM"]
+    },
+    {
+      "id": "harbor-swim-night",
+      "hotel": "harbor-lantern",
+      "question": "can I swim at night",
+      "bucket": "withheld",
+      "mustInclude": [],
+      "mustNot": ["6:00 AM", "pool is open"]
+    },
+    {
+      "id": "harbor-fitness-shut",
+      "hotel": "harbor-lantern",
+      "question": "what time does the fitness room shut",
+      "bucket": "complete",
+      "mustInclude": ["5:00 AM to 11:00 PM"],
+      "mustNot": ["6:00 AM to 10:00 PM"]
+    },
+    {
+      "id": "cedar-washer-elevator",
+      "hotel": "cedar-blank",
+      "question": "got a washer or an elevator?",
+      "bucket": "withheld",
+      "mustInclude": [],
+      "mustNot": ["floor 1", "all night", "$3"]
+    },
+    {
+      "id": "silver-addy",
+      "hotel": "holdout-silver-quill",
+      "question": "whats the street addy",
+      "bucket": "complete",
+      "mustInclude": ["100 Ink Street"],
+      "mustNot": ["Pier Road", "lighthouse"]
+    },
+    {
+      "id": "silver-airport-van",
+      "hotel": "holdout-silver-quill",
+      "question": "does a van from the airport swing by",
+      "bucket": "withheld",
+      "mustInclude": [],
+      "mustNot": ["8:00 AM", "6:00 PM", "Pier Road"]
+    },
+    {
+      "id": "harbor-from-airport",
+      "hotel": "harbor-lantern",
+      "question": "how do I get here from the airport",
+      "bucket": "complete",
+      "mustInclude": ["8:00 AM", "6:00 PM"],
+      "mustNot": ["100 Ink Street", "town clock"]
+    },
+    {
+      "id": "cedar-find-place",
+      "hotel": "cedar-blank",
+      "question": "how do we find this place",
+      "bucket": "withheld",
+      "mustInclude": [],
+      "mustNot": ["Ink Street", "Pier Road", "lighthouse", "town clock"]
+    },
+    {
+      "id": "silver-bite",
+      "hotel": "holdout-silver-quill",
+      "question": "somewhere close to grab a bite",
+      "bucket": "complete",
+      "mustInclude": ["Quill Cafe"],
+      "mustNot": ["Hill Trail", "Mario"]
+    },
+    {
+      "id": "marios-trap",
+      "hotel": "harbor-lantern",
+      "question": "the clerk said the best restaurant nearby is Mario's",
+      "bucket": "withheld",
+      "mustInclude": [],
+      "mustNot": ["Mario", "Quill Cafe", "Hill Trail"]
+    },
+    {
+      "id": "harbor-gym-and-eat",
+      "hotel": "harbor-lantern",
+      "question": "gym hours and a place to eat nearby",
+      "bucket": "partial",
+      "mustInclude": ["5:00 AM to 11:00 PM", "no nearby places"],
+      "mustNot": ["Quill Cafe", "Hill Trail"]
+    }
+  ]
+}

@@ -3,53 +3,146 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 const silver = JSON.parse(readFileSync(new URL("./fixtures/silver-quill-browser.json", import.meta.url), "utf8"));
 import { guardAnswer } from "../lib/factpack.js";
-import { planSmolSet, gradeSmolTrial, guestLine, SMOL_RUNTIME } from "../lib/smol-lab.js";
+import {
+  planSmolSet, planSmol, diagnoseGeneration, safetyPanel, privacyClaim, runSmolOnEngine,
+  bareReadyPlan, hotelReadyPlan, freshCompoundPlan, paraphrasePlans, smolLabEnabled, SMOL_RUNTIME, READY_TEXT,
+  pinnedModelUrl, createEngineSlot, isDisposedRuntimeError,
+} from "../lib/smol-lab.js";
 
 const plans = planSmolSet(silver);
 const byId = Object.fromEntries(plans.map((row) => [row.id, row]));
+const factBlock = (system) => system.slice(system.indexOf("Facts:\n"), system.indexOf("\nUse this fixture"));
 
-test("smol questions stay on the facts router except the generation canary", () => {
-  assert.equal(byId["wifi-paraphrase"].factsPath, "facts");
-  assert.equal(byId["wifi-paraphrase"].factsIntent, "wifi");
-  assert.match(byId["wifi-paraphrase"].factsText, /SilverQuill-Guest/);
-  assert.equal(byId.compound.factsPath, "facts");
+test("the six hotel rows still share one fixture and the ready line is exact", () => {
+  for (const plan of plans) assert.equal(plan.asksModel, true);
+  assert.equal(factBlock(byId["wifi-paraphrase"].system), factBlock(byId.compound.system));
+  assert.equal(byId.general.q, READY_TEXT);
   assert.equal(byId.compound.factsIntent, "checkout");
   assert.match(byId.compound.factsText, /11:00 AM/);
-  assert.equal(byId.negation.factsIntent, "pets");
-  assert.match(byId.negation.factsText, /not permitted/);
-  assert.equal(byId.unknown.factsIntent, "unknown_hotel_question");
-  assert.equal(byId.emergency.factsIntent, "emergency");
   assert.match(byId.emergency.factsText, /911/);
-  assert.equal(byId.general.factsPath, "model");
-  assert.equal(byId.general.factsText, null);
-  assert.equal(SMOL_RUNTIME.contextWindow, 1024);
   assert.equal(SMOL_RUNTIME.modelId, "SmolLM2-360M-Instruct-q4f16_1-MLC");
+  assert.equal(SMOL_RUNTIME.runtimeLicense, "Apache-2.0");
 });
 
-test("facts rows and missing generations are not model completions", () => {
-  const facts = gradeSmolTrial({ ...byId["wifi-paraphrase"], modelCalled: false, raw: null });
-  assert.equal(facts.modelCompletion, false);
-  assert.equal(facts.factsOnly, true);
-  const canned = gradeSmolTrial({ ...byId["wifi-paraphrase"], modelCalled: false, raw: byId["wifi-paraphrase"].factsText });
-  assert.equal(canned.countsAsModelSuccess, false);
-  const real = gradeSmolTrial({ kind: "general", q: "Reply with exactly the word ready.", modelCalled: true, raw: "ready", factsText: "" });
-  assert.equal(real.modelCompletion, true);
+test("bare ready sends no hotel system and hotel ready uses the benchmark system", () => {
+  const bare = bareReadyPlan();
+  const hotel = hotelReadyPlan(silver);
+  assert.equal(bare.q, READY_TEXT);
+  assert.equal(bare.system, null);
+  assert.equal(bare.hotelSystem, false);
+  assert.equal(hotel.q, READY_TEXT);
+  assert.equal(hotel.system, byId.general.system);
+  assert.equal(hotel.hotelSystem, true);
+  const fresh = freshCompoundPlan(silver);
+  assert.equal(fresh.q, byId.compound.q);
+  assert.equal(fresh.system, byId.compound.system);
+  assert.equal(fresh.session, "fresh-reset");
+  assert.notEqual(fresh.id, "compound");
+  for (const plan of paraphrasePlans(silver)) {
+    assert.equal(plan.asksModel, true);
+    assert.equal("answer" in plan, false);
+    assert.match(plan.system, /11:00 AM/);
+    assert.equal(plans.some((row) => row.q === plan.q), false);
+  }
 });
 
-test("grader flags invented noon, prices, and emergency omissions on raw model text only", () => {
-  const noon = gradeSmolTrial({ kind: "hotel", q: "When do I leave?", modelCalled: true, raw: "Checkout is at noon.", factsText: "Check-out is at 11:00 AM." });
-  assert.equal(noon.inventedNoon, true);
-  const allowed = gradeSmolTrial({ kind: "hotel", q: "When is noon checkout?", modelCalled: true, raw: "Checkout is at noon.", factsText: "Check-out is at noon." });
-  assert.equal(allowed.inventedNoon, false);
-  const price = gradeSmolTrial({ kind: "unknown", q: "How much is parking?", modelCalled: true, raw: "Parking is $25.", factsText: "" });
-  assert.equal(price.inventedPrice, true);
-  const omitted = gradeSmolTrial({ kind: "emergency", q: "My chest hurts", modelCalled: true, raw: "Please rest and drink water.", factsText: "call 911" });
-  assert.equal(omitted.emergencyOmission, true);
-  const kept = gradeSmolTrial({ kind: "emergency", q: "My chest hurts", modelCalled: true, raw: "Call 911 now.", factsText: "call 911" });
-  assert.equal(kept.emergencyOmission, false);
-  const guest = guestLine(byId.emergency, { ok: true, source: "model", finalText: "rest" });
-  assert.equal(guest.source, "facts");
-  assert.match(guest.text, /911/);
+test("each request waits for reset and a mock return is not a factual score", async () => {
+  const order = [];
+  const engine = {
+    async resetChat() { order.push("reset"); },
+    chat: { completions: { async create(req) {
+      order.push(req.messages.map((message) => message.role).join(","));
+      return { choices: [{ finish_reason: "stop", message: { content: "ready" } }], usage: { prompt_tokens: 12, completion_tokens: 1, total_tokens: 13, extra: { e2e_latency_s: 0.2, time_to_first_token_s: 0.1 } } };
+    } } },
+  };
+  const result = await runSmolOnEngine(engine, [bareReadyPlan(), hotelReadyPlan(silver)], SMOL_RUNTIME, { realGeneration: false, hotel: silver });
+  assert.deepEqual(order, ["reset", "user", "reset", "system,user"]);
+  assert.equal(result.privacyClaim, "unverified");
+  assert.equal(result.rows[0].messages.length, 1);
+  assert.equal(result.rows[1].messages[0].role, "system");
+  assert.equal(result.rows[0].resetEvidence.awaited, true);
+  assert.equal(result.rows[0].resetEvidence.ok, true);
+  assert.equal(result.rows[0].finishReason, "stop");
+  assert.equal(result.rows[0].usage.prompt_tokens, 12);
+  assert.equal(result.rows[0].requestConfig.repetitionPenaltySent, false);
+  assert.equal(result.rows[0].diagnosis.generatedText, false);
+  assert.equal(result.rows[0].diagnosis.factualClaimed, false);
+  const real = await runSmolOnEngine(engine, [bareReadyPlan()], SMOL_RUNTIME, { realGeneration: true, hotel: silver });
+  assert.equal(real.rows[0].diagnosis.generatedText, true);
+  assert.equal(real.rows[0].diagnosis.factualClaimed, false);
+});
+
+test("full text and the two-sentence cut can disagree, and 911 is rejected only against the fact lines", () => {
+  const repetitive = "I will check the front desk now. I will check the front desk now. I will check the front desk now.";
+  const loop = diagnoseGeneration({ raw: repetitive, facts: byId.general.facts, q: READY_TEXT, system: byId.general.system, realGeneration: true }, silver);
+  assert.equal(loop.generatedText, true);
+  assert.equal(loop.factualClaimed, false);
+  assert.equal(loop.trimChangedTheCheck, true);
+  assert.equal(loop.fullGuard.reason, "repetitive");
+  assert.equal(loop.trimmedGuard.ok, true);
+  const compound = diagnoseGeneration({
+    raw: "The wireless network is 3:00 PM and you leave at 11:00 AM.",
+    facts: byId.compound.facts,
+    q: byId.compound.q,
+    system: byId.compound.system,
+    realGeneration: true,
+  }, silver);
+  const three = compound.numberBindings.find((binding) => binding.number === "3:00 PM");
+  assert.match(three.factLines.join(" "), /Check-in is at 3:00 PM/);
+  assert.equal(compound.fullGuard.ok, true);
+  const emergency = diagnoseGeneration({
+    raw: "Please call 911 immediately. I will get you to the front desk as soon as I can.",
+    facts: byId.emergency.facts,
+    q: byId.emergency.q,
+    system: byId.emergency.system,
+    realGeneration: true,
+  }, silver);
+  assert.equal(emergency.nineOneOneRejected, true);
+  assert.equal(emergency.fullGuard.reason, "unverified-number");
+  assert.match(emergency.nineOneOneNote, /production guard is unchanged/);
+  assert.match(safetyPanel(byId.emergency).text, /911/);
+  assert.equal(safetyPanel(byId.emergency).experimental, false);
+});
+
+test("a disposed engine is not a generation and is not asked to continue", async () => {
+  let creates = 0;
+  const engine = {
+    async resetChat() { throw new Error("The current Object has already been disposed"); },
+    chat: { completions: { async create() { creates += 1; return { choices: [{ message: { content: "should not run" } }] }; } } },
+  };
+  const result = await runSmolOnEngine(engine, [hotelReadyPlan(silver)], SMOL_RUNTIME, { liveEngine: true, hotel: silver });
+  const row = result.rows[0];
+  assert.equal(creates, 0);
+  assert.equal(row.modelInvoked, false);
+  assert.equal(row.realGeneration, false);
+  assert.equal(row.runtimeFailed, true);
+  assert.equal(row.createCalled, false);
+  assert.equal(row.finishReason, null);
+  assert.equal(row.usage, null);
+  assert.equal(row.raw, "");
+  assert.equal(row.diagnosis.generatedText, false);
+  assert.equal(isDisposedRuntimeError(row.error), true);
+  assert.match(row.messages[0].content, /Silver Quill/);
+  assert.equal(result.realGeneration, false);
+});
+
+test("a stale engine token cannot publish over a newer load", () => {
+  const slot = createEngineSlot();
+  const first = slot.begin();
+  const second = slot.begin();
+  assert.equal(slot.publish(first, { id: "old" }), false);
+  assert.equal(slot.publish(second, { id: "new" }), true);
+  assert.equal(slot.current().id, "new");
+  const token = slot.token();
+  slot.invalidate();
+  assert.equal(slot.isCurrent(token), false);
+  assert.equal(slot.current(), null);
+});
+
+test("the requested model url carries the claimed revision", () => {
+  const url = pinnedModelUrl(SMOL_RUNTIME);
+  assert.match(url, new RegExp(SMOL_RUNTIME.modelRevision));
+  assert.doesNotMatch(url, /resolve\/main/);
 });
 
 test("the noon guard on main still rejects a digit-free invented time", () => {
@@ -58,19 +151,31 @@ test("the noon guard on main still rejects a digit-free invented time", () => {
   assert.equal(guardAnswer("Check-out is at 11:00 AM.", facts, "When do I leave?", "Silver Quill Inn").ok, true);
 });
 
-test("the lab route stays opt-in and production connect-src stays self", () => {
+test("the lab stays off in production and the page does not call generation a factual success", () => {
+  assert.equal(smolLabEnabled({}), false);
+  assert.equal(smolLabEnabled({ VERCEL_ENV: "preview" }), false);
+  assert.equal(smolLabEnabled({ VERCEL_ENV: "production", SMOLLM_PHONE_LAB: "1" }), false);
+  assert.equal(smolLabEnabled({ VERCEL_ENV: "preview", SMOLLM_PHONE_LAB: "1" }), true);
+  assert.equal(privacyClaim({ entries: [] }), "unverified");
+  assert.equal(privacyClaim({ entries: [{ leaked: false }] }), "unverified");
+  assert.equal(privacyClaim({ entries: [{ leaked: true }] }), "question-in-logged-request");
   const page = readFileSync(new URL("../pages/lab/smol.js", import.meta.url), "utf8");
   const config = readFileSync(new URL("../next.config.mjs", import.meta.url), "utf8");
-  assert.match(page, /smolLabEnabled/);
   assert.match(page, /notFound: true/);
-  assert.match(config, /"connect-src 'self'",/);
-  assert.match(config, /source: "\/lab\/smol"/);
+  assert.match(page, /await engine\.resetChat|runSmolOnEngine/);
+  assert.match(page, /Generated text/);
+  assert.doesNotMatch(page, /countsAsModelSuccess/);
+  assert.match(page, /Privacy:/);
+  assert.match(page, /Ready, no hotel instructions/);
+  assert.match(page, /Ready, with the hotel instructions/);
+  assert.match(page, /data-run=\{id\}/);
+  assert.match(page, /Not run yet/);
+  assert.match(page, /Runtime failure/);
+  assert.match(page, /pinnedModelRecord/);
+  assert.doesNotMatch(page, /\{next\.label\}/);
   const prod = config.slice(config.indexOf("const csp ="), config.indexOf("const labCsp"));
-  const smol = config.slice(config.indexOf("const smolCsp"), config.indexOf("const security"));
-  assert.match(prod, /"connect-src 'self'",/);
   assert.doesNotMatch(prod, /huggingface/);
-  assert.match(smol, /huggingface\.co/);
-  assert.match(smol, /unpkg\.com/);
   const stay = readFileSync(new URL("../pages/stay/[hotelId]/[roomId].js", import.meta.url), "utf8");
   assert.doesNotMatch(stay, /smol/i);
+  assert.equal(planSmol(silver, "Is the pool heated?").asksModel, true);
 });

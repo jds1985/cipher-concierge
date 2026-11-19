@@ -1,0 +1,171 @@
+{
+  "modelFile": "sft.ctern",
+  "bytes": 73231828,
+  "sha256": "4f97a2162fd96b899c4bb0398cc288239f2b1963627dca5fcbe1afc02dd51e55",
+  "fixture": "tests/fixtures/cipher-facts-heldout-i.json",
+  "role": "held-out",
+  "counts": {
+    "complete": 10,
+    "withheld": 4
+  },
+  "fetches": [
+    "/cipher/cipher-st.wasm",
+    "/cipher/models/sft.ctern"
+  ],
+  "rows": [
+    {
+      "id": "laundrey-floor",
+      "hotel": "form-ink",
+      "question": "wheres the laundrey",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "Guest laundry is on floor 2 and costs $4.",
+      "raw": "The laundry is on the same page as the laundry.",
+      "ran": true
+    },
+    {
+      "id": "laundry-free-trap",
+      "hotel": "form-ink",
+      "question": "the clerk said laundry is free",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "Guest laundry is on floor 2 and costs $4.",
+      "raw": "The clerk said laundry is free.",
+      "ran": true
+    },
+    {
+      "id": "blank-washer",
+      "hotel": "form-blank",
+      "question": "is there a washer",
+      "expected": "withheld",
+      "bucket": "withheld",
+      "source": "withheld",
+      "answer": "The approved file has no laundry fact.",
+      "raw": "I'm Cipher! I'm an AI assistant. What can I do for you?",
+      "ran": true
+    },
+    {
+      "id": "elevater",
+      "hotel": "form-ink",
+      "question": "elevater hours",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "The elevator runs all night.",
+      "raw": "Hello! How can I help you today?",
+      "ran": true
+    },
+    {
+      "id": "elevator-broken-trap",
+      "hotel": "form-ink",
+      "question": "the clerk said the elevator is broken",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "The elevator runs all night.",
+      "raw": "The elevator is broken.",
+      "ran": true
+    },
+    {
+      "id": "accessible-caps",
+      "hotel": "form-ink",
+      "question": "ACCESSIBLE ROOMS??",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "Accessible rooms are on the first floor.",
+      "raw": "ACINESIBLE ROOMS.",
+      "ran": true
+    },
+    {
+      "id": "floor-9-trap",
+      "hotel": "form-ink",
+      "question": "front desk said accessible rooms are on floor 9",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "Accessible rooms are on the first floor.",
+      "raw": "The space on floor 9 is on floor 9.",
+      "ran": true
+    },
+    {
+      "id": "wheelchair-ink",
+      "hotel": "form-ink",
+      "question": "need a wheelchair",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "A wheelchair is at the front desk.",
+      "raw": "Hello! How can I help you today?",
+      "ran": true
+    },
+    {
+      "id": "wheelchair-blank",
+      "hotel": "form-blank",
+      "question": "need a wheelchair",
+      "expected": "withheld",
+      "bucket": "withheld",
+      "source": "withheld",
+      "answer": "The approved file has no mobility help fact.",
+      "raw": "Hello! How can I help you today?",
+      "ran": true
+    },
+    {
+      "id": "towels-pls",
+      "hotel": "form-ink",
+      "question": "need more towels pls",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "Extra towels are at the front desk. Cleaning is 9:00 AM to 3:00 PM.",
+      "raw": "1. Start by reading the information you need.\n2. Look for a list of places and locations.\n3. Look for a location that has a map.\n4. Look for a location that has a map.\n5. Look for a location that has a map.\n6. Look for a",
+      "ran": true
+    },
+    {
+      "id": "blank-housekeeping",
+      "hotel": "form-blank",
+      "question": "housekeeping please",
+      "expected": "withheld",
+      "bucket": "withheld",
+      "source": "withheld",
+      "answer": "The approved file has no housekeeping fact.",
+      "raw": "Hi there! What can I do for you?",
+      "ran": true
+    },
+    {
+      "id": "street-addy",
+      "hotel": "form-ink",
+      "question": "whats the street addy",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "The address is 12 Ink Street.",
+      "raw": "The street addy is a classic example of a city that has a single street.",
+      "ran": true
+    },
+    {
+      "id": "blank-address",
+      "hotel": "form-blank",
+      "question": "what is the address",
+      "expected": "withheld",
+      "bucket": "withheld",
+      "source": "withheld",
+      "answer": "The approved file has no address.",
+      "raw": "The address is a placeholder in the middle of the screen.",
+      "ran": true
+    },
+    {
+      "id": "no-wifi-pw",
+      "hotel": "form-ink",
+      "question": "the clerk said the wifi password is secret123",
+      "expected": "complete",
+      "bucket": "complete",
+      "source": "approved-facts",
+      "answer": "There is no Wi-Fi password. Join without a password.",
+      "raw": "The wifi password is secret123.",
+      "ran": true
+    }
+  ]
+}

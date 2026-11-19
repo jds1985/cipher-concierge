@@ -3,7 +3,7 @@ import { useState } from "react";
 import Mark from "../../components/Mark";
 import { SETUP_CSS } from "../../lib/setup-css";
 import { sessionFromReq } from "../../lib/auth";
-import { getBilling, billingConfigured } from "../../lib/billing";
+import { getBilling, billingConfigured, billingButtonVisible } from "../../lib/billing";
 import { monthlyCents, dollars, TRIAL_DAYS } from "../../lib/pricing";
 
 export async function getServerSideProps({ req, res, query }) {
@@ -11,7 +11,7 @@ export async function getServerSideProps({ req, res, query }) {
   const s = await sessionFromReq(req);
   if (!s) return { redirect: { destination: "/login", permanent: false } };
   const b = (await getBilling(s.hotelId)) || {};
-  return { props: { email: s.email, configured: billingConfigured(), done: query.done === "1", canceled: query.canceled === "1",
+  return { props: { email: s.email, configured: billingConfigured(), buttonVisible: billingButtonVisible(), done: query.done === "1", canceled: query.canceled === "1",
     billing: { status: b.status || null, rooms: b.rooms || b.plannedRooms || null, founding: !!b.founding, comp: !!b.comp,
       trialEnd: b.trialEnd || null, currentPeriodEnd: b.currentPeriodEnd || null, cancelAtPeriodEnd: !!b.cancelAtPeriodEnd, hasCustomer: !!b.customerId } } };
 }
@@ -20,9 +20,9 @@ const LABEL = { trialing: "Free trial", active: "Active", past_due: "Payment ove
   incomplete: "Waiting for payment", incomplete_expired: "Expired", paused: "Paused — add a card" };
 const fmt = (d) => (d ? new Date(d).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" }) : "");
 const BIG = `.bill-big{font-size:20px;line-height:1.5}.bill-status{font:800 30px "Plus Jakarta Sans";color:#fff}
-.bill-price{font:800 40px "Plus Jakarta Sans";color:var(--lime)}.btn-xl{min-height:60px;font-size:20px;padding:0 28px}`;
+.bill-price{font:800 40px "Plus Jakarta Sans";color:var(--lime)}.btn-xl{box-sizing:border-box;max-width:100%;min-height:60px;font-size:20px;padding:0 28px}`;
 
-export default function Billing({ email, configured, done, canceled, billing }) {
+export default function Billing({ email, configured, buttonVisible, done, canceled, billing }) {
   const [rooms, setRooms] = useState(billing.rooms || "");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
@@ -78,8 +78,12 @@ export default function Billing({ email, configured, done, canceled, billing }) 
             <input type="number" inputMode="numeric" min={1} max={2000} value={rooms} onChange={(e) => setRooms(e.target.value)} placeholder="40" /></label>
           {valid && <p className="bill-price" aria-live="polite">{dollars(monthlyCents(n, billing.founding))}/month</p>}
           {valid && <p className="hint">after your {TRIAL_DAYS}-day free trial</p>}
-          <button className="btn btn-primary btn-xl" disabled={busy || !valid || !configured} onClick={() => go("/api/billing/checkout", { rooms: n })}>
-            {busy ? "Opening checkout…" : `Start ${TRIAL_DAYS}-day free trial`}</button>
+          {buttonVisible ? (
+            <button className="btn btn-primary btn-xl" disabled={busy || !valid || !configured} onClick={() => go("/api/billing/checkout", { rooms: n })}>
+              {busy ? "Opening checkout…" : `Start ${TRIAL_DAYS}-day free trial`}</button>
+          ) : (
+            <p className="bill-big">Checkout opens December 11, 2026. Guests can keep using Cipher until then. No card is charged today.</p>
+          )}
           {billing.hasCustomer && billing.status && <button className="btn btn-ghost" disabled={busy} onClick={() => go("/api/billing/portal")}>Past invoices</button>}
         </section>
       )}

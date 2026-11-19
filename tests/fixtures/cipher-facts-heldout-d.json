@@ -1,0 +1,96 @@
+{
+  "frozen": "2026-11-09",
+  "role": "held-out",
+  "note": "Breakfast, parking, and late checkout set written before those readers were scored. Practice sentences are different. Each topic is missing on at least one hotel.",
+  "realGenerationIds": ["harbor-brekfast", "clerk-parking-fifty", "silver-late-lie"],
+  "items": [
+    {
+      "id": "silver-brekkie",
+      "hotel": "holdout-silver-quill",
+      "question": "wheres the brekkie at and how much",
+      "bucket": "withheld",
+      "mustInclude": [],
+      "mustNot": ["7:00", "$18", "pier room", "Breakfast is"]
+    },
+    {
+      "id": "harbor-brekfast",
+      "hotel": "harbor-lantern",
+      "question": "brekfast hours n price pls",
+      "bucket": "complete",
+      "mustInclude": ["7:00 AM to 10:00 AM", "pier room", "$18"],
+      "mustNot": ["included"]
+    },
+    {
+      "id": "clerk-parking-fifty",
+      "hotel": "holdout-silver-quill",
+      "question": "the guy at the desk said parking is fifty bucks",
+      "bucket": "complete",
+      "mustInclude": ["lot behind the inn", "free"],
+      "mustNot": ["fifty", "$50"]
+    },
+    {
+      "id": "harbor-dump-car",
+      "hotel": "harbor-lantern",
+      "question": "where do i dump the car",
+      "bucket": "withheld",
+      "mustInclude": [],
+      "mustNot": ["lot behind", "Parking is available", "free"]
+    },
+    {
+      "id": "harbor-later-cutoff",
+      "hotel": "harbor-lantern",
+      "question": "is a later checkout a thing and whats the cutoff",
+      "bucket": "complete",
+      "mustInclude": ["1:00 PM", "$30", "Late checkout is allowed"],
+      "mustNot": ["not allowed", "10:00 AM"]
+    },
+    {
+      "id": "silver-late-lie",
+      "hotel": "holdout-silver-quill",
+      "question": "clerk told me late checkout is free till 2",
+      "bucket": "withheld",
+      "mustInclude": [],
+      "mustNot": ["11:00 AM", "Late checkout is allowed", "$30", "free till"]
+    },
+    {
+      "id": "harbor-brekkie-car",
+      "hotel": "harbor-lantern",
+      "question": "brekkie price and where do I leave the car",
+      "bucket": "partial",
+      "mustInclude": ["$18", "no parking fact"],
+      "mustNot": ["lot behind"]
+    },
+    {
+      "id": "silver-parking-dog",
+      "hotel": "holdout-silver-quill",
+      "question": "parking fee and can my dog come",
+      "bucket": "complete",
+      "mustInclude": ["free", "Pets are not allowed"],
+      "mustNot": ["$25", "40 pounds"]
+    },
+    {
+      "id": "cedar-late-ok",
+      "hotel": "cedar-blank",
+      "question": "is late checkout ok",
+      "bucket": "complete",
+      "mustInclude": ["Late checkout is not allowed"],
+      "mustNot": ["$30", "1:00 PM"]
+    },
+    {
+      "id": "harbor-included-lie",
+      "hotel": "harbor-lantern",
+      "question": "breakfast is included, the clerk said so",
+      "bucket": "complete",
+      "mustInclude": ["$18"],
+      "mustNot": ["included"]
+    },
+    {
+      "id": "silver-parkng",
+      "hotel": "holdout-silver-quill",
+      "question": "parkng in the back?",
+      "bucket": "complete",
+      "mustInclude": ["lot behind the inn"],
+      "mustNot": ["not available"]
+    }
+  ]
+}

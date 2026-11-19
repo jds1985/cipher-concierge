@@ -1,0 +1,45 @@
+{
+  "opening": {
+    "status": "Not started.",
+    "button": "Start the 3-question test",
+    "hash": false
+  },
+  "widths": {
+    "280": false,
+    "320": false,
+    "390": false
+  },
+  "errors": [],
+  "done": {
+    "status": "Completed. All 3 questions finished.",
+    "rows": [
+      {
+        "n": 1,
+        "question": "brekfast hours n price pls",
+        "label": "Complete answer.",
+        "source": "approved-facts",
+        "answer": "Breakfast is 7:00 AM to 10:00 AM at the pier room. Breakfast costs $18.",
+        "ran": true,
+        "raw": "<<<\"Search on the Dates\">>\n\n1. \"Title: The Date of the Dead\"\n2. \"The Date of the Dead\"\n3. \"The Loop of the Dead\"\n4. \"The Loop of the Dead\"\n5."
+      },
+      {
+        "n": 2,
+        "question": "the guy at the desk said parking is fifty bucks",
+        "label": "Complete answer.",
+        "source": "approved-facts",
+        "answer": "Parking is available at the lot behind the inn. The parking fee is free.",
+        "ran": true,
+        "raw": "The guy at the desk said parking is 150."
+      },
+      {
+        "n": 3,
+        "question": "clerk told me late checkout is free till 2",
+        "label": "Not answered from the hotel file.",
+        "source": "withheld",
+        "answer": "The approved file has no late checkout policy.",
+        "ran": true,
+        "raw": "I'm sorry for any confusion, but as an AI, I don't have real-time data or access to specific information. However, you can use a search engine like Google Maps or Google Maps to find your location."
+      }
+    ]
+  }
+}

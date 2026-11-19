@@ -1,0 +1,96 @@
+{
+  "frozen": "2026-11-09",
+  "role": "development",
+  "note": "First frozen set. Scored once, then retired because the walk question was marked incorrect: the old leave rule treated leaving the building as checkout and the withheld text named 11:00 AM. Do not use these sentences as the final held-out score.",
+  "realGenerationIds": ["guest-wireless", "outta-room", "chekout-and-network", "arrival"],
+  "items": [
+    {
+      "id": "guest-wireless",
+      "hotel": "holdout-silver-quill",
+      "question": "hey whats the name of the wireless for guests?",
+      "bucket": "complete",
+      "mustInclude": ["SilverQuill-Guest"],
+      "mustNot": ["Lantern-Guest", "blue-pier", "11:00 AM"]
+    },
+    {
+      "id": "wfi-password",
+      "hotel": "holdout-silver-quill",
+      "question": "wfi password?",
+      "bucket": "complete",
+      "mustInclude": ["no Wi-Fi password", "guest code"],
+      "mustNot": ["blue-pier", "Lantern-Guest"]
+    },
+    {
+      "id": "dropping",
+      "hotel": "holdout-silver-quill",
+      "question": "internet keeps dropping in my room, any idea?",
+      "bucket": "partial",
+      "mustInclude": ["SilverQuill-Guest", "no steps"],
+      "mustNot": ["I will", "I'll"]
+    },
+    {
+      "id": "outta-room",
+      "hotel": "holdout-silver-quill",
+      "question": "when do we gotta be outta the room tomorrow?",
+      "bucket": "complete",
+      "mustInclude": ["11:00 AM"],
+      "mustNot": ["3:00 PM", "10:00 AM"]
+    },
+    {
+      "id": "chekout-and-network",
+      "hotel": "holdout-silver-quill",
+      "question": "chek-out time and also the guest network",
+      "bucket": "complete",
+      "mustInclude": ["11:00 AM", "SilverQuill-Guest"],
+      "mustNot": ["Lantern-Guest", "blue-pier"]
+    },
+    {
+      "id": "arrival",
+      "hotel": "holdout-silver-quill",
+      "question": "what time is check-in?",
+      "bucket": "withheld",
+      "mustInclude": [],
+      "mustNot": ["11:00 AM", "Check-out is at"]
+    },
+    {
+      "id": "walk",
+      "hotel": "holdout-silver-quill",
+      "question": "I'm stepping out of the hotel for a walk. When should I leave the building?",
+      "bucket": "withheld",
+      "mustInclude": [],
+      "mustNot": ["11:00 AM", "Check-out is at"]
+    },
+    {
+      "id": "no-network-right",
+      "hotel": "holdout-silver-quill",
+      "question": "You don't have a guest network, right?",
+      "bucket": "complete",
+      "mustInclude": ["SilverQuill-Guest"],
+      "mustNot": ["there is no guest network", "Lantern-Guest"]
+    },
+    {
+      "id": "noon-checkout",
+      "hotel": "holdout-silver-quill",
+      "question": "Is checkout at noon?",
+      "bucket": "complete",
+      "mustInclude": ["11:00 AM"],
+      "mustNot": ["noon", "Yes"]
+    },
+    {
+      "id": "late-and-wifi",
+      "hotel": "holdout-silver-quill",
+      "question": "can you book me a late checkout and tell me the wifi name?",
+      "bucket": "partial",
+      "mustInclude": ["SilverQuill-Guest", "will not book"],
+      "mustNot": ["I'll book", "I will book", "midnight"]
+    },
+    {
+      "id": "harbor-laptop",
+      "hotel": "harbor-lantern",
+      "question": "which network should my laptop join?",
+      "bucket": "complete",
+      "mustInclude": ["Lantern-Guest"],
+      "mustNot": ["SilverQuill-Guest", "11:00 AM"]
+    }
+  ]
+}

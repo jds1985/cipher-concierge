@@ -1,0 +1,147 @@
+{
+  "status": 200,
+  "both": true,
+  "harborShown": true,
+  "kept": true,
+  "hidden": true,
+  "overflow": false,
+  "overflowAfter": false,
+  "errors": [],
+  "rows": [
+    {
+      "id": "guest-wireless-b",
+      "question": "could you tell me the guest wireless name please",
+      "expected": "complete",
+      "bucket": "complete",
+      "raw": "I'm sorry for any confusion, but as an AI, I don't have real-time access to personal data unless it has been shared with me in the course of our conversation. However, I can guide you through the process of checking a reliable internet connection or using a search engine like Google Maps or Google M",
+      "layer": "The Wi-Fi network is SilverQuill-Guest.",
+      "source": "approved-facts",
+      "intents": [
+        "wifi-name"
+      ],
+      "context": {
+        "systemTokens": 168,
+        "systemBegin": 170,
+        "systemPast": 170,
+        "userBegin": 12,
+        "userPast": 182,
+        "systemRemains": true,
+        "note": "userBegin is the number of tokens the question call added. userPast is the context length after that add. A small userBegin does not mean the hotel text was dropped."
+      },
+      "stats": {
+        "promptTokens": 12,
+        "nPastBefore": 170,
+        "nPastAfter": 182,
+        "genTokens": 64,
+        "prefillMs": 101.69999999925494,
+        "firstTokenMs": 118.89999999850988,
+        "totalMs": 904,
+        "decodeTokS": 80.24455483362682
+      }
+    },
+    {
+      "id": "vacate-room",
+      "question": "what hour tomorrow do we need to vacate the room",
+      "expected": "complete",
+      "bucket": "complete",
+      "raw": "The hour tomorrow is a day of great service and good time for the rest of the day.",
+      "layer": "Check-out is at 11:00 AM.",
+      "source": "approved-facts",
+      "intents": [
+        "checkout"
+      ],
+      "context": {
+        "systemTokens": 168,
+        "systemBegin": 170,
+        "systemPast": 170,
+        "userBegin": 14,
+        "userPast": 184,
+        "systemRemains": true,
+        "note": "userBegin is the number of tokens the question call added. userPast is the context length after that add. A small userBegin does not mean the hotel text was dropped."
+      },
+      "stats": {
+        "promptTokens": 14,
+        "nPastBefore": 170,
+        "nPastAfter": 184,
+        "genTokens": 19,
+        "prefillMs": 112.59999999962747,
+        "firstTokenMs": 124.5,
+        "totalMs": 352.5,
+        "decodeTokS": 78.94736842105263
+      }
+    },
+    {
+      "id": "departure-and-ssid",
+      "question": "need both the departure time from the room and the ssid",
+      "expected": "complete",
+      "bucket": "complete",
+      "raw": "In the first sentence, the first sentence is \"Ever since the first letter is.\" This means that the second letter is \"Ever since the first letter is,\" which means that the second letter is \"Ever since the first letter is\" (which means \"e\").",
+      "layer": "The Wi-Fi network is SilverQuill-Guest. Check-out is at 11:00 AM.",
+      "source": "approved-facts",
+      "intents": [
+        "wifi-name",
+        "checkout"
+      ],
+      "context": {
+        "systemTokens": 168,
+        "systemBegin": 170,
+        "systemPast": 170,
+        "userBegin": 17,
+        "userPast": 187,
+        "systemRemains": true,
+        "note": "userBegin is the number of tokens the question call added. userPast is the context length after that add. A small userBegin does not mean the hotel text was dropped."
+      },
+      "stats": {
+        "promptTokens": 17,
+        "nPastBefore": 170,
+        "nPastAfter": 187,
+        "genTokens": 56,
+        "prefillMs": 134.80000000074506,
+        "firstTokenMs": 146.80000000074506,
+        "totalMs": 825.0999999996275,
+        "decodeTokS": 81.08506560532304
+      }
+    },
+    {
+      "id": "arrive",
+      "question": "when do guests usually arrive?",
+      "expected": "withheld",
+      "bucket": "withheld",
+      "raw": "When guests arrive, the first person to arrive is the person who arrives. They usually arrive at the top of the room, but they usually arrive at the top of the room.",
+      "layer": "This question is not a Wi-Fi name, password, or end-of-stay time.",
+      "source": "withheld",
+      "intents": [],
+      "context": {
+        "systemTokens": 168,
+        "systemBegin": 170,
+        "systemPast": 170,
+        "userBegin": 9,
+        "userPast": 179,
+        "systemRemains": true,
+        "note": "userBegin is the number of tokens the question call added. userPast is the context length after that add. A small userBegin does not mean the hotel text was dropped."
+      },
+      "stats": {
+        "promptTokens": 9,
+        "nPastBefore": 170,
+        "nPastAfter": 179,
+        "genTokens": 36,
+        "prefillMs": 73.29999999888241,
+        "firstTokenMs": 85.19999999925494,
+        "totalMs": 518.0999999996275,
+        "decodeTokS": 80.85008085001127
+      }
+    }
+  ],
+  "fetches": [
+    {
+      "url": "/cipher/cipher-st.wasm",
+      "method": "GET",
+      "bodyChars": 0
+    },
+    {
+      "url": "/cipher/models/sft.ctern",
+      "method": "GET",
+      "bodyChars": 0
+    }
+  ]
+}

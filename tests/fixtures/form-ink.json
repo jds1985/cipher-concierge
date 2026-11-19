@@ -1,0 +1,21 @@
+{
+  "id": "form-ink",
+  "name": "Form Ink",
+  "location": { "city": "Testville", "area": "Downtown", "address": "12 Ink Street" },
+  "frontDesk": { "inRoom": "Dial 0", "phoneDisplay": null, "phoneTel": null },
+  "wifi": { "network": "Ink-Guest", "password": null, "showPassword": false, "notes": "Join without a password." },
+  "checkIn": { "time": "3:00 PM" },
+  "checkOut": { "time": "11:00 AM", "late": "" },
+  "dining": [],
+  "laundry": "Guest laundry is on floor 2 and costs $4.",
+  "elevator": "The elevator runs all night.",
+  "accessibleRooms": "Accessible rooms are on the first floor.",
+  "mobilityHelp": "A wheelchair is at the front desk.",
+  "housekeeping": "Extra towels are at the front desk. Cleaning is 9:00 AM to 3:00 PM.",
+  "pets": "",
+  "parking": "",
+  "pool": "",
+  "fitness": "",
+  "roomService": "",
+  "localRecommendations": []
+}
