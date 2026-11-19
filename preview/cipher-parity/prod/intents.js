@@ -14,6 +14,44 @@ export function normalize(q) {
 }
 
 const desk = (h) => `${h.frontDesk.inRoom}${h.frontDesk.phoneTel ? `, or call **${h.frontDesk.phoneDisplay}**` : ""}`;
+
+// Keep letters, including Spanish, and drop accents so "desmayó" still matches.
+function fold(q) {
+  return String(q || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .replace(/[’`]/g, "'")
+    .replace(/[^a-z0-9'\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+const SPANISH_EMERGENCY = /\b(no puedo respirar|no puede respirar|no respiro|no respira|infarto|dolor de pecho|ataque al corazon|sangre|sangrando|sangrado|convulsion|convulsiones|se desmayo|desmayo|desmaye|me desmayo|incendio|fuego|humo|se esta ahogando|se ahoga|esta ahogando|ahogando|ambulancia|inconsciente)\b/;
+const SMOKE_EMERGENCY = /\b(smell(?:s|ing|ed)?(?: of| like)? smoke|see smoke|saw smoke|smoke in the (hall|hallway|room|corridor)|smoke in my room|filling with smoke|full of smoke|smoke alarm|fire alarm|alarm going off|smoke coming)\b/;
+const SMOKING_POLICY = /\b(can i smoke|may i smoke|smoking rooms?|smoke outside|where (can|do) i smoke|is smoking|allowed to smoke|vape|vaping|cigarettes?|cigars?|smoked salmon|smoked meat|smoked fish)\b/;
+const ENGLISH_EMERGENCY = /\b(heart attack|chest pain|chest hurts|clutched (?:his|her|their|my) chest|grabbed (?:his|her|their) chest|can'?t breathe|cannot breathe|cant breathe|not breathing|choking|seizure|overdose|stroke|drowning|drowned|heavy bleeding|bleeding a lot|bleeding heavily|bleeding|unconscious|unresponsive|not responding|passed out|fainted|collapsed|can'?t wake|cant wake|gas leak|smell(?:s|ing)? gas|gas smell|ambulance|assault(?:ed)?|intruder|threatening me|threatening us|someone threatening|is threatening|attacking|being attacked|on fire|there is a fire|there'?s a fire)\b/;
+
+function emergencyKind(question) {
+  const q = fold(question);
+  if (SPANISH_EMERGENCY.test(q)) return "spanish";
+  // A smoking-policy question is not an emergency, even if it says "smoke in the room".
+  if (SMOKING_POLICY.test(q)) return null;
+  if (SMOKE_EMERGENCY.test(q) || ENGLISH_EMERGENCY.test(q) || /\b911\b/.test(q)) return "english";
+  if (/\b(dying|smoke|smoking|smoker)\b/.test(q)) return null;
+  if (/\bfire\b/.test(q) && !/\bfire pits?\b/.test(q) && !/\bfireplace\b/.test(q)) return "english";
+  return null;
+}
+
+function emergencyAnswer(hotel, question) {
+  const kind = emergencyKind(question);
+  if (!kind) return null;
+  const line = desk(hotel);
+  const text = kind === "spanish"
+    ? `**Llame al 911 ahora.** Call 911 now. Then tell the front desk: ${line}.`
+    : `**Call 911 now.** Then tell the front desk: ${line}.`;
+  return { intent: "emergency", kind: "emergency", call: true, text };
+}
 const fallback = (h, intent, topic) => ({
   intent, kind: "fallback", call: true,
   text: `I don't have ${topic} details on file for ${h.name}, and I'd rather not guess. The front desk can help: ${desk(h)}.`,
@@ -102,7 +140,7 @@ function matchFaq(h, q) {
 }
 
 const RULES = [
-  ["emergency", /\b(fire|smoke alarm|heart attack|can'?t breathe|not breathing|bleeding|unconscious|emergency|911|ambulance|overdose|chest pain|intruder|break(ing)? in|assault(ed)?|gas leak|seizure|allergic|allergy attack|anaphyla\w*|epipen|stroke|poison\w*|choking|collapsed|fainted|unresponsive|not responding|passed out|can'?t wake)\b/,
+  ["emergency", /\b(smoke alarm|heart attack|can'?t breathe|not breathing|bleeding|unconscious|emergency|911|ambulance|overdose|chest pain|intruder|break(ing)? in|assault(ed)?|gas leak|seizure|allergic|allergy attack|anaphyla\w*|epipen|stroke|poison\w*|choking|collapsed|fainted|unresponsive|not responding|passed out|can'?t wake)\b/,
     (h) => ({ intent: "emergency", kind: "emergency", call: true, text: `**If this is an emergency, call 911 now.** Then alert the front desk: ${desk(h)}.` })],
   ["locked_out", /\b(lock(ed)? out|lost (my )?(room )?key|key ?card|keycard|room key|door (won'?t|will not|doesn'?t) (open|unlock)|can'?t get (in|into))/,
     (h) => fact("locked_out", `Sorry about that! The front desk can make you a new key right away. Head to the lobby or call: ${desk(h)}. Bring your ID.`, true)],
@@ -229,6 +267,8 @@ function softMatch(q) {
 }
 
 export function matchIntent(hotel, question, now = new Date()) {
+  const emergency = emergencyAnswer(hotel, question);
+  if (emergency) return emergency;
   const q = normalize(question);
   const fq = foodQuery(hotel.localRecommendations, q);
   if (fq) {
