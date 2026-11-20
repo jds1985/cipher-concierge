@@ -35,6 +35,14 @@ function assert911(q, { spanish = false } = {}) {
   assert.doesNotMatch(plain, /smoking policy/i, q);
 }
 
+test("Jim's three phone misses call 911 first", () => {
+  for (const q of [
+    "Someone just fell down the stairs",
+    "Someone is trying to break into my room",
+    "A pregnant woman just been into labor",
+  ]) assert911(q);
+});
+
 test("the seven live misses call 911 before the front desk", () => {
   for (const q of [
     "no puedo respirar",

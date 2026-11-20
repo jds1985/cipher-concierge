@@ -27,19 +27,110 @@ function fold(q) {
     .trim();
 }
 
-const SPANISH_EMERGENCY = /\b(no puedo respirar|no puede respirar|no respiro|no respira|infarto|dolor de pecho|ataque al corazon|sangre|sangrando|sangrado|convulsion|convulsiones|se desmayo|desmayo|desmaye|me desmayo|incendio|fuego|humo|se esta ahogando|se ahoga|esta ahogando|ahogando|ambulancia|inconsciente)\b/;
+function loosen(q) {
+  let s = fold(q);
+  s = s.replace(/(\w)\1{2,}/g, "$1$1");
+  s = s.replace(/\b(cant|cannot)\b/g, "can't");
+  s = s.replace(/\blabour\b/g, "labor");
+  s = s.replace(/\bpregnent\b/g, "pregnant");
+  s = s.replace(/\bbreking\b/g, "breaking");
+  s = s.replace(/\bbrek\b/g, "break");
+  s = s.replace(/\bseizuer\b|\bseisure\b|\bseizre\b/g, "seizure");
+  s = s.replace(/\boverdoes\b|\boverdoss\b/g, "overdose");
+  s = s.replace(/\bunconsious\b|\bunconcious\b|\bunconscous\b/g, "unconscious");
+  return s.replace(/\s+/g, " ").trim();
+}
+
+// Pull harmless phrases out before looking for danger, so "fire pit" is not a fire.
+function stripBenign(q) {
+  return q
+    .replace(/\bfire\s*pits?\b/g, " ")
+    .replace(/\bfireplace\b/g, " ")
+    .replace(/\b(?:my |the )?(?:phone|battery|charger) is dying\b/g, " ")
+    .replace(/\bdying to\b/g, " ")
+    .replace(/\bsmoked (?:salmon|meat|fish|trout|bacon)\b/g, " ")
+    .replace(/\bbreak(?:ing)? in (?:my |the |these |those )?(?:new )?shoes\b/g, " ")
+    .replace(/\bfall foliage\b/g, " ")
+    .replace(/\bfall colou?rs?\b/g, " ")
+    .replace(/\blabor day\b/g, " ")
+    .replace(/\bfell asleep\b/g, " ")
+    .replace(/\bfall(?:ing)? asleep\b/g, " ")
+    .replace(/\bfell in love\b/g, " ")
+    .replace(/\bnight fell\b/g, " ")
+    .replace(/\bprices fell\b/g, " ")
+    .replace(/\btemperature fell\b/g, " ")
+    .replace(/\bshot glasses?\b/g, " ")
+    .replace(/\bflu shots?\b/g, " ")
+    .replace(/\bshot of (?:espresso|coffee|whiskey|tequila|vodka|wine)\b/g, " ")
+    .replace(/\bsteak knives?\b/g, " ")
+    .replace(/\bknife and fork\b/g, " ")
+    .replace(/\bhair\s*cuts?\b/g, " ")
+    .replace(/\b(?:glue|nail|water|spray|toy) guns?\b/g, " ")
+    .replace(/\bbutter knives?\b/g, " ")
+    .replace(/\bgive it a shot\b/g, " ")
+    .replace(/\b(?:a )?long shots?\b/g, " ")
+    .replace(/\bone shot\b/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+const SMOKING_POLICY = /\b(can i smoke|may i smoke|smoking rooms?|smoke outside|where (can|do) i smoke|is smoking|allowed to smoke|vape|vaping|cigarettes?|cigars?)\b/;
 const SMOKE_EMERGENCY = /\b(smell(?:s|ing|ed)?(?: of| like)? smoke|see smoke|saw smoke|smoke in the (hall|hallway|room|corridor)|smoke in my room|filling with smoke|full of smoke|smoke alarm|fire alarm|alarm going off|smoke coming)\b/;
-const SMOKING_POLICY = /\b(can i smoke|may i smoke|smoking rooms?|smoke outside|where (can|do) i smoke|is smoking|allowed to smoke|vape|vaping|cigarettes?|cigars?|smoked salmon|smoked meat|smoked fish)\b/;
-const ENGLISH_EMERGENCY = /\b(heart attack|chest pain|chest hurts|clutched (?:his|her|their|my) chest|grabbed (?:his|her|their) chest|can'?t breathe|cannot breathe|cant breathe|not breathing|choking|seizure|overdose|stroke|drowning|drowned|heavy bleeding|bleeding a lot|bleeding heavily|bleeding|unconscious|unresponsive|not responding|passed out|fainted|collapsed|can'?t wake|cant wake|gas leak|smell(?:s|ing)? gas|gas smell|ambulance|assault(?:ed)?|intruder|threatening me|threatening us|someone threatening|is threatening|attacking|being attacked|on fire|there is a fire|there'?s a fire)\b/;
+const SUICIDE = /\b(suicid\w*|kill (?:my|him|her|them)self|kill myself|want(?:s|ed)? to (?:die|kill myself)|end (?:my|his|her) life|quiero morir|quiero morirme|me quiero matar|suicidarme|no quiero vivir|don't want to live|dont want to live)\b/;
+const PERSON = "(?:someone|somebody|he|she|they|i|we|my |our |the |a |an )?(?:husband|wife|mom|dad|mother|father|grandma|grandpa|kid|child|baby|son|daughter|friend|guest|man|woman|boy|girl|person|people)";
+const SPANISH_EMERGENCY = /\b(no puedo respirar|no puede respirar|no respiro|no respira|infarto|dolor de pecho|ataque al corazon|sangre|sangrando|sangrado|convulsion|convulsiones|se desmayo|desmayo|desmaye|me desmayo|incendio|hay fuego|un fuego|fuego en|huele a humo|hay humo|lleno de humo|vi humo|se esta ahogando|se ahoga|esta ahogando|ahogando|ambulancia|inconsciente|entro a mi|entraron a mi|alguien entro|me robaron|nos robaron|hay un robo|un robo|de parto|romp(?:io|ieron) (?:la |el )?fuente|sobredosis|un arma|con arma|pistola|navaja|no despierta|no se mueve|no responde|alarma de gas|estan siguiendo|me sigue|nos siguen|apunal\w*|acuchill\w*|electrocut\w*|se perdio)\b/;
+const NOT_MOVING = /\b(?:someone|somebody|he|she|they|husband|wife|mom|dad|mother|father|grandma|grandpa|kid|child|baby|son|daughter|friend|guest|man|woman|boy|girl|person|people).{0,40}(?:isn't|isnt|is not|ain't|aint|not) moving|\bhelp .{0,40}(?:isn't|isnt|not) moving/i;
+const DANGER = new RegExp([
+  "heart attack", "chest pain", "chest hurts", "clutched (?:his|her|their|my) chest", "grabbed (?:his|her|their) chest",
+  "can't breathe", "not breathing", "choking", "seizure", "overdose", "too many pills", "stroke",
+  "drowning", "drowned", "heavy bleeding", "bleeding a lot", "bleeding heavily", "\\bbleeding\\b", "\\bbleed(?:s|ing)?\\b",
+  "unconscious", "unresponsive", "not responding", "passed out", "fainted", "collapsed", "can't wake", "not waking", "won't wake", "wont wake",
+  "gas leak", "smell(?:s|ing)? gas", "gas smell", "carbon monoxide", "\\bco alarm\\b", "\\bco detector\\b",
+  "ambulance", "assault(?:ed)?", "intruder", "threatening me", "threatening us", "someone threatening", "is threatening",
+  "attacking", "being attacked", "\\battacked\\b", "on fire", "there is a fire", "there's a fire",
+  "fell down", "falling down", "fall down", "fell over", "fell off", "fell on",
+  "tripped and", "tripped on", "tripped over", "(?:someone|he|she|i|we|man|woman|guest|kid) tripped",
+  "just fell", "fell in", "fell by", "fell near", "fell getting", "\\bfell\\b",
+  "went under", "didn't come up", "didnt come up",
+  "\\bfel (?:down|in|by|on|near|off)\\b", "just fel",
+  "(?:someone|he|she|they|man|woman|guest|husband|wife|kid|child|boy|girl|grandma|grandpa|dad|mom|person|friend) fell",
+  "i fell(?! for\\b)",
+  "hit (?:his|her|their|my) head", "broken bone", "broke (?:his|her|their|my) (?:leg|arm|hip|ankle|wrist|bone|neck|head)",
+  "can't get up", "can't stand",
+  "break(?:ing|s|ed)? into", "broke into", "broken into", "breaking in", "trying to break in", "break in happening",
+  "went down hard", "ate it on the", "isn't waking", "isnt waking", "outlet is sparking",
+  "someone(?: is|'s| was)? in my room",
+  "(?:man|guy|woman|people|person|stranger|he|she|someone).{0,30}in my room",
+  "\\bgun\\b", "gunshot", "\\bknife\\b", "stabbed", "stabbing",
+  "(?:got|was|been|they|he|she) shot", "shot (?:me|him|her|them|us)",
+  "\\brobbed\\b", "robbery", "domestic violence", "kidnapp(?:ed|ing)?",
+  "being followed", "followed me", "following me",
+  "(?:child|kid|daughter|son|baby) (?:is |went )?missing", "lost (?:my |our )?(?:child|kid|daughter|son|baby)",
+  "(?:in|into) labor", "going into labor", "been into labor", "gone into labor", "contractions?", "water broke", "giving birth",
+  "pregnant.{0,40}(?:pain|bleeding|bleed|cramp|hurt)", "(?:pain|bleeding).{0,30}pregnant",
+  "allergic reaction", "anaphyla\\w*", "epipen", "throat (?:is )?swell\\w*", "swelling throat",
+  "diabetic", "low blood sugar", "asthma attack", "poison(?:ed|ing)?",
+  "electrocuted", "electric shock", "explosion", "trapped in (?:the |an )?elevator",
+  "flood(?:ing|ed)?.{0,30}electric", "electric.{0,20}flood",
+  "cut (?:my|his|her|their) (?:hand|arm|leg|head|finger)", "i(?:'m| am) cut\\b",
+].join("|"), "i");
+
+function spanishFall(q) {
+  if (!/\b(?:se cayo|se cayeron|cayo por|cayo de|me cai|se callo)\b/.test(q)) return false;
+  if (/\b(?:wifi|internet|telefono|llamada|conexion|senal|red)\b/.test(q)) return false;
+  return true;
+}
 
 function emergencyKind(question) {
-  const q = fold(question);
-  if (SPANISH_EMERGENCY.test(q)) return "spanish";
-  // A smoking-policy question is not an emergency, even if it says "smoke in the room".
+  const q = stripBenign(loosen(question));
+  const suicide = SUICIDE.test(q);
+  const spanish = SPANISH_EMERGENCY.test(q) || spanishFall(q);
+  if (suicide) return { lang: /\b(quiero|morir|matar|suicidarme)\b/.test(q) ? "spanish" : "english", suicide: true };
+  if (spanish) return { lang: "spanish", suicide: false };
   if (SMOKING_POLICY.test(q)) return null;
-  if (SMOKE_EMERGENCY.test(q) || ENGLISH_EMERGENCY.test(q) || /\b911\b/.test(q)) return "english";
+  if (SMOKE_EMERGENCY.test(q) || DANGER.test(q) || NOT_MOVING.test(q) || /\b911\b/.test(q)) return { lang: "english", suicide: false };
   if (/\b(dying|smoke|smoking|smoker)\b/.test(q)) return null;
-  if (/\bfire\b/.test(q) && !/\bfire pits?\b/.test(q) && !/\bfireplace\b/.test(q)) return "english";
+  if (/\bfire\b/.test(q) && !/\bfireplace\b/.test(q)) return { lang: "english", suicide: false };
   return null;
 }
 
@@ -47,9 +138,10 @@ function emergencyAnswer(hotel, question) {
   const kind = emergencyKind(question);
   if (!kind) return null;
   const line = desk(hotel);
-  const text = kind === "spanish"
-    ? `**Llame al 911 ahora.** Call 911 now. Then tell the front desk: ${line}.`
-    : `**Call 911 now.** Then tell the front desk: ${line}.`;
+  const extra = kind.suicide ? " If you are thinking about suicide, you can also call or text 988." : "";
+  const text = kind.lang === "spanish"
+    ? `**Llame al 911 ahora.** Call 911 now.${extra} Then tell the front desk: ${line}.`
+    : `**Call 911 now.**${extra} Then tell the front desk: ${line}.`;
   return { intent: "emergency", kind: "emergency", call: true, text };
 }
 const fallback = (h, intent, topic) => ({
@@ -140,7 +232,7 @@ function matchFaq(h, q) {
 }
 
 const RULES = [
-  ["emergency", /\b(smoke alarm|heart attack|can'?t breathe|not breathing|bleeding|unconscious|emergency|911|ambulance|overdose|chest pain|intruder|break(ing)? in|assault(ed)?|gas leak|seizure|allergic|allergy attack|anaphyla\w*|epipen|stroke|poison\w*|choking|collapsed|fainted|unresponsive|not responding|passed out|can'?t wake)\b/,
+  ["emergency", /\b(smoke alarm|heart attack|can'?t breathe|not breathing|bleeding|unconscious|emergency|911|ambulance|overdose|chest pain|intruder|assault(ed)?|gas leak|seizure|allergic|allergy attack|anaphyla\w*|epipen|stroke|poison\w*|choking|collapsed|fainted|unresponsive|not responding|passed out|can'?t wake)\b/,
     (h) => ({ intent: "emergency", kind: "emergency", call: true, text: `**If this is an emergency, call 911 now.** Then alert the front desk: ${desk(h)}.` })],
   ["locked_out", /\b(lock(ed)? out|lost (my )?(room )?key|key ?card|keycard|room key|door (won'?t|will not|doesn'?t) (open|unlock)|can'?t get (in|into))/,
     (h) => fact("locked_out", `Sorry about that! The front desk can make you a new key right away. Head to the lobby or call: ${desk(h)}. Bring your ID.`, true)],
