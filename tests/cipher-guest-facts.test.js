@@ -205,7 +205,8 @@ test("the server answer path uses the layer only when the preview flag is on", a
   delete process.env.VERCEL_ENV;
   try {
     const off = await answer(oliver, [{ role: "user", content: "I can't breathe" }]);
-    assert.match(off.text, /alert the front desk/);
+    assert.match(off.text, /\*\*Call 911 now\.\*\*/);
+    assert.match(off.text, /Then tell the front desk/);
     process.env.CIPHER_LAYER_GUEST = "1";
     const on = await answer(oliver, [{ role: "user", content: "I can't breathe" }]);
     assert.equal(on.text, "Call 911 now. Then tell the front desk at (865) 521-0050.");
@@ -216,7 +217,8 @@ test("the server answer path uses the layer only when the preview flag is on", a
     assert.equal(withheld.call, true);
     process.env.VERCEL_ENV = "production";
     const prod = await answer(oliver, [{ role: "user", content: "I can't breathe" }]);
-    assert.match(prod.text, /alert the front desk/);
+    assert.match(prod.text, /\*\*Call 911 now\.\*\*/);
+    assert.match(prod.text, /Then tell the front desk/);
   } finally {
     if (prevGuest === undefined) delete process.env.CIPHER_LAYER_GUEST;
     else process.env.CIPHER_LAYER_GUEST = prevGuest;
