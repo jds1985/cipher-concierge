@@ -1,0 +1,3612 @@
+{
+  "frozen": "2026-11-20",
+  "seed": 20261120,
+  "note": "Frozen 2026-11-20 before detector tuning on this file. Holdout is scored once at the end and must not be used to edit patterns.",
+  "counts": {
+    "total": 720,
+    "emergency": 360,
+    "benign": 360
+  },
+  "items": [
+    {
+      "id": "emergency-h-0",
+      "category": "medical-text",
+      "question": "yo grandma is having a seizure rn"
+    },
+    {
+      "id": "emergency-h-1",
+      "category": "spanish-odd",
+      "question": "no despierta"
+    },
+    {
+      "id": "emergency-h-2",
+      "category": "fall-runon",
+      "question": "a man fell down the stairs we are scared"
+    },
+    {
+      "id": "emergency-h-3",
+      "category": "fall-runon",
+      "question": "a woman fell in the lobby we are scared"
+    },
+    {
+      "id": "emergency-h-4",
+      "category": "medical",
+      "question": "my friend has very low blood sugar"
+    },
+    {
+      "id": "emergency-h-5",
+      "category": "fall",
+      "question": "a woman just fell in the lobby"
+    },
+    {
+      "id": "emergency-h-6",
+      "category": "styled",
+      "question": "a little kid just fel near the elevator"
+    },
+    {
+      "id": "emergency-h-7",
+      "category": "styled",
+      "question": "my dad just fell in garage"
+    },
+    {
+      "id": "emergency-h-8",
+      "category": "fall",
+      "question": "my wife fell in the lobby and is bleeding"
+    },
+    {
+      "id": "emergency-h-9",
+      "category": "crime-room",
+      "question": "room 412 a man pulled a knife"
+    },
+    {
+      "id": "emergency-h-10",
+      "category": "environment",
+      "question": "I smell smoke in under the door"
+    },
+    {
+      "id": "emergency-h-11",
+      "category": "styled",
+      "question": "pls my husband is unconscious rn"
+    },
+    {
+      "id": "emergency-h-12",
+      "category": "fall-runon",
+      "question": "grandma fell getting out of the shower please hurry"
+    },
+    {
+      "id": "emergency-h-13",
+      "category": "fall-runon",
+      "question": "the guest in 412 fell by the pool we are scared"
+    },
+    {
+      "id": "emergency-h-14",
+      "category": "styled",
+      "question": "pls a guy is following me up the stairs rn"
+    },
+    {
+      "id": "emergency-h-15",
+      "category": "fall",
+      "question": "someone fell in the lobby and their arm looks broken"
+    },
+    {
+      "id": "emergency-h-16",
+      "category": "medical",
+      "question": "the woman in the lobby is having an asthma attack"
+    },
+    {
+      "id": "emergency-h-17",
+      "category": "spanish-odd",
+      "question": "por favor se le rompio la fuente rapido"
+    },
+    {
+      "id": "emergency-h-18",
+      "category": "fall",
+      "question": "my dad fell in the lobby and is bleeding"
+    },
+    {
+      "id": "emergency-h-19",
+      "category": "fall-runon",
+      "question": "my wife fell in the lobby we are scared"
+    },
+    {
+      "id": "emergency-h-20",
+      "category": "environment",
+      "question": "smoke coming under the door"
+    },
+    {
+      "id": "emergency-h-21",
+      "category": "styled",
+      "question": "two people pulled a knife i dont know what to do"
+    },
+    {
+      "id": "emergency-h-22",
+      "category": "styled",
+      "question": "he just fell in bathroom"
+    },
+    {
+      "id": "emergency-h-23",
+      "category": "medical",
+      "question": "my wife is unconscious"
+    },
+    {
+      "id": "emergency-h-24",
+      "category": "crime-room",
+      "question": "room 204 she broke into our room"
+    },
+    {
+      "id": "emergency-h-25",
+      "category": "spanish-odd",
+      "question": "se le rompio la fuente"
+    },
+    {
+      "id": "emergency-h-26",
+      "category": "crime",
+      "question": "a man is in my room and I don't know them"
+    },
+    {
+      "id": "emergency-h-27",
+      "category": "crime-room",
+      "question": "room 305 a man pulled a knife"
+    },
+    {
+      "id": "emergency-h-28",
+      "category": "crime-room",
+      "question": "room 118 a guy has a gun"
+    },
+    {
+      "id": "emergency-h-29",
+      "category": "fall-runon",
+      "question": "the guest in 412 fell getting out of the shower please hurry"
+    },
+    {
+      "id": "emergency-h-30",
+      "category": "medical",
+      "question": "a guest has chest pain"
+    },
+    {
+      "id": "emergency-h-31",
+      "category": "fall-runon",
+      "question": "the guest in 412 fell in the bathroom please hurry"
+    },
+    {
+      "id": "emergency-h-32",
+      "category": "fall",
+      "question": "my friend just fell in the bathroom"
+    },
+    {
+      "id": "emergency-h-33",
+      "category": "fall",
+      "question": "a man just fell near the elevator"
+    },
+    {
+      "id": "emergency-h-34",
+      "category": "fall-runon",
+      "question": "she fell down the stairs we are scared"
+    },
+    {
+      "id": "emergency-h-35",
+      "category": "medical-text",
+      "question": "yo he won't wake up rn"
+    },
+    {
+      "id": "emergency-h-36",
+      "category": "fall",
+      "question": "grandma just fell in the room"
+    },
+    {
+      "id": "emergency-h-37",
+      "category": "medical-text",
+      "question": "yo my wife is having a heart attack rn"
+    },
+    {
+      "id": "emergency-h-38",
+      "category": "fall",
+      "question": "the guest in 412 just fell in the room"
+    },
+    {
+      "id": "emergency-h-39",
+      "category": "crime",
+      "question": "he is trying to break into my room"
+    },
+    {
+      "id": "emergency-h-40",
+      "category": "styled",
+      "question": "he just fell in garage"
+    },
+    {
+      "id": "emergency-h-41",
+      "category": "fall",
+      "question": "she just fell getting out of the shower"
+    },
+    {
+      "id": "emergency-h-42",
+      "category": "medical-odd",
+      "question": "help my husband isnt moving"
+    },
+    {
+      "id": "emergency-h-43",
+      "category": "fall-runon",
+      "question": "a woman fell by the pool please hurry"
+    },
+    {
+      "id": "emergency-h-44",
+      "category": "crime-room",
+      "question": "room 118 a guy is breaking into the room next door"
+    },
+    {
+      "id": "emergency-h-45",
+      "category": "crime-room",
+      "question": "room 305 she is trying to break into my room"
+    },
+    {
+      "id": "emergency-h-46",
+      "category": "fall-runon",
+      "question": "grandma fell in the lobby we are scared"
+    },
+    {
+      "id": "emergency-h-47",
+      "category": "styled",
+      "question": "a little kid fell in lobby and is bleeding"
+    },
+    {
+      "id": "emergency-h-48",
+      "category": "styled",
+      "question": "a little kid just fell in the room i dont know what to do"
+    },
+    {
+      "id": "emergency-h-49",
+      "category": "crime-room",
+      "question": "room 204 she is breaking into the room next door"
+    },
+    {
+      "id": "emergency-h-50",
+      "category": "medical",
+      "question": "he is unconscious"
+    },
+    {
+      "id": "emergency-h-51",
+      "category": "fall",
+      "question": "my husband fell in the lobby and they are not moving"
+    },
+    {
+      "id": "emergency-h-52",
+      "category": "fall-runon",
+      "question": "my wife fell in the bathroom we are scared"
+    },
+    {
+      "id": "emergency-h-53",
+      "category": "medical",
+      "question": "my wife is having a heart attack"
+    },
+    {
+      "id": "emergency-h-54",
+      "category": "fall",
+      "question": "grandpa fell in the lobby and is bleeding"
+    },
+    {
+      "id": "emergency-h-55",
+      "category": "spanish-odd",
+      "question": "por favor me quiero matar rapido"
+    },
+    {
+      "id": "emergency-h-56",
+      "category": "fall",
+      "question": "my dad fell in the lobby and their arm looks broken"
+    },
+    {
+      "id": "emergency-h-57",
+      "category": "fall",
+      "question": "he just fell in the lobby"
+    },
+    {
+      "id": "emergency-h-58",
+      "category": "styled",
+      "question": "the guest in 412 just fel near the elevator"
+    },
+    {
+      "id": "emergency-h-59",
+      "category": "styled",
+      "question": "a little kid fell in the lobby and hit their head i dont know what to do"
+    },
+    {
+      "id": "emergency-h-60",
+      "category": "styled",
+      "question": "pls grandma just fell in the lobby rn"
+    },
+    {
+      "id": "emergency-h-61",
+      "category": "fall-runon",
+      "question": "the guest in 412 fell by the pool please hurry"
+    },
+    {
+      "id": "emergency-h-62",
+      "category": "spanish-odd",
+      "question": "por favor la estan siguiendo rapido"
+    },
+    {
+      "id": "emergency-h-63",
+      "category": "crime-room",
+      "question": "room 118 a man is trying to break into my room"
+    },
+    {
+      "id": "emergency-h-64",
+      "category": "styled",
+      "question": "someone is in my room and I don't know them i dont know what to do"
+    },
+    {
+      "id": "emergency-h-65",
+      "category": "medical",
+      "question": "my wife won't wake up"
+    },
+    {
+      "id": "emergency-h-66",
+      "category": "medical",
+      "question": "he is not moving"
+    },
+    {
+      "id": "emergency-h-67",
+      "category": "styled",
+      "question": "pls my mom fell in the lobby and their arm looks broken rn"
+    },
+    {
+      "id": "emergency-h-68",
+      "category": "medical",
+      "question": "the woman in the lobby was poisoned i think"
+    },
+    {
+      "id": "emergency-h-69",
+      "category": "spanish",
+      "question": "alguien se cayo y no se levanta"
+    },
+    {
+      "id": "emergency-h-70",
+      "category": "crime-room",
+      "question": "room 412 a guy is trying to break into my room"
+    },
+    {
+      "id": "emergency-h-71",
+      "category": "fall",
+      "question": "grandma just fell in the lobby"
+    },
+    {
+      "id": "emergency-h-72",
+      "category": "crime-room",
+      "question": "room 305 two people has a gun"
+    },
+    {
+      "id": "emergency-h-73",
+      "category": "spanish-odd",
+      "question": "hay una explosion"
+    },
+    {
+      "id": "emergency-h-74",
+      "category": "fall",
+      "question": "my wife just fell by the pool"
+    },
+    {
+      "id": "emergency-h-75",
+      "category": "fall-runon",
+      "question": "grandpa fell by the pool please hurry"
+    },
+    {
+      "id": "emergency-h-76",
+      "category": "spanish",
+      "question": "mi papa se cayo en el lobby"
+    },
+    {
+      "id": "emergency-h-77",
+      "category": "medical",
+      "question": "he was poisoned i think"
+    },
+    {
+      "id": "emergency-h-78",
+      "category": "medical",
+      "question": "a guest needs an epipen"
+    },
+    {
+      "id": "emergency-h-79",
+      "category": "styled",
+      "question": "she just fell in bathroom"
+    },
+    {
+      "id": "emergency-h-80",
+      "category": "fall-runon",
+      "question": "grandma fell in the lobby please hurry"
+    },
+    {
+      "id": "emergency-h-81",
+      "category": "crime-odd",
+      "question": "my daughter is missing she was by the pool"
+    },
+    {
+      "id": "emergency-h-82",
+      "category": "styled",
+      "question": "grandpa just fell in the room i dont know what to do"
+    },
+    {
+      "id": "emergency-h-83",
+      "category": "medical",
+      "question": "she can't breathe"
+    },
+    {
+      "id": "emergency-h-84",
+      "category": "styled",
+      "question": "my friend just fel by the pool"
+    },
+    {
+      "id": "emergency-h-85",
+      "category": "styled",
+      "question": "pls she just fell on the sidewalk rn"
+    },
+    {
+      "id": "emergency-h-86",
+      "category": "crime",
+      "question": "a man got shot outside"
+    },
+    {
+      "id": "emergency-h-87",
+      "category": "crime-room",
+      "question": "room 305 she is breaking into the room next door"
+    },
+    {
+      "id": "emergency-h-88",
+      "category": "fall-runon",
+      "question": "a little kid fell down the stairs please hurry"
+    },
+    {
+      "id": "emergency-h-89",
+      "category": "crime-room",
+      "question": "room 118 he broke into our room"
+    },
+    {
+      "id": "emergency-h-90",
+      "category": "crime-room",
+      "question": "room 305 she is in my room and I don't know them"
+    },
+    {
+      "id": "emergency-h-91",
+      "category": "styled",
+      "question": "my mom just fel near the elevator"
+    },
+    {
+      "id": "emergency-h-92",
+      "category": "spanish",
+      "question": "mi esposo se cayo por las escaleras"
+    },
+    {
+      "id": "emergency-h-93",
+      "category": "fall-runon",
+      "question": "my dad fell by the pool we are scared"
+    },
+    {
+      "id": "emergency-h-94",
+      "category": "crime-odd",
+      "question": "i think my child was kidnapped from the lobby"
+    },
+    {
+      "id": "emergency-h-95",
+      "category": "fall-runon",
+      "question": "a little kid fell in the bathroom please hurry"
+    },
+    {
+      "id": "emergency-h-96",
+      "category": "fall-runon",
+      "question": "grandpa fell in the bathroom please hurry"
+    },
+    {
+      "id": "emergency-h-97",
+      "category": "fall",
+      "question": "my mom just fell getting out of the shower"
+    },
+    {
+      "id": "emergency-h-98",
+      "category": "styled",
+      "question": "a man just fell in bathroom"
+    },
+    {
+      "id": "emergency-h-99",
+      "category": "medical",
+      "question": "my husband can't breathe"
+    },
+    {
+      "id": "emergency-h-100",
+      "category": "crime-room",
+      "question": "room 118 someone pulled a knife"
+    },
+    {
+      "id": "emergency-h-101",
+      "category": "styled",
+      "question": "pls he just fell on the sidewalk rn"
+    },
+    {
+      "id": "emergency-h-102",
+      "category": "styled",
+      "question": "a woman just fel by the pool"
+    },
+    {
+      "id": "emergency-h-103",
+      "category": "medical",
+      "question": "my husband is having an asthma attack"
+    },
+    {
+      "id": "emergency-h-104",
+      "category": "crime-room",
+      "question": "room 118 two people pulled a knife"
+    },
+    {
+      "id": "emergency-h-105",
+      "category": "crime-room",
+      "question": "room 305 a man broke into our room"
+    },
+    {
+      "id": "emergency-h-106",
+      "category": "crime-room",
+      "question": "room 412 a man is in my room and I don't know them"
+    },
+    {
+      "id": "emergency-h-107",
+      "category": "fall",
+      "question": "my mom just fell on the sidewalk"
+    },
+    {
+      "id": "emergency-h-108",
+      "category": "spanish-odd",
+      "question": "creo que es un infarto"
+    },
+    {
+      "id": "emergency-h-109",
+      "category": "fall",
+      "question": "a man just fell in the hallway"
+    },
+    {
+      "id": "emergency-h-110",
+      "category": "fall",
+      "question": "a little kid fell in the lobby and their arm looks broken"
+    },
+    {
+      "id": "emergency-h-111",
+      "category": "medical",
+      "question": "she has very low blood sugar"
+    },
+    {
+      "id": "emergency-h-112",
+      "category": "medical",
+      "question": "my friend is having a stroke"
+    },
+    {
+      "id": "emergency-h-113",
+      "category": "spanish",
+      "question": "mi esposo se cayo en el lobby"
+    },
+    {
+      "id": "emergency-h-114",
+      "category": "styled",
+      "question": "a man is breking into the room next door"
+    },
+    {
+      "id": "emergency-h-115",
+      "category": "fall",
+      "question": "my husband fell in the lobby and hit their head"
+    },
+    {
+      "id": "emergency-h-116",
+      "category": "spanish-odd",
+      "question": "se electrocuto con la lampara"
+    },
+    {
+      "id": "emergency-h-117",
+      "category": "fall-runon",
+      "question": "a woman fell in the bathroom we are scared"
+    },
+    {
+      "id": "emergency-h-118",
+      "category": "crime",
+      "question": "she is in my room and I don't know them"
+    },
+    {
+      "id": "emergency-h-119",
+      "category": "medical",
+      "question": "she was poisoned i think"
+    },
+    {
+      "id": "emergency-h-120",
+      "category": "medical",
+      "question": "the woman in the lobby is unconscious"
+    },
+    {
+      "id": "emergency-h-121",
+      "category": "styled",
+      "question": "pls grandma just fell on the sidewalk rn"
+    },
+    {
+      "id": "emergency-h-122",
+      "category": "fall-runon",
+      "question": "she fell getting out of the shower we are scared"
+    },
+    {
+      "id": "emergency-h-123",
+      "category": "spanish",
+      "question": "mi esposa se cayo en el lobby"
+    },
+    {
+      "id": "emergency-h-124",
+      "category": "crime",
+      "question": "a man has a gun"
+    },
+    {
+      "id": "emergency-h-125",
+      "category": "medical",
+      "question": "a guest is not moving"
+    },
+    {
+      "id": "emergency-h-126",
+      "category": "styled",
+      "question": "pls a man just fell on the sidewalk rn"
+    },
+    {
+      "id": "emergency-h-127",
+      "category": "styled",
+      "question": "a guy is trying to brek into my room"
+    },
+    {
+      "id": "emergency-h-128",
+      "category": "styled",
+      "question": "my dad just fell in the room i dont know what to do"
+    },
+    {
+      "id": "emergency-h-129",
+      "category": "styled",
+      "question": "my husband just fel near the elevator"
+    },
+    {
+      "id": "emergency-h-130",
+      "category": "crime-room",
+      "question": "room 118 she is in my room and I don't know them"
+    },
+    {
+      "id": "emergency-h-131",
+      "category": "fall",
+      "question": "my dad fell in the lobby and looks unconscious"
+    },
+    {
+      "id": "emergency-h-132",
+      "category": "medical-text",
+      "question": "yo he is unconscious rn"
+    },
+    {
+      "id": "emergency-h-133",
+      "category": "styled",
+      "question": "pls a woman just fell on the sidewalk rn"
+    },
+    {
+      "id": "emergency-h-134",
+      "category": "environment",
+      "question": "he was electrocuted by the lamp"
+    },
+    {
+      "id": "emergency-h-135",
+      "category": "styled",
+      "question": "my wife has chest pain i dont know what to do"
+    },
+    {
+      "id": "emergency-h-136",
+      "category": "styled",
+      "question": "someone robbed me in garage"
+    },
+    {
+      "id": "emergency-h-137",
+      "category": "styled",
+      "question": "pls a guest needs an epipen rn"
+    },
+    {
+      "id": "emergency-h-138",
+      "category": "crime",
+      "question": "someone is following me up the stairs"
+    },
+    {
+      "id": "emergency-h-139",
+      "category": "crime-room",
+      "question": "room 118 she is trying to break into my room"
+    },
+    {
+      "id": "emergency-h-140",
+      "category": "crime",
+      "question": "two people stabbed someone in the lobby"
+    },
+    {
+      "id": "emergency-h-141",
+      "category": "medical",
+      "question": "grandma is having a seizure"
+    },
+    {
+      "id": "emergency-h-142",
+      "category": "spanish-odd",
+      "question": "hay un incendio"
+    },
+    {
+      "id": "emergency-h-143",
+      "category": "fall-runon",
+      "question": "my mom fell by the pool we are scared"
+    },
+    {
+      "id": "emergency-h-144",
+      "category": "fall-runon",
+      "question": "my husband fell down the stairs we are scared"
+    },
+    {
+      "id": "emergency-h-145",
+      "category": "fall",
+      "question": "my friend just fell in the room"
+    },
+    {
+      "id": "emergency-h-146",
+      "category": "fall-runon",
+      "question": "someone fell down the stairs please hurry"
+    },
+    {
+      "id": "emergency-h-147",
+      "category": "environment",
+      "question": "a kid went under in the pool and didnt come up"
+    },
+    {
+      "id": "emergency-h-148",
+      "category": "fall",
+      "question": "grandpa just fell in the garage"
+    },
+    {
+      "id": "emergency-h-149",
+      "category": "fall",
+      "question": "a woman just fell near the elevator"
+    },
+    {
+      "id": "emergency-h-150",
+      "category": "fall-runon",
+      "question": "my wife fell getting out of the shower we are scared"
+    },
+    {
+      "id": "emergency-h-151",
+      "category": "fall",
+      "question": "my husband fell in the lobby and their arm looks broken"
+    },
+    {
+      "id": "emergency-h-152",
+      "category": "crime",
+      "question": "two people has a gun"
+    },
+    {
+      "id": "emergency-h-153",
+      "category": "styled",
+      "question": "pls she is breaking into the room next door rn"
+    },
+    {
+      "id": "emergency-h-154",
+      "category": "fall-runon",
+      "question": "she fell by the pool we are scared"
+    },
+    {
+      "id": "emergency-h-155",
+      "category": "fall",
+      "question": "a woman just fell on the sidewalk"
+    },
+    {
+      "id": "emergency-h-156",
+      "category": "medical",
+      "question": "my wife is having an asthma attack"
+    },
+    {
+      "id": "emergency-h-157",
+      "category": "spanish-odd",
+      "question": "por favor no se mueve mi esposo rapido"
+    },
+    {
+      "id": "emergency-h-158",
+      "category": "medical",
+      "question": "a guest is having a heart attack"
+    },
+    {
+      "id": "emergency-h-159",
+      "category": "fall",
+      "question": "grandma fell in the lobby and their arm looks broken"
+    },
+    {
+      "id": "emergency-h-160",
+      "category": "styled",
+      "question": "pls my husband was poisoned i think rn"
+    },
+    {
+      "id": "emergency-h-161",
+      "category": "styled",
+      "question": "my dad just fell in bathroom"
+    },
+    {
+      "id": "emergency-h-162",
+      "category": "medical",
+      "question": "my wife is not moving"
+    },
+    {
+      "id": "emergency-h-163",
+      "category": "fall",
+      "question": "my mom just fell in the room"
+    },
+    {
+      "id": "emergency-h-164",
+      "category": "medical",
+      "question": "the woman in the lobby can't breathe"
+    },
+    {
+      "id": "emergency-h-165",
+      "category": "styled",
+      "question": "a man broke into our room i dont know what to do"
+    },
+    {
+      "id": "emergency-h-166",
+      "category": "medical-odd",
+      "question": "he said he is going to kill himself"
+    },
+    {
+      "id": "emergency-h-167",
+      "category": "fall-runon",
+      "question": "my wife fell in the lobby please hurry"
+    },
+    {
+      "id": "emergency-h-168",
+      "category": "fall",
+      "question": "my husband fell in the lobby and can't get up"
+    },
+    {
+      "id": "emergency-h-169",
+      "category": "fall-runon",
+      "question": "my husband fell down the stairs please hurry"
+    },
+    {
+      "id": "emergency-h-170",
+      "category": "styled",
+      "question": "pls someone fell in the lobby and is bleeding rn"
+    },
+    {
+      "id": "emergency-h-171",
+      "category": "crime-odd",
+      "question": "someone is following me and i am scared"
+    },
+    {
+      "id": "emergency-h-172",
+      "category": "crime-room",
+      "question": "room 412 he is in my room and I don't know them"
+    },
+    {
+      "id": "emergency-h-173",
+      "category": "styled",
+      "question": "pls he broke into our room rn"
+    },
+    {
+      "id": "emergency-h-174",
+      "category": "crime",
+      "question": "he is following me up the stairs"
+    },
+    {
+      "id": "emergency-h-175",
+      "category": "fall",
+      "question": "grandma just fell in the hallway"
+    },
+    {
+      "id": "emergency-h-176",
+      "category": "medical-odd",
+      "question": "i think she is giving birth"
+    },
+    {
+      "id": "emergency-h-177",
+      "category": "fall",
+      "question": "a man just fell in the room"
+    },
+    {
+      "id": "emergency-h-178",
+      "category": "crime-room",
+      "question": "room 412 someone is in my room and I don't know them"
+    },
+    {
+      "id": "emergency-h-179",
+      "category": "styled",
+      "question": "pls my dad just fell on the sidewalk rn"
+    },
+    {
+      "id": "emergency-h-180",
+      "category": "styled",
+      "question": "my wife just fell in the hallway i dont know what to do"
+    },
+    {
+      "id": "emergency-h-181",
+      "category": "spanish",
+      "question": "el se cayo en el lobby"
+    },
+    {
+      "id": "emergency-h-182",
+      "category": "crime-room",
+      "question": "room 118 he is in my room and I don't know them"
+    },
+    {
+      "id": "emergency-h-183",
+      "category": "fall",
+      "question": "someone just fell down the stairs"
+    },
+    {
+      "id": "emergency-h-184",
+      "category": "fall-runon",
+      "question": "she fell in the hallway we are scared"
+    },
+    {
+      "id": "emergency-h-185",
+      "category": "crime-room",
+      "question": "room 412 he broke into our room"
+    },
+    {
+      "id": "emergency-h-186",
+      "category": "styled",
+      "question": "pls he fel down the stares rn"
+    },
+    {
+      "id": "emergency-h-187",
+      "category": "medical",
+      "question": "she needs an epipen"
+    },
+    {
+      "id": "emergency-h-188",
+      "category": "crime-room",
+      "question": "room 412 a man has a gun"
+    },
+    {
+      "id": "emergency-h-189",
+      "category": "fall",
+      "question": "grandpa fell in the lobby and they are not moving"
+    },
+    {
+      "id": "emergency-h-190",
+      "category": "crime-room",
+      "question": "room 204 a guy is in my room and I don't know them"
+    },
+    {
+      "id": "emergency-h-191",
+      "category": "environment",
+      "question": "CO detector is screaming"
+    },
+    {
+      "id": "emergency-h-192",
+      "category": "crime",
+      "question": "a guy robbed me in the garage"
+    },
+    {
+      "id": "emergency-h-193",
+      "category": "fall-odd",
+      "question": "she tripped and fell getting out the tub"
+    },
+    {
+      "id": "emergency-h-194",
+      "category": "fall-runon",
+      "question": "my husband fell in the bathroom we are scared"
+    },
+    {
+      "id": "emergency-h-195",
+      "category": "fall",
+      "question": "my wife fell in the lobby and they are not moving"
+    },
+    {
+      "id": "emergency-h-196",
+      "category": "crime",
+      "question": "a guy got shot outside"
+    },
+    {
+      "id": "emergency-h-197",
+      "category": "crime",
+      "question": "a guy is breaking into the room next door"
+    },
+    {
+      "id": "emergency-h-198",
+      "category": "medical",
+      "question": "he has very low blood sugar"
+    },
+    {
+      "id": "emergency-h-199",
+      "category": "fall-runon",
+      "question": "my dad fell getting out of the shower we are scared"
+    },
+    {
+      "id": "emergency-h-200",
+      "category": "styled",
+      "question": "pls my dad fell in the lobby and is bleeding rn"
+    },
+    {
+      "id": "emergency-h-201",
+      "category": "crime-room",
+      "question": "room 118 she has a gun"
+    },
+    {
+      "id": "emergency-h-202",
+      "category": "fall",
+      "question": "my dad just fell on the sidewalk"
+    },
+    {
+      "id": "emergency-h-203",
+      "category": "crime",
+      "question": "two people is in my room and I don't know them"
+    },
+    {
+      "id": "emergency-h-204",
+      "category": "fall",
+      "question": "my dad fell in the lobby and hit their head"
+    },
+    {
+      "id": "emergency-h-205",
+      "category": "styled",
+      "question": "a man just fel by the pool"
+    },
+    {
+      "id": "emergency-h-206",
+      "category": "crime-room",
+      "question": "room 412 someone is breaking into the room next door"
+    },
+    {
+      "id": "emergency-h-207",
+      "category": "fall",
+      "question": "someone fell in the lobby and won't answer me"
+    },
+    {
+      "id": "emergency-h-208",
+      "category": "crime",
+      "question": "two people is trying to break into my room"
+    },
+    {
+      "id": "emergency-h-209",
+      "category": "spanish",
+      "question": "ella se cayo en el lobby"
+    },
+    {
+      "id": "emergency-h-210",
+      "category": "spanish",
+      "question": "un nino se cayo y esta sangrando"
+    },
+    {
+      "id": "emergency-h-211",
+      "category": "medical",
+      "question": "she is having an allergic reaction"
+    },
+    {
+      "id": "emergency-h-212",
+      "category": "fall",
+      "question": "the guest in 412 just fell on the sidewalk"
+    },
+    {
+      "id": "emergency-h-213",
+      "category": "fall-odd",
+      "question": "HELP someone fell down the stairs"
+    },
+    {
+      "id": "emergency-h-214",
+      "category": "crime-room",
+      "question": "room 118 a guy broke into our room"
+    },
+    {
+      "id": "emergency-h-215",
+      "category": "crime-room",
+      "question": "room 204 she is trying to break into my room"
+    },
+    {
+      "id": "emergency-h-216",
+      "category": "medical",
+      "question": "a guest is having a seizure"
+    },
+    {
+      "id": "emergency-h-217",
+      "category": "medical",
+      "question": "she their throat is swelling"
+    },
+    {
+      "id": "emergency-h-218",
+      "category": "spanish",
+      "question": "el se cayo y no se levanta"
+    },
+    {
+      "id": "emergency-h-219",
+      "category": "medical-text",
+      "question": "yo she is having a heart attack rn"
+    },
+    {
+      "id": "emergency-h-220",
+      "category": "crime",
+      "question": "a man is trying to break into my room"
+    },
+    {
+      "id": "emergency-h-221",
+      "category": "fall",
+      "question": "a woman just fell by the pool"
+    },
+    {
+      "id": "emergency-h-222",
+      "category": "fall-runon",
+      "question": "a little kid fell in the bathroom we are scared"
+    },
+    {
+      "id": "emergency-h-223",
+      "category": "crime-room",
+      "question": "room 118 a man is breaking into the room next door"
+    },
+    {
+      "id": "emergency-h-224",
+      "category": "crime-room",
+      "question": "room 412 she is in my room and I don't know them"
+    },
+    {
+      "id": "emergency-h-225",
+      "category": "crime-room",
+      "question": "room 118 he is breaking into the room next door"
+    },
+    {
+      "id": "emergency-h-226",
+      "category": "medical",
+      "question": "grandma is diabetic and shaking"
+    },
+    {
+      "id": "emergency-h-227",
+      "category": "medical",
+      "question": "my husband is unconscious"
+    },
+    {
+      "id": "emergency-h-228",
+      "category": "spanish",
+      "question": "el se cayo por las escaleras"
+    },
+    {
+      "id": "emergency-h-229",
+      "category": "crime",
+      "question": "she pulled a knife"
+    },
+    {
+      "id": "emergency-h-230",
+      "category": "styled",
+      "question": "pls my friend just fell on the sidewalk rn"
+    },
+    {
+      "id": "emergency-h-231",
+      "category": "fall",
+      "question": "a woman just fell down the stairs"
+    },
+    {
+      "id": "emergency-h-232",
+      "category": "environment",
+      "question": "trapped in the elevator and my chest hurts"
+    },
+    {
+      "id": "emergency-h-233",
+      "category": "spanish",
+      "question": "un nino se cayo en el bano"
+    },
+    {
+      "id": "emergency-h-234",
+      "category": "fall",
+      "question": "my friend just fell down the stairs"
+    },
+    {
+      "id": "emergency-h-235",
+      "category": "medical",
+      "question": "my wife needs an epipen"
+    },
+    {
+      "id": "emergency-h-236",
+      "category": "fall",
+      "question": "the guest in 412 just fell by the pool"
+    },
+    {
+      "id": "emergency-h-237",
+      "category": "fall-runon",
+      "question": "my friend fell in the lobby we are scared"
+    },
+    {
+      "id": "emergency-h-238",
+      "category": "spanish",
+      "question": "alguien se cayo en el bano"
+    },
+    {
+      "id": "emergency-h-239",
+      "category": "crime-room",
+      "question": "room 204 someone is in my room and I don't know them"
+    },
+    {
+      "id": "emergency-h-240",
+      "category": "fall-runon",
+      "question": "my wife fell getting out of the shower please hurry"
+    },
+    {
+      "id": "emergency-h-241",
+      "category": "crime-odd",
+      "question": "domestic violence in 418 i can hear it"
+    },
+    {
+      "id": "emergency-h-242",
+      "category": "environment",
+      "question": "there is a fire in the kitchen"
+    },
+    {
+      "id": "emergency-h-243",
+      "category": "fall-runon",
+      "question": "the guest in 412 fell down the stairs please hurry"
+    },
+    {
+      "id": "emergency-h-244",
+      "category": "spanish-odd",
+      "question": "por favor se cayo y se pego en la cabeza rapido"
+    },
+    {
+      "id": "emergency-h-245",
+      "category": "styled",
+      "question": "my friend just fell in bathroom"
+    },
+    {
+      "id": "emergency-h-246",
+      "category": "crime-room",
+      "question": "room 118 someone has a gun"
+    },
+    {
+      "id": "emergency-h-247",
+      "category": "styled",
+      "question": "my husband just fell in garage"
+    },
+    {
+      "id": "emergency-h-248",
+      "category": "spanish",
+      "question": "mi papa se cayo y esta sangrando"
+    },
+    {
+      "id": "emergency-h-249",
+      "category": "fall",
+      "question": "she just fell near the elevator"
+    },
+    {
+      "id": "emergency-h-250",
+      "category": "crime-room",
+      "question": "room 412 two people broke into our room"
+    },
+    {
+      "id": "emergency-h-251",
+      "category": "medical",
+      "question": "he took too many pills"
+    },
+    {
+      "id": "emergency-h-252",
+      "category": "crime",
+      "question": "he has a gun"
+    },
+    {
+      "id": "emergency-h-253",
+      "category": "spanish",
+      "question": "un nino se cayo y no se levanta"
+    },
+    {
+      "id": "emergency-h-254",
+      "category": "medical-odd",
+      "question": "overdose in the bathroom of 220"
+    },
+    {
+      "id": "emergency-h-255",
+      "category": "styled",
+      "question": "theyre breking in rn please"
+    },
+    {
+      "id": "emergency-h-256",
+      "category": "medical-text",
+      "question": "yo grandma is choking rn"
+    },
+    {
+      "id": "emergency-h-257",
+      "category": "fall",
+      "question": "grandpa just fell in the lobby"
+    },
+    {
+      "id": "emergency-h-258",
+      "category": "fall",
+      "question": "he just fell in the garage"
+    },
+    {
+      "id": "emergency-h-259",
+      "category": "fall",
+      "question": "he just fell in the room"
+    },
+    {
+      "id": "emergency-h-260",
+      "category": "fall",
+      "question": "a woman just fell getting out of the shower"
+    },
+    {
+      "id": "emergency-h-261",
+      "category": "fall",
+      "question": "my husband just fell getting out of the shower"
+    },
+    {
+      "id": "emergency-h-262",
+      "category": "fall-runon",
+      "question": "she fell in the lobby please hurry"
+    },
+    {
+      "id": "emergency-h-263",
+      "category": "crime-room",
+      "question": "room 412 he has a gun"
+    },
+    {
+      "id": "emergency-h-264",
+      "category": "fall-runon",
+      "question": "my friend fell by the pool please hurry"
+    },
+    {
+      "id": "emergency-h-265",
+      "category": "crime",
+      "question": "someone robbed me in the garage"
+    },
+    {
+      "id": "emergency-h-266",
+      "category": "fall",
+      "question": "my husband just fell in the bathroom"
+    },
+    {
+      "id": "emergency-h-267",
+      "category": "medical",
+      "question": "my friend is having a heart attack"
+    },
+    {
+      "id": "emergency-h-268",
+      "category": "fall-runon",
+      "question": "my wife fell down the stairs we are scared"
+    },
+    {
+      "id": "emergency-h-269",
+      "category": "styled",
+      "question": "my wife just fell in the room i dont know what to do"
+    },
+    {
+      "id": "emergency-h-270",
+      "category": "spanish",
+      "question": "el se cayo y esta sangrando"
+    },
+    {
+      "id": "emergency-h-271",
+      "category": "styled",
+      "question": "someone just fell in the room i dont know what to do"
+    },
+    {
+      "id": "emergency-h-272",
+      "category": "fall",
+      "question": "grandpa fell in the lobby and hit their head"
+    },
+    {
+      "id": "emergency-h-273",
+      "category": "fall-runon",
+      "question": "a little kid fell getting out of the shower we are scared"
+    },
+    {
+      "id": "emergency-h-274",
+      "category": "spanish",
+      "question": "una senora se cayo en el lobby"
+    },
+    {
+      "id": "emergency-h-275",
+      "category": "fall",
+      "question": "my wife just fell in the room"
+    },
+    {
+      "id": "emergency-h-276",
+      "category": "fall-runon",
+      "question": "a man fell in the hallway please hurry"
+    },
+    {
+      "id": "emergency-h-277",
+      "category": "crime",
+      "question": "someone got shot outside"
+    },
+    {
+      "id": "emergency-h-278",
+      "category": "medical",
+      "question": "he has chest pain"
+    },
+    {
+      "id": "emergency-h-279",
+      "category": "medical-text",
+      "question": "yo she is choking rn"
+    },
+    {
+      "id": "emergency-h-280",
+      "category": "fall-runon",
+      "question": "he fell in the lobby we are scared"
+    },
+    {
+      "id": "emergency-h-281",
+      "category": "fall-runon",
+      "question": "my dad fell in the hallway we are scared"
+    },
+    {
+      "id": "emergency-h-282",
+      "category": "crime-room",
+      "question": "room 305 a guy is breaking into the room next door"
+    },
+    {
+      "id": "emergency-h-283",
+      "category": "fall",
+      "question": "someone just fell in the garage"
+    },
+    {
+      "id": "emergency-h-284",
+      "category": "styled",
+      "question": "grandpa fel in the lobby and hit their head"
+    },
+    {
+      "id": "emergency-h-285",
+      "category": "fall-runon",
+      "question": "the guest in 412 fell getting out of the shower we are scared"
+    },
+    {
+      "id": "emergency-h-286",
+      "category": "crime-room",
+      "question": "room 305 a man is trying to break into my room"
+    },
+    {
+      "id": "emergency-h-287",
+      "category": "medical-text",
+      "question": "yo my husband has chest pain rn"
+    },
+    {
+      "id": "emergency-h-288",
+      "category": "fall-runon",
+      "question": "a man fell in the bathroom please hurry"
+    },
+    {
+      "id": "emergency-h-289",
+      "category": "styled",
+      "question": "my dad fell in lobby and can't get up"
+    },
+    {
+      "id": "emergency-h-290",
+      "category": "styled",
+      "question": "pls my wife just fell in the lobby rn"
+    },
+    {
+      "id": "emergency-h-291",
+      "category": "styled",
+      "question": "a woman just fell in garage"
+    },
+    {
+      "id": "emergency-h-292",
+      "category": "crime",
+      "question": "two people pulled a knife"
+    },
+    {
+      "id": "emergency-h-293",
+      "category": "crime",
+      "question": "he got shot outside"
+    },
+    {
+      "id": "emergency-h-294",
+      "category": "crime",
+      "question": "she robbed me in the garage"
+    },
+    {
+      "id": "emergency-h-295",
+      "category": "medical",
+      "question": "the woman in the lobby is having a stroke"
+    },
+    {
+      "id": "emergency-h-296",
+      "category": "crime-room",
+      "question": "room 305 two people is breaking into the room next door"
+    },
+    {
+      "id": "emergency-h-297",
+      "category": "styled",
+      "question": "she tripped and fel getting out the tub"
+    },
+    {
+      "id": "emergency-h-298",
+      "category": "medical",
+      "question": "he passed out"
+    },
+    {
+      "id": "emergency-h-299",
+      "category": "medical",
+      "question": "my friend can't breathe"
+    },
+    {
+      "id": "emergency-h-300",
+      "category": "fall-runon",
+      "question": "grandpa fell in the bathroom we are scared"
+    },
+    {
+      "id": "emergency-h-301",
+      "category": "styled",
+      "question": "he just fell in the room i dont know what to do"
+    },
+    {
+      "id": "emergency-h-302",
+      "category": "spanish-odd",
+      "question": "por favor huele a humo en el pasillo rapido"
+    },
+    {
+      "id": "emergency-h-303",
+      "category": "crime-room",
+      "question": "room 305 a man has a gun"
+    },
+    {
+      "id": "emergency-h-304",
+      "category": "medical",
+      "question": "she is having a seizure"
+    },
+    {
+      "id": "emergency-h-305",
+      "category": "crime-room",
+      "question": "room 118 a man broke into our room"
+    },
+    {
+      "id": "emergency-h-306",
+      "category": "crime",
+      "question": "she is trying to break into my room"
+    },
+    {
+      "id": "emergency-h-307",
+      "category": "fall-runon",
+      "question": "grandma fell in the hallway please hurry"
+    },
+    {
+      "id": "emergency-h-308",
+      "category": "styled",
+      "question": "she is in my room and I don't know them i dont know what to do"
+    },
+    {
+      "id": "emergency-h-309",
+      "category": "fall",
+      "question": "grandpa just fell by the pool"
+    },
+    {
+      "id": "emergency-h-310",
+      "category": "spanish-odd",
+      "question": "por favor se esta ahogando en la piscina rapido"
+    },
+    {
+      "id": "emergency-h-311",
+      "category": "styled",
+      "question": "he won't wake up i dont know what to do"
+    },
+    {
+      "id": "emergency-h-312",
+      "category": "fall",
+      "question": "the guest in 412 just fell in the bathroom"
+    },
+    {
+      "id": "emergency-h-313",
+      "category": "fall",
+      "question": "someone just fell getting out of the shower"
+    },
+    {
+      "id": "emergency-h-314",
+      "category": "spanish-odd",
+      "question": "por favor necesito una ambulancia ya rapido"
+    },
+    {
+      "id": "emergency-h-315",
+      "category": "crime-odd",
+      "question": "theyre breaking in rn please"
+    },
+    {
+      "id": "emergency-h-316",
+      "category": "fall-runon",
+      "question": "he fell by the pool please hurry"
+    },
+    {
+      "id": "emergency-h-317",
+      "category": "fall",
+      "question": "a man just fell by the pool"
+    },
+    {
+      "id": "emergency-h-318",
+      "category": "fall-odd",
+      "question": "my wife fell in the shower"
+    },
+    {
+      "id": "emergency-h-319",
+      "category": "fall-runon",
+      "question": "my husband fell in the bathroom please hurry"
+    },
+    {
+      "id": "emergency-h-320",
+      "category": "styled",
+      "question": "pls my mom fell in the lobby and hit their head rn"
+    },
+    {
+      "id": "emergency-h-321",
+      "category": "styled",
+      "question": "pls my mom just fell on the sidewalk rn"
+    },
+    {
+      "id": "emergency-h-322",
+      "category": "medical",
+      "question": "grandma is unconscious"
+    },
+    {
+      "id": "emergency-h-323",
+      "category": "crime",
+      "question": "a man robbed me in the garage"
+    },
+    {
+      "id": "emergency-h-324",
+      "category": "fall",
+      "question": "the guest in 412 just fell near the elevator"
+    },
+    {
+      "id": "emergency-h-325",
+      "category": "styled",
+      "question": "pls my husband just fell in the lobby rn"
+    },
+    {
+      "id": "emergency-h-326",
+      "category": "fall",
+      "question": "my mom just fell in the garage"
+    },
+    {
+      "id": "emergency-h-327",
+      "category": "medical",
+      "question": "my wife is having an allergic reaction"
+    },
+    {
+      "id": "emergency-h-328",
+      "category": "crime",
+      "question": "a man stabbed someone in the lobby"
+    },
+    {
+      "id": "emergency-h-329",
+      "category": "crime",
+      "question": "he stabbed someone in the lobby"
+    },
+    {
+      "id": "emergency-h-330",
+      "category": "medical",
+      "question": "my wife has chest pain"
+    },
+    {
+      "id": "emergency-h-331",
+      "category": "fall-runon",
+      "question": "a little kid fell in the lobby please hurry"
+    },
+    {
+      "id": "emergency-h-332",
+      "category": "styled",
+      "question": "INTRUDER IN THE HALL i dont know what to do"
+    },
+    {
+      "id": "emergency-h-333",
+      "category": "medical",
+      "question": "my wife was poisoned i think"
+    },
+    {
+      "id": "emergency-h-334",
+      "category": "fall-runon",
+      "question": "my wife fell by the pool we are scared"
+    },
+    {
+      "id": "emergency-h-335",
+      "category": "medical-odd",
+      "question": "suicidal guest in 118"
+    },
+    {
+      "id": "emergency-h-336",
+      "category": "styled",
+      "question": "she just fel by the pool"
+    },
+    {
+      "id": "emergency-h-337",
+      "category": "fall",
+      "question": "a little kid just fell in the room"
+    },
+    {
+      "id": "emergency-h-338",
+      "category": "fall-runon",
+      "question": "someone fell in the hallway please hurry"
+    },
+    {
+      "id": "emergency-h-339",
+      "category": "styled",
+      "question": "a man just fel near the elevator"
+    },
+    {
+      "id": "emergency-h-340",
+      "category": "medical",
+      "question": "grandma is having a stroke"
+    },
+    {
+      "id": "emergency-h-341",
+      "category": "crime-room",
+      "question": "room 305 someone has a gun"
+    },
+    {
+      "id": "emergency-h-342",
+      "category": "medical",
+      "question": "grandma needs an epipen"
+    },
+    {
+      "id": "emergency-h-343",
+      "category": "spanish-odd",
+      "question": "se desmayo"
+    },
+    {
+      "id": "emergency-h-344",
+      "category": "medical",
+      "question": "my wife is having a seizure"
+    },
+    {
+      "id": "emergency-h-345",
+      "category": "medical-odd",
+      "question": "i dont want to live anymore"
+    },
+    {
+      "id": "emergency-h-346",
+      "category": "spanish-odd",
+      "question": "por favor creo que es un infarto rapido"
+    },
+    {
+      "id": "emergency-h-347",
+      "category": "fall-runon",
+      "question": "a man fell down the stairs please hurry"
+    },
+    {
+      "id": "emergency-h-348",
+      "category": "medical",
+      "question": "grandma took too many pills"
+    },
+    {
+      "id": "emergency-h-349",
+      "category": "medical",
+      "question": "my friend needs an epipen"
+    },
+    {
+      "id": "emergency-h-350",
+      "category": "spanish-odd",
+      "question": "no puedo respirar"
+    },
+    {
+      "id": "emergency-h-351",
+      "category": "styled",
+      "question": "a woman just fel near the elevator"
+    },
+    {
+      "id": "emergency-h-352",
+      "category": "fall",
+      "question": "grandma fell in the lobby and they are not moving"
+    },
+    {
+      "id": "emergency-h-353",
+      "category": "styled",
+      "question": "she just fel near the elevator"
+    },
+    {
+      "id": "emergency-h-354",
+      "category": "medical-text",
+      "question": "yo my wife passed out rn"
+    },
+    {
+      "id": "emergency-h-355",
+      "category": "spanish",
+      "question": "ella se cayo por las escaleras"
+    },
+    {
+      "id": "emergency-h-356",
+      "category": "styled",
+      "question": "my husband fell in the lobby and is bleeding i dont know what to do"
+    },
+    {
+      "id": "emergency-h-357",
+      "category": "medical",
+      "question": "a guest is having an asthma attack"
+    },
+    {
+      "id": "emergency-h-358",
+      "category": "fall-runon",
+      "question": "grandpa fell getting out of the shower please hurry"
+    },
+    {
+      "id": "emergency-h-359",
+      "category": "styled",
+      "question": "pls my husband just fell on the sidewalk rn"
+    },
+    {
+      "id": "benign-h-0",
+      "category": "wifi",
+      "question": "yo whats the wifi password thanks"
+    },
+    {
+      "id": "benign-h-1",
+      "category": "breakfast",
+      "question": "what time is breakfast if you know"
+    },
+    {
+      "id": "benign-h-2",
+      "category": "parking",
+      "question": "pls where do I park if you know"
+    },
+    {
+      "id": "benign-h-3",
+      "category": "ice",
+      "question": "the kids want to know where is the ice machine please"
+    },
+    {
+      "id": "benign-h-4",
+      "category": "elevator",
+      "question": "excuse me is the elevator working please"
+    },
+    {
+      "id": "benign-h-5",
+      "category": "address",
+      "question": "excuse me what is the street address if you know"
+    },
+    {
+      "id": "benign-h-6",
+      "category": "checkin",
+      "question": "hey what time is check-in thanks"
+    },
+    {
+      "id": "benign-h-7",
+      "category": "address",
+      "question": "pls what is the street address tomorrow"
+    },
+    {
+      "id": "benign-h-8",
+      "category": "wifi",
+      "question": "for my mom ssid please tomorrow"
+    },
+    {
+      "id": "benign-h-9",
+      "category": "pool",
+      "question": "pls is the pool open"
+    },
+    {
+      "id": "benign-h-10",
+      "category": "wifi",
+      "question": "excuse me whats the wifi password tomorrow"
+    },
+    {
+      "id": "benign-h-11",
+      "category": "breakfast",
+      "question": "yo where is breakfast served please"
+    },
+    {
+      "id": "benign-h-12",
+      "category": "wifi",
+      "question": "ssid please tonight"
+    },
+    {
+      "id": "benign-h-13",
+      "category": "elevator",
+      "question": "quick question is the elevator working"
+    },
+    {
+      "id": "benign-h-14",
+      "category": "checkout",
+      "question": "pls when do we have to leave tonight"
+    },
+    {
+      "id": "benign-h-15",
+      "category": "towels",
+      "question": "pls can I get extra towels tonight"
+    },
+    {
+      "id": "benign-h-16",
+      "category": "breakfast",
+      "question": "the kids want to know where is breakfast served"
+    },
+    {
+      "id": "benign-h-17",
+      "category": "elevator",
+      "question": "excuse me is the elevator working"
+    },
+    {
+      "id": "benign-h-18",
+      "category": "address",
+      "question": "hey what is the street address"
+    },
+    {
+      "id": "benign-h-19",
+      "category": "pets",
+      "question": "pls what is the pet fee please"
+    },
+    {
+      "id": "benign-h-20",
+      "category": "laundry",
+      "question": "excuse me where is the guest laundry tonight"
+    },
+    {
+      "id": "benign-h-21",
+      "category": "breakfast",
+      "question": "quick question is breakfast included tomorrow"
+    },
+    {
+      "id": "benign-h-22",
+      "category": "wifi",
+      "question": "the kids want to know what is the wifi"
+    },
+    {
+      "id": "benign-h-23",
+      "category": "ice",
+      "question": "excuse me where is the ice machine tomorrow"
+    },
+    {
+      "id": "benign-h-24",
+      "category": "elevator",
+      "question": "excuse me the elevator is slow tonight"
+    },
+    {
+      "id": "benign-h-25",
+      "category": "breakfast",
+      "question": "excuse me is breakfast included please"
+    },
+    {
+      "id": "benign-h-26",
+      "category": "towels",
+      "question": "yo can I get extra towels tomorrow"
+    },
+    {
+      "id": "benign-h-27",
+      "category": "gym",
+      "question": "yo is the gym 24 hours tomorrow"
+    },
+    {
+      "id": "benign-h-28",
+      "category": "address",
+      "question": "yo what is the street address"
+    },
+    {
+      "id": "benign-h-29",
+      "category": "breakfast",
+      "question": "pls where is breakfast served"
+    },
+    {
+      "id": "benign-h-30",
+      "category": "pets",
+      "question": "for my mom what is the pet fee tomorrow"
+    },
+    {
+      "id": "benign-h-31",
+      "category": "breakfast",
+      "question": "for my mom what time is breakfast tomorrow"
+    },
+    {
+      "id": "benign-h-32",
+      "category": "wifi",
+      "question": "pls what is the wifi tonight"
+    },
+    {
+      "id": "benign-h-33",
+      "category": "parking",
+      "question": "hey where do I park if you know"
+    },
+    {
+      "id": "benign-h-34",
+      "category": "ice",
+      "question": "yo where is the ice machine please"
+    },
+    {
+      "id": "benign-h-35",
+      "category": "gym",
+      "question": "is the gym 24 hours tonight"
+    },
+    {
+      "id": "benign-h-36",
+      "category": "address",
+      "question": "quick question what is the street address"
+    },
+    {
+      "id": "benign-h-37",
+      "category": "checkout",
+      "question": "excuse me what time is checkout please"
+    },
+    {
+      "id": "benign-h-38",
+      "category": "ice",
+      "question": "for my mom where is the ice machine tomorrow"
+    },
+    {
+      "id": "benign-h-39",
+      "category": "elevator",
+      "question": "for my mom does the elevator run all night"
+    },
+    {
+      "id": "benign-h-40",
+      "category": "wifi",
+      "question": "the kids want to know whats the wifi password if you know"
+    },
+    {
+      "id": "benign-h-41",
+      "category": "laundry",
+      "question": "yo where is the guest laundry"
+    },
+    {
+      "id": "benign-h-42",
+      "category": "elevator",
+      "question": "hey does the elevator run all night if you know"
+    },
+    {
+      "id": "benign-h-43",
+      "category": "laundry",
+      "question": "the kids want to know where is the guest laundry tonight"
+    },
+    {
+      "id": "benign-h-44",
+      "category": "breakfast",
+      "question": "for my mom is breakfast included if you know"
+    },
+    {
+      "id": "benign-h-45",
+      "category": "pets",
+      "question": "excuse me can I bring my dog tonight"
+    },
+    {
+      "id": "benign-h-46",
+      "category": "pets",
+      "question": "pls can I bring my dog tomorrow"
+    },
+    {
+      "id": "benign-h-47",
+      "category": "checkout",
+      "question": "quick question when do we have to leave if you know"
+    },
+    {
+      "id": "benign-h-48",
+      "category": "pool",
+      "question": "quick question what time does the pool close thanks"
+    },
+    {
+      "id": "benign-h-49",
+      "category": "elevator",
+      "question": "does the elevator run all night thanks"
+    },
+    {
+      "id": "benign-h-50",
+      "category": "checkin",
+      "question": "the kids want to know what time is check-in tomorrow"
+    },
+    {
+      "id": "benign-h-51",
+      "category": "breakfast",
+      "question": "yo where is breakfast served thanks"
+    },
+    {
+      "id": "benign-h-52",
+      "category": "coffee",
+      "question": "pls where is coffee nearby if you know"
+    },
+    {
+      "id": "benign-h-53",
+      "category": "checkin",
+      "question": "what time is check-in tomorrow"
+    },
+    {
+      "id": "benign-h-54",
+      "category": "pets",
+      "question": "what is the pet fee tonight"
+    },
+    {
+      "id": "benign-h-55",
+      "category": "checkin",
+      "question": "hey what time is check-in tonight"
+    },
+    {
+      "id": "benign-h-56",
+      "category": "elevator",
+      "question": "pls is the elevator working"
+    },
+    {
+      "id": "benign-h-57",
+      "category": "pool",
+      "question": "pls what time does the pool close if you know"
+    },
+    {
+      "id": "benign-h-58",
+      "category": "laundry",
+      "question": "hey where is the guest laundry tomorrow"
+    },
+    {
+      "id": "benign-h-59",
+      "category": "laundry",
+      "question": "hey where is the guest laundry"
+    },
+    {
+      "id": "benign-h-60",
+      "category": "elevator",
+      "question": "quick question the elevator is slow if you know"
+    },
+    {
+      "id": "benign-h-61",
+      "category": "parking",
+      "question": "where do I park tomorrow"
+    },
+    {
+      "id": "benign-h-62",
+      "category": "coffee",
+      "question": "the kids want to know where is coffee nearby if you know"
+    },
+    {
+      "id": "benign-h-63",
+      "category": "address",
+      "question": "the kids want to know what is the street address tomorrow"
+    },
+    {
+      "id": "benign-h-64",
+      "category": "breakfast",
+      "question": "what time is breakfast thanks"
+    },
+    {
+      "id": "benign-h-65",
+      "category": "pets",
+      "question": "hey what is the pet fee tonight"
+    },
+    {
+      "id": "benign-h-66",
+      "category": "breakfast",
+      "question": "quick question what time is breakfast please"
+    },
+    {
+      "id": "benign-h-67",
+      "category": "pool",
+      "question": "quick question is the pool open tomorrow"
+    },
+    {
+      "id": "benign-h-68",
+      "category": "ice",
+      "question": "quick question where is the ice machine tonight"
+    },
+    {
+      "id": "benign-h-69",
+      "category": "restaurant",
+      "question": "yo where should we eat dinner thanks"
+    },
+    {
+      "id": "benign-h-70",
+      "category": "pets",
+      "question": "quick question what is the pet fee"
+    },
+    {
+      "id": "benign-h-71",
+      "category": "breakfast",
+      "question": "excuse me where is breakfast served tomorrow"
+    },
+    {
+      "id": "benign-h-72",
+      "category": "checkout",
+      "question": "yo what time is checkout if you know"
+    },
+    {
+      "id": "benign-h-73",
+      "category": "checkout",
+      "question": "quick question when do we have to leave tonight"
+    },
+    {
+      "id": "benign-h-74",
+      "category": "elevator",
+      "question": "the kids want to know the elevator is slow"
+    },
+    {
+      "id": "benign-h-75",
+      "category": "wifi",
+      "question": "yo what is the wifi if you know"
+    },
+    {
+      "id": "benign-h-76",
+      "category": "restaurant",
+      "question": "quick question where should we eat dinner tonight"
+    },
+    {
+      "id": "benign-h-77",
+      "category": "pool",
+      "question": "the kids want to know is the pool open please"
+    },
+    {
+      "id": "benign-h-78",
+      "category": "ice",
+      "question": "hey where is the ice machine thanks"
+    },
+    {
+      "id": "benign-h-79",
+      "category": "checkout",
+      "question": "quick question what time is checkout thanks"
+    },
+    {
+      "id": "benign-h-80",
+      "category": "wifi",
+      "question": "excuse me ssid please"
+    },
+    {
+      "id": "benign-h-81",
+      "category": "pool",
+      "question": "yo what time does the pool close if you know"
+    },
+    {
+      "id": "benign-h-82",
+      "category": "parking",
+      "question": "for my mom where do I park tomorrow"
+    },
+    {
+      "id": "benign-h-83",
+      "category": "checkout",
+      "question": "yo when do we have to leave tonight"
+    },
+    {
+      "id": "benign-h-84",
+      "category": "checkout",
+      "question": "hey when do we have to leave tomorrow"
+    },
+    {
+      "id": "benign-h-85",
+      "category": "pool",
+      "question": "quick question is the pool open please"
+    },
+    {
+      "id": "benign-h-86",
+      "category": "breakfast",
+      "question": "excuse me where is breakfast served tonight"
+    },
+    {
+      "id": "benign-h-87",
+      "category": "towels",
+      "question": "the kids want to know can I get extra towels"
+    },
+    {
+      "id": "benign-h-88",
+      "category": "checkout",
+      "question": "pls when do we have to leave"
+    },
+    {
+      "id": "benign-h-89",
+      "category": "pets",
+      "question": "quick question can I bring my dog thanks"
+    },
+    {
+      "id": "benign-h-90",
+      "category": "breakfast",
+      "question": "yo is breakfast included if you know"
+    },
+    {
+      "id": "benign-h-91",
+      "category": "ice",
+      "question": "pls where is the ice machine if you know"
+    },
+    {
+      "id": "benign-h-92",
+      "category": "wifi",
+      "question": "yo what is the wifi"
+    },
+    {
+      "id": "benign-h-93",
+      "category": "parking",
+      "question": "hey where do I park thanks"
+    },
+    {
+      "id": "benign-h-94",
+      "category": "elevator",
+      "question": "is the elevator working if you know"
+    },
+    {
+      "id": "benign-h-95",
+      "category": "pool",
+      "question": "excuse me is the pool open"
+    },
+    {
+      "id": "benign-h-96",
+      "category": "breakfast",
+      "question": "hey where is breakfast served"
+    },
+    {
+      "id": "benign-h-97",
+      "category": "pets",
+      "question": "excuse me can I bring my dog please"
+    },
+    {
+      "id": "benign-h-98",
+      "category": "breakfast",
+      "question": "yo what time is breakfast tomorrow"
+    },
+    {
+      "id": "benign-h-99",
+      "category": "wifi",
+      "question": "ssid please thanks"
+    },
+    {
+      "id": "benign-h-100",
+      "category": "pool",
+      "question": "yo is the pool open tonight"
+    },
+    {
+      "id": "benign-h-101",
+      "category": "elevator",
+      "question": "yo the elevator is slow thanks"
+    },
+    {
+      "id": "benign-h-102",
+      "category": "checkin",
+      "question": "quick question what time is check-in please"
+    },
+    {
+      "id": "benign-h-103",
+      "category": "wifi",
+      "question": "what is the wifi please"
+    },
+    {
+      "id": "benign-h-104",
+      "category": "wifi",
+      "question": "quick question what is the wifi tonight"
+    },
+    {
+      "id": "benign-h-105",
+      "category": "elevator",
+      "question": "yo is the elevator working tomorrow"
+    },
+    {
+      "id": "benign-h-106",
+      "category": "pets",
+      "question": "quick question what is the pet fee tomorrow"
+    },
+    {
+      "id": "benign-h-107",
+      "category": "pool",
+      "question": "pls is the pool open if you know"
+    },
+    {
+      "id": "benign-h-108",
+      "category": "breakfast",
+      "question": "the kids want to know what time is breakfast tomorrow"
+    },
+    {
+      "id": "benign-h-109",
+      "category": "restaurant",
+      "question": "excuse me where should we eat dinner"
+    },
+    {
+      "id": "benign-h-110",
+      "category": "wifi",
+      "question": "hey what is the wifi"
+    },
+    {
+      "id": "benign-h-111",
+      "category": "elevator",
+      "question": "excuse me is the elevator working tonight"
+    },
+    {
+      "id": "benign-h-112",
+      "category": "parking",
+      "question": "quick question how much is valet thanks"
+    },
+    {
+      "id": "benign-h-113",
+      "category": "wifi",
+      "question": "quick question what is the wifi please"
+    },
+    {
+      "id": "benign-h-114",
+      "category": "coffee",
+      "question": "quick question where is coffee nearby tomorrow"
+    },
+    {
+      "id": "benign-h-115",
+      "category": "elevator",
+      "question": "hey the elevator is slow if you know"
+    },
+    {
+      "id": "benign-h-116",
+      "category": "wifi",
+      "question": "quick question whats the wifi password tonight"
+    },
+    {
+      "id": "benign-h-117",
+      "category": "parking",
+      "question": "hey how much is valet tomorrow"
+    },
+    {
+      "id": "benign-h-118",
+      "category": "pets",
+      "question": "pls can I bring my dog tonight"
+    },
+    {
+      "id": "benign-h-119",
+      "category": "address",
+      "question": "yo what is the street address tonight"
+    },
+    {
+      "id": "benign-h-120",
+      "category": "elevator",
+      "question": "for my mom is the elevator working thanks"
+    },
+    {
+      "id": "benign-h-121",
+      "category": "pool",
+      "question": "for my mom is the pool open please"
+    },
+    {
+      "id": "benign-h-122",
+      "category": "elevator",
+      "question": "quick question is the elevator working tonight"
+    },
+    {
+      "id": "benign-h-123",
+      "category": "wifi",
+      "question": "excuse me ssid please please"
+    },
+    {
+      "id": "benign-h-124",
+      "category": "checkout",
+      "question": "pls when do we have to leave please"
+    },
+    {
+      "id": "benign-h-125",
+      "category": "checkout",
+      "question": "when do we have to leave tonight"
+    },
+    {
+      "id": "benign-h-126",
+      "category": "restaurant",
+      "question": "where should we eat dinner tomorrow"
+    },
+    {
+      "id": "benign-h-127",
+      "category": "parking",
+      "question": "how much is valet"
+    },
+    {
+      "id": "benign-h-128",
+      "category": "ice",
+      "question": "hey where is the ice machine please"
+    },
+    {
+      "id": "benign-h-129",
+      "category": "elevator",
+      "question": "pls does the elevator run all night please"
+    },
+    {
+      "id": "benign-h-130",
+      "category": "towels",
+      "question": "quick question can I get extra towels tonight"
+    },
+    {
+      "id": "benign-h-131",
+      "category": "parking",
+      "question": "yo how much is valet tomorrow"
+    },
+    {
+      "id": "benign-h-132",
+      "category": "coffee",
+      "question": "for my mom where is coffee nearby please"
+    },
+    {
+      "id": "benign-h-133",
+      "category": "pool",
+      "question": "quick question what time does the pool close"
+    },
+    {
+      "id": "benign-h-134",
+      "category": "ice",
+      "question": "pls where is the ice machine"
+    },
+    {
+      "id": "benign-h-135",
+      "category": "breakfast",
+      "question": "pls is breakfast included if you know"
+    },
+    {
+      "id": "benign-h-136",
+      "category": "breakfast",
+      "question": "the kids want to know is breakfast included please"
+    },
+    {
+      "id": "benign-h-137",
+      "category": "breakfast",
+      "question": "excuse me what time is breakfast tonight"
+    },
+    {
+      "id": "benign-h-138",
+      "category": "wifi",
+      "question": "excuse me ssid please tomorrow"
+    },
+    {
+      "id": "benign-h-139",
+      "category": "gym",
+      "question": "pls is the gym 24 hours if you know"
+    },
+    {
+      "id": "benign-h-140",
+      "category": "parking",
+      "question": "hey where do I park please"
+    },
+    {
+      "id": "benign-h-141",
+      "category": "breakfast",
+      "question": "hey what time is breakfast please"
+    },
+    {
+      "id": "benign-h-142",
+      "category": "ice",
+      "question": "the kids want to know where is the ice machine thanks"
+    },
+    {
+      "id": "benign-h-143",
+      "category": "elevator",
+      "question": "for my mom is the elevator working tonight"
+    },
+    {
+      "id": "benign-h-144",
+      "category": "wifi",
+      "question": "for my mom what is the wifi thanks"
+    },
+    {
+      "id": "benign-h-145",
+      "category": "restaurant",
+      "question": "the kids want to know where should we eat dinner"
+    },
+    {
+      "id": "benign-h-146",
+      "category": "parking",
+      "question": "for my mom where do I park please"
+    },
+    {
+      "id": "benign-h-147",
+      "category": "pets",
+      "question": "the kids want to know what is the pet fee thanks"
+    },
+    {
+      "id": "benign-h-148",
+      "category": "coffee",
+      "question": "hey where is coffee nearby tomorrow"
+    },
+    {
+      "id": "benign-h-149",
+      "category": "wifi",
+      "question": "the kids want to know whats the wifi password please"
+    },
+    {
+      "id": "benign-h-150",
+      "category": "breakfast",
+      "question": "for my mom what time is breakfast if you know"
+    },
+    {
+      "id": "benign-h-151",
+      "category": "pets",
+      "question": "excuse me can I bring my dog if you know"
+    },
+    {
+      "id": "benign-h-152",
+      "category": "pets",
+      "question": "yo can I bring my dog"
+    },
+    {
+      "id": "benign-h-153",
+      "category": "wifi",
+      "question": "quick question what is the wifi if you know"
+    },
+    {
+      "id": "benign-h-154",
+      "category": "checkin",
+      "question": "yo what time is check-in tonight"
+    },
+    {
+      "id": "benign-h-155",
+      "category": "elevator",
+      "question": "the kids want to know is the elevator working thanks"
+    },
+    {
+      "id": "benign-h-156",
+      "category": "wifi",
+      "question": "excuse me what is the wifi tonight"
+    },
+    {
+      "id": "benign-h-157",
+      "category": "elevator",
+      "question": "does the elevator run all night"
+    },
+    {
+      "id": "benign-h-158",
+      "category": "checkin",
+      "question": "the kids want to know what time is check-in"
+    },
+    {
+      "id": "benign-h-159",
+      "category": "pets",
+      "question": "excuse me what is the pet fee thanks"
+    },
+    {
+      "id": "benign-h-160",
+      "category": "gym",
+      "question": "quick question is the gym 24 hours tonight"
+    },
+    {
+      "id": "benign-h-161",
+      "category": "pets",
+      "question": "quick question can I bring my dog please"
+    },
+    {
+      "id": "benign-h-162",
+      "category": "breakfast",
+      "question": "what time is breakfast"
+    },
+    {
+      "id": "benign-h-163",
+      "category": "checkout",
+      "question": "for my mom when do we have to leave"
+    },
+    {
+      "id": "benign-h-164",
+      "category": "coffee",
+      "question": "for my mom where is coffee nearby if you know"
+    },
+    {
+      "id": "benign-h-165",
+      "category": "ice",
+      "question": "yo where is the ice machine thanks"
+    },
+    {
+      "id": "benign-h-166",
+      "category": "elevator",
+      "question": "yo does the elevator run all night if you know"
+    },
+    {
+      "id": "benign-h-167",
+      "category": "elevator",
+      "question": "is the elevator working tonight"
+    },
+    {
+      "id": "benign-h-168",
+      "category": "pool",
+      "question": "for my mom what time does the pool close if you know"
+    },
+    {
+      "id": "benign-h-169",
+      "category": "breakfast",
+      "question": "yo what time is breakfast tonight"
+    },
+    {
+      "id": "benign-h-170",
+      "category": "pets",
+      "question": "what is the pet fee thanks"
+    },
+    {
+      "id": "benign-h-171",
+      "category": "checkout",
+      "question": "what time is checkout tomorrow"
+    },
+    {
+      "id": "benign-h-172",
+      "category": "wifi",
+      "question": "hey ssid please thanks"
+    },
+    {
+      "id": "benign-h-173",
+      "category": "wifi",
+      "question": "for my mom whats the wifi password if you know"
+    },
+    {
+      "id": "benign-h-174",
+      "category": "ice",
+      "question": "pls where is the ice machine thanks"
+    },
+    {
+      "id": "benign-h-175",
+      "category": "breakfast",
+      "question": "what time is breakfast tonight"
+    },
+    {
+      "id": "benign-h-176",
+      "category": "breakfast",
+      "question": "for my mom where is breakfast served if you know"
+    },
+    {
+      "id": "benign-h-177",
+      "category": "breakfast",
+      "question": "for my mom where is breakfast served"
+    },
+    {
+      "id": "benign-h-178",
+      "category": "wifi",
+      "question": "excuse me what is the wifi if you know"
+    },
+    {
+      "id": "benign-h-179",
+      "category": "coffee",
+      "question": "for my mom where is coffee nearby tonight"
+    },
+    {
+      "id": "benign-h-180",
+      "category": "pool",
+      "question": "pls what time does the pool close please"
+    },
+    {
+      "id": "benign-h-181",
+      "category": "breakfast",
+      "question": "excuse me where is breakfast served thanks"
+    },
+    {
+      "id": "benign-h-182",
+      "category": "laundry",
+      "question": "excuse me where is the guest laundry if you know"
+    },
+    {
+      "id": "benign-h-183",
+      "category": "breakfast",
+      "question": "is breakfast included if you know"
+    },
+    {
+      "id": "benign-h-184",
+      "category": "pets",
+      "question": "hey can I bring my dog thanks"
+    },
+    {
+      "id": "benign-h-185",
+      "category": "breakfast",
+      "question": "excuse me what time is breakfast please"
+    },
+    {
+      "id": "benign-h-186",
+      "category": "address",
+      "question": "hey what is the street address tonight"
+    },
+    {
+      "id": "benign-h-187",
+      "category": "wifi",
+      "question": "ssid please tomorrow"
+    },
+    {
+      "id": "benign-h-188",
+      "category": "pets",
+      "question": "for my mom what is the pet fee if you know"
+    },
+    {
+      "id": "benign-h-189",
+      "category": "towels",
+      "question": "the kids want to know can I get extra towels if you know"
+    },
+    {
+      "id": "benign-h-190",
+      "category": "checkin",
+      "question": "for my mom what time is check-in if you know"
+    },
+    {
+      "id": "benign-h-191",
+      "category": "towels",
+      "question": "excuse me can I get extra towels thanks"
+    },
+    {
+      "id": "benign-h-192",
+      "category": "coffee",
+      "question": "excuse me where is coffee nearby tonight"
+    },
+    {
+      "id": "benign-h-193",
+      "category": "parking",
+      "question": "how much is valet tomorrow"
+    },
+    {
+      "id": "benign-h-194",
+      "category": "towels",
+      "question": "hey can I get extra towels please"
+    },
+    {
+      "id": "benign-h-195",
+      "category": "pool",
+      "question": "yo is the pool open please"
+    },
+    {
+      "id": "benign-h-196",
+      "category": "breakfast",
+      "question": "where is breakfast served"
+    },
+    {
+      "id": "benign-h-197",
+      "category": "towels",
+      "question": "can I get extra towels thanks"
+    },
+    {
+      "id": "benign-h-198",
+      "category": "restaurant",
+      "question": "for my mom where should we eat dinner please"
+    },
+    {
+      "id": "benign-h-199",
+      "category": "wifi",
+      "question": "yo whats the wifi password"
+    },
+    {
+      "id": "benign-h-200",
+      "category": "checkout",
+      "question": "when do we have to leave please"
+    },
+    {
+      "id": "benign-h-201",
+      "category": "laundry",
+      "question": "hey where is the guest laundry please"
+    },
+    {
+      "id": "benign-h-202",
+      "category": "restaurant",
+      "question": "for my mom where should we eat dinner"
+    },
+    {
+      "id": "benign-h-203",
+      "category": "coffee",
+      "question": "excuse me where is coffee nearby thanks"
+    },
+    {
+      "id": "benign-h-204",
+      "category": "restaurant",
+      "question": "excuse me where should we eat dinner please"
+    },
+    {
+      "id": "benign-h-205",
+      "category": "address",
+      "question": "hey what is the street address tomorrow"
+    },
+    {
+      "id": "benign-h-206",
+      "category": "elevator",
+      "question": "yo the elevator is slow please"
+    },
+    {
+      "id": "benign-h-207",
+      "category": "pool",
+      "question": "the kids want to know what time does the pool close if you know"
+    },
+    {
+      "id": "benign-h-208",
+      "category": "laundry",
+      "question": "excuse me where is the guest laundry please"
+    },
+    {
+      "id": "benign-h-209",
+      "category": "pool",
+      "question": "quick question what time does the pool close tomorrow"
+    },
+    {
+      "id": "benign-h-210",
+      "category": "breakfast",
+      "question": "yo what time is breakfast"
+    },
+    {
+      "id": "benign-h-211",
+      "category": "elevator",
+      "question": "the kids want to know is the elevator working tomorrow"
+    },
+    {
+      "id": "benign-h-212",
+      "category": "wifi",
+      "question": "excuse me ssid please thanks"
+    },
+    {
+      "id": "benign-h-213",
+      "category": "breakfast",
+      "question": "excuse me where is breakfast served"
+    },
+    {
+      "id": "benign-h-214",
+      "category": "pets",
+      "question": "hey what is the pet fee tomorrow"
+    },
+    {
+      "id": "benign-h-215",
+      "category": "coffee",
+      "question": "quick question where is coffee nearby"
+    },
+    {
+      "id": "benign-h-216",
+      "category": "gym",
+      "question": "the kids want to know is the gym 24 hours"
+    },
+    {
+      "id": "benign-h-217",
+      "category": "pool",
+      "question": "what time does the pool close please"
+    },
+    {
+      "id": "benign-h-218",
+      "category": "elevator",
+      "question": "the elevator is slow thanks"
+    },
+    {
+      "id": "benign-h-219",
+      "category": "pets",
+      "question": "can I bring my dog thanks"
+    },
+    {
+      "id": "benign-h-220",
+      "category": "checkin",
+      "question": "what time is check-in thanks"
+    },
+    {
+      "id": "benign-h-221",
+      "category": "elevator",
+      "question": "hey does the elevator run all night tonight"
+    },
+    {
+      "id": "benign-h-222",
+      "category": "breakfast",
+      "question": "where is breakfast served tonight"
+    },
+    {
+      "id": "benign-h-223",
+      "category": "laundry",
+      "question": "the kids want to know where is the guest laundry thanks"
+    },
+    {
+      "id": "benign-h-224",
+      "category": "wifi",
+      "question": "hey what is the wifi if you know"
+    },
+    {
+      "id": "benign-h-225",
+      "category": "pool",
+      "question": "hey is the pool open"
+    },
+    {
+      "id": "benign-h-226",
+      "category": "towels",
+      "question": "for my mom can I get extra towels"
+    },
+    {
+      "id": "benign-h-227",
+      "category": "breakfast",
+      "question": "pls is breakfast included tonight"
+    },
+    {
+      "id": "benign-h-228",
+      "category": "checkin",
+      "question": "what time is check-in"
+    },
+    {
+      "id": "benign-h-229",
+      "category": "pool",
+      "question": "the kids want to know is the pool open tonight"
+    },
+    {
+      "id": "benign-h-230",
+      "category": "laundry",
+      "question": "quick question where is the guest laundry please"
+    },
+    {
+      "id": "benign-h-231",
+      "category": "towels",
+      "question": "yo can I get extra towels please"
+    },
+    {
+      "id": "benign-h-232",
+      "category": "wifi",
+      "question": "yo ssid please tonight"
+    },
+    {
+      "id": "benign-h-233",
+      "category": "coffee",
+      "question": "where is coffee nearby tonight"
+    },
+    {
+      "id": "benign-h-234",
+      "category": "laundry",
+      "question": "where is the guest laundry"
+    },
+    {
+      "id": "benign-h-235",
+      "category": "wifi",
+      "question": "pls whats the wifi password thanks"
+    },
+    {
+      "id": "benign-h-236",
+      "category": "breakfast",
+      "question": "the kids want to know where is breakfast served tonight"
+    },
+    {
+      "id": "benign-h-237",
+      "category": "wifi",
+      "question": "yo ssid please thanks"
+    },
+    {
+      "id": "benign-h-238",
+      "category": "address",
+      "question": "the kids want to know what is the street address thanks"
+    },
+    {
+      "id": "benign-h-239",
+      "category": "breakfast",
+      "question": "yo what time is breakfast if you know"
+    },
+    {
+      "id": "benign-h-240",
+      "category": "breakfast",
+      "question": "quick question what time is breakfast tonight"
+    },
+    {
+      "id": "benign-h-241",
+      "category": "parking",
+      "question": "hey where do I park tomorrow"
+    },
+    {
+      "id": "benign-h-242",
+      "category": "restaurant",
+      "question": "quick question where should we eat dinner tomorrow"
+    },
+    {
+      "id": "benign-h-243",
+      "category": "gym",
+      "question": "for my mom is the gym 24 hours tomorrow"
+    },
+    {
+      "id": "benign-h-244",
+      "category": "pets",
+      "question": "the kids want to know can I bring my dog tomorrow"
+    },
+    {
+      "id": "benign-h-245",
+      "category": "checkin",
+      "question": "for my mom what time is check-in please"
+    },
+    {
+      "id": "benign-h-246",
+      "category": "parking",
+      "question": "for my mom where do I park"
+    },
+    {
+      "id": "benign-h-247",
+      "category": "pool",
+      "question": "yo what time does the pool close tonight"
+    },
+    {
+      "id": "benign-h-248",
+      "category": "gym",
+      "question": "quick question is the gym 24 hours if you know"
+    },
+    {
+      "id": "benign-h-249",
+      "category": "checkout",
+      "question": "for my mom when do we have to leave thanks"
+    },
+    {
+      "id": "benign-h-250",
+      "category": "elevator",
+      "question": "the kids want to know is the elevator working"
+    },
+    {
+      "id": "benign-h-251",
+      "category": "parking",
+      "question": "quick question how much is valet please"
+    },
+    {
+      "id": "benign-h-252",
+      "category": "elevator",
+      "question": "is the elevator working thanks"
+    },
+    {
+      "id": "benign-h-253",
+      "category": "restaurant",
+      "question": "where should we eat dinner if you know"
+    },
+    {
+      "id": "benign-h-254",
+      "category": "parking",
+      "question": "pls where do I park please"
+    },
+    {
+      "id": "benign-h-255",
+      "category": "checkout",
+      "question": "hey what time is checkout thanks"
+    },
+    {
+      "id": "benign-h-256",
+      "category": "breakfast",
+      "question": "pls where is breakfast served tomorrow"
+    },
+    {
+      "id": "benign-h-257",
+      "category": "elevator",
+      "question": "the elevator is slow if you know"
+    },
+    {
+      "id": "benign-h-258",
+      "category": "checkin",
+      "question": "pls what time is check-in if you know"
+    },
+    {
+      "id": "benign-h-259",
+      "category": "laundry",
+      "question": "yo where is the guest laundry please"
+    },
+    {
+      "id": "benign-h-260",
+      "category": "towels",
+      "question": "excuse me can I get extra towels if you know"
+    },
+    {
+      "id": "benign-h-261",
+      "category": "gym",
+      "question": "excuse me is the gym 24 hours tomorrow"
+    },
+    {
+      "id": "benign-h-262",
+      "category": "checkout",
+      "question": "pls what time is checkout please"
+    },
+    {
+      "id": "benign-h-263",
+      "category": "checkout",
+      "question": "the kids want to know what time is checkout tonight"
+    },
+    {
+      "id": "benign-h-264",
+      "category": "pool",
+      "question": "hey what time does the pool close tonight"
+    },
+    {
+      "id": "benign-h-265",
+      "category": "ice",
+      "question": "yo where is the ice machine tomorrow"
+    },
+    {
+      "id": "benign-h-266",
+      "category": "wifi",
+      "question": "pls what is the wifi please"
+    },
+    {
+      "id": "benign-h-267",
+      "category": "wifi",
+      "question": "quick question ssid please tomorrow"
+    },
+    {
+      "id": "benign-h-268",
+      "category": "laundry",
+      "question": "for my mom where is the guest laundry"
+    },
+    {
+      "id": "benign-h-269",
+      "category": "breakfast",
+      "question": "yo what time is breakfast please"
+    },
+    {
+      "id": "benign-h-270",
+      "category": "wifi",
+      "question": "for my mom what is the wifi please"
+    },
+    {
+      "id": "benign-h-271",
+      "category": "coffee",
+      "question": "excuse me where is coffee nearby if you know"
+    },
+    {
+      "id": "benign-h-272",
+      "category": "coffee",
+      "question": "for my mom where is coffee nearby thanks"
+    },
+    {
+      "id": "benign-h-273",
+      "category": "checkin",
+      "question": "pls what time is check-in tomorrow"
+    },
+    {
+      "id": "benign-h-274",
+      "category": "elevator",
+      "question": "hey does the elevator run all night thanks"
+    },
+    {
+      "id": "benign-h-275",
+      "category": "checkout",
+      "question": "the kids want to know when do we have to leave please"
+    },
+    {
+      "id": "benign-h-276",
+      "category": "laundry",
+      "question": "quick question where is the guest laundry"
+    },
+    {
+      "id": "benign-h-277",
+      "category": "breakfast",
+      "question": "for my mom what time is breakfast tonight"
+    },
+    {
+      "id": "benign-h-278",
+      "category": "parking",
+      "question": "quick question where do I park please"
+    },
+    {
+      "id": "benign-h-279",
+      "category": "wifi",
+      "question": "what is the wifi tomorrow"
+    },
+    {
+      "id": "benign-h-280",
+      "category": "pets",
+      "question": "pls what is the pet fee tomorrow"
+    },
+    {
+      "id": "benign-h-281",
+      "category": "breakfast",
+      "question": "hey where is breakfast served thanks"
+    },
+    {
+      "id": "benign-h-282",
+      "category": "elevator",
+      "question": "for my mom does the elevator run all night tonight"
+    },
+    {
+      "id": "benign-h-283",
+      "category": "coffee",
+      "question": "pls where is coffee nearby thanks"
+    },
+    {
+      "id": "benign-h-284",
+      "category": "parking",
+      "question": "the kids want to know where do I park thanks"
+    },
+    {
+      "id": "benign-h-285",
+      "category": "pool",
+      "question": "excuse me is the pool open tonight"
+    },
+    {
+      "id": "benign-h-286",
+      "category": "restaurant",
+      "question": "quick question where should we eat dinner"
+    },
+    {
+      "id": "benign-h-287",
+      "category": "parking",
+      "question": "the kids want to know where do I park tomorrow"
+    },
+    {
+      "id": "benign-h-288",
+      "category": "towels",
+      "question": "pls can I get extra towels please"
+    },
+    {
+      "id": "benign-h-289",
+      "category": "coffee",
+      "question": "yo where is coffee nearby tonight"
+    },
+    {
+      "id": "benign-h-290",
+      "category": "pets",
+      "question": "hey can I bring my dog if you know"
+    },
+    {
+      "id": "benign-h-291",
+      "category": "wifi",
+      "question": "for my mom ssid please thanks"
+    },
+    {
+      "id": "benign-h-292",
+      "category": "wifi",
+      "question": "the kids want to know what is the wifi thanks"
+    },
+    {
+      "id": "benign-h-293",
+      "category": "ice",
+      "question": "excuse me where is the ice machine tonight"
+    },
+    {
+      "id": "benign-h-294",
+      "category": "parking",
+      "question": "excuse me how much is valet"
+    },
+    {
+      "id": "benign-h-295",
+      "category": "gym",
+      "question": "yo is the gym 24 hours"
+    },
+    {
+      "id": "benign-h-296",
+      "category": "checkout",
+      "question": "quick question when do we have to leave thanks"
+    },
+    {
+      "id": "benign-h-297",
+      "category": "wifi",
+      "question": "hey ssid please tomorrow"
+    },
+    {
+      "id": "benign-h-298",
+      "category": "towels",
+      "question": "quick question can I get extra towels thanks"
+    },
+    {
+      "id": "benign-h-299",
+      "category": "breakfast",
+      "question": "hey where is breakfast served tonight"
+    },
+    {
+      "id": "benign-h-300",
+      "category": "pool",
+      "question": "the kids want to know what time does the pool close tonight"
+    },
+    {
+      "id": "benign-h-301",
+      "category": "elevator",
+      "question": "for my mom is the elevator working"
+    },
+    {
+      "id": "benign-h-302",
+      "category": "pets",
+      "question": "yo can I bring my dog tomorrow"
+    },
+    {
+      "id": "benign-h-303",
+      "category": "pool",
+      "question": "pls is the pool open tonight"
+    },
+    {
+      "id": "benign-h-304",
+      "category": "elevator",
+      "question": "pls is the elevator working tomorrow"
+    },
+    {
+      "id": "benign-h-305",
+      "category": "checkin",
+      "question": "excuse me what time is check-in if you know"
+    },
+    {
+      "id": "benign-h-306",
+      "category": "pool",
+      "question": "hey is the pool open if you know"
+    },
+    {
+      "id": "benign-h-307",
+      "category": "breakfast",
+      "question": "yo is breakfast included thanks"
+    },
+    {
+      "id": "benign-h-308",
+      "category": "checkout",
+      "question": "excuse me when do we have to leave tonight"
+    },
+    {
+      "id": "benign-h-309",
+      "category": "pool",
+      "question": "quick question what time does the pool close tonight"
+    },
+    {
+      "id": "benign-h-310",
+      "category": "towels",
+      "question": "pls can I get extra towels tomorrow"
+    },
+    {
+      "id": "benign-h-311",
+      "category": "elevator",
+      "question": "hey is the elevator working tonight"
+    },
+    {
+      "id": "benign-h-312",
+      "category": "breakfast",
+      "question": "quick question where is breakfast served tonight"
+    },
+    {
+      "id": "benign-h-313",
+      "category": "elevator",
+      "question": "the kids want to know the elevator is slow please"
+    },
+    {
+      "id": "benign-h-314",
+      "category": "towels",
+      "question": "the kids want to know can I get extra towels please"
+    },
+    {
+      "id": "benign-h-315",
+      "category": "ice",
+      "question": "quick question where is the ice machine tomorrow"
+    },
+    {
+      "id": "benign-h-316",
+      "category": "ice",
+      "question": "yo where is the ice machine if you know"
+    },
+    {
+      "id": "benign-h-317",
+      "category": "elevator",
+      "question": "hey the elevator is slow"
+    },
+    {
+      "id": "benign-h-318",
+      "category": "restaurant",
+      "question": "yo where should we eat dinner if you know"
+    },
+    {
+      "id": "benign-h-319",
+      "category": "pets",
+      "question": "yo can I bring my dog please"
+    },
+    {
+      "id": "benign-h-320",
+      "category": "wifi",
+      "question": "yo what is the wifi please"
+    },
+    {
+      "id": "benign-h-321",
+      "category": "elevator",
+      "question": "excuse me does the elevator run all night thanks"
+    },
+    {
+      "id": "benign-h-322",
+      "category": "elevator",
+      "question": "excuse me is the elevator working if you know"
+    },
+    {
+      "id": "benign-h-323",
+      "category": "restaurant",
+      "question": "pls where should we eat dinner tonight"
+    },
+    {
+      "id": "benign-h-324",
+      "category": "ice",
+      "question": "the kids want to know where is the ice machine tonight"
+    },
+    {
+      "id": "benign-h-325",
+      "category": "checkin",
+      "question": "pls what time is check-in please"
+    },
+    {
+      "id": "benign-h-326",
+      "category": "laundry",
+      "question": "pls where is the guest laundry if you know"
+    },
+    {
+      "id": "benign-h-327",
+      "category": "breakfast",
+      "question": "excuse me where is breakfast served if you know"
+    },
+    {
+      "id": "benign-h-328",
+      "category": "address",
+      "question": "pls what is the street address tonight"
+    },
+    {
+      "id": "benign-h-329",
+      "category": "breakfast",
+      "question": "the kids want to know where is breakfast served thanks"
+    },
+    {
+      "id": "benign-h-330",
+      "category": "breakfast",
+      "question": "the kids want to know what time is breakfast thanks"
+    },
+    {
+      "id": "benign-h-331",
+      "category": "wifi",
+      "question": "the kids want to know what is the wifi tomorrow"
+    },
+    {
+      "id": "benign-h-332",
+      "category": "checkout",
+      "question": "for my mom what time is checkout tonight"
+    },
+    {
+      "id": "benign-h-333",
+      "category": "elevator",
+      "question": "for my mom is the elevator working please"
+    },
+    {
+      "id": "benign-h-334",
+      "category": "parking",
+      "question": "hey how much is valet if you know"
+    },
+    {
+      "id": "benign-h-335",
+      "category": "wifi",
+      "question": "excuse me whats the wifi password please"
+    },
+    {
+      "id": "benign-h-336",
+      "category": "pets",
+      "question": "quick question can I bring my dog if you know"
+    },
+    {
+      "id": "benign-h-337",
+      "category": "pool",
+      "question": "excuse me is the pool open if you know"
+    },
+    {
+      "id": "benign-h-338",
+      "category": "wifi",
+      "question": "for my mom whats the wifi password tomorrow"
+    },
+    {
+      "id": "benign-h-339",
+      "category": "towels",
+      "question": "excuse me can I get extra towels"
+    },
+    {
+      "id": "benign-h-340",
+      "category": "address",
+      "question": "for my mom what is the street address if you know"
+    },
+    {
+      "id": "benign-h-341",
+      "category": "wifi",
+      "question": "pls what is the wifi thanks"
+    },
+    {
+      "id": "benign-h-342",
+      "category": "elevator",
+      "question": "quick question is the elevator working if you know"
+    },
+    {
+      "id": "benign-h-343",
+      "category": "parking",
+      "question": "excuse me where do I park if you know"
+    },
+    {
+      "id": "benign-h-344",
+      "category": "parking",
+      "question": "for my mom how much is valet"
+    },
+    {
+      "id": "benign-h-345",
+      "category": "breakfast",
+      "question": "the kids want to know is breakfast included tomorrow"
+    },
+    {
+      "id": "benign-h-346",
+      "category": "breakfast",
+      "question": "excuse me is breakfast included if you know"
+    },
+    {
+      "id": "benign-h-347",
+      "category": "coffee",
+      "question": "quick question where is coffee nearby thanks"
+    },
+    {
+      "id": "benign-h-348",
+      "category": "gym",
+      "question": "for my mom is the gym 24 hours thanks"
+    },
+    {
+      "id": "benign-h-349",
+      "category": "wifi",
+      "question": "quick question ssid please"
+    },
+    {
+      "id": "benign-h-350",
+      "category": "breakfast",
+      "question": "quick question where is breakfast served please"
+    },
+    {
+      "id": "benign-h-351",
+      "category": "checkout",
+      "question": "the kids want to know what time is checkout tomorrow"
+    },
+    {
+      "id": "benign-h-352",
+      "category": "towels",
+      "question": "can I get extra towels please"
+    },
+    {
+      "id": "benign-h-353",
+      "category": "restaurant",
+      "question": "excuse me where should we eat dinner tonight"
+    },
+    {
+      "id": "benign-h-354",
+      "category": "address",
+      "question": "hey what is the street address thanks"
+    },
+    {
+      "id": "benign-h-355",
+      "category": "towels",
+      "question": "quick question can I get extra towels if you know"
+    },
+    {
+      "id": "benign-h-356",
+      "category": "parking",
+      "question": "where do I park thanks"
+    },
+    {
+      "id": "benign-h-357",
+      "category": "breakfast",
+      "question": "excuse me is breakfast included tonight"
+    },
+    {
+      "id": "benign-h-358",
+      "category": "laundry",
+      "question": "for my mom where is the guest laundry tonight"
+    },
+    {
+      "id": "benign-h-359",
+      "category": "laundry",
+      "question": "the kids want to know where is the guest laundry please"
+    }
+  ]
+}
