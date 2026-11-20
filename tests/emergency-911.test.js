@@ -35,6 +35,89 @@ function assert911(q, { spanish = false } = {}) {
   assert.doesNotMatch(plain, /smoking policy/i, q);
 }
 
+test("a hit-and-run and drugs on the property call 911 before parking or the model", () => {
+  const stay = {
+    ...hotel,
+    parking: "Valet parking at the main entrance is $28 per night.",
+    pets: "Dogs under 40 lb are welcome.",
+    location: { address: "Market Square, Knoxville, TN" },
+  };
+  const english = [
+    "Someone ran over my dog in the parking lot",
+    "he got run over by the garage",
+    "she was hit by a car",
+    "there is a car crash in the parking lot",
+    "it was a hit and run",
+    "the truck struck a child",
+    "a vehicle hit my dog",
+    "someone crashed in the parking garage",
+    "Someone was doing drugs in the stairway",
+    "he is smoking crack in the hallway",
+    "someone is shooting up in the bathroom",
+    "there are needles in the stairway",
+    "they are dealing drugs",
+    "there is a brawl in the lobby",
+    "people are fighting in the hall",
+    "someone is vandalizing the elevator",
+    "a man is trespassing on the roof",
+    "someone is lurking by my door",
+    "he is harassing me",
+    "someone was peeping in the window",
+    "a man is exposing himself",
+    "someone is banging on my door",
+    "they are yelling threats in the hall",
+    "someone broke into my car in the lot",
+    "they are stealing my car",
+  ];
+  for (const q of english) {
+    const answer = matchIntent(stay, q);
+    assert.equal(answer?.kind, "emergency", q + " -> " + (answer?.text || ""));
+    assert.equal(route(stay, q).needsModel, undefined, q);
+    assert.match(answer.text.replace(/\*/g, ""), /^Call 911 now\./);
+    assert.doesNotMatch(answer.text, /\$28|Market Square|Knoxville|Dogs under/i, q);
+  }
+  for (const q of [
+    "atropelló a mi perro en el estacionamiento",
+    "un carro chocó a una persona",
+    "hay un accidente de carro",
+    "están usando drogas en la escalera",
+    "están vendiendo drogas",
+    "están peleando en el pasillo",
+    "están robando mi carro",
+  ]) assert911(q, { spanish: true });
+});
+
+test("drugstore, pet policy, and ordinary mishaps do not call 911", () => {
+  const stay = {
+    ...hotel,
+    parking: "Valet parking at the main entrance is $28 per night.",
+    pets: "Dogs under 40 lb are welcome.",
+  };
+  const ordinary = [
+    "where is the nearest drugstore",
+    "where is the pharmacy",
+    "I need my prescription medication",
+    "what is the parking lot rate",
+    "what is your dog policy",
+    "what is the pet policy",
+    "we ran out of towels",
+    "I ran into a friend in the lobby",
+    "the remote is fighting with the TV remote",
+    "fighting with the TV remote",
+    "I'm crashing for the night",
+    "I crashed early, what time is breakfast",
+    "how much is valet",
+  ];
+  for (const q of ordinary) {
+    const answer = matchIntent(stay, q);
+    const text = answer?.text || "";
+    assert.notEqual(answer?.kind, "emergency", q + " -> " + text);
+    assert.doesNotMatch(text, /911/, q + " -> " + text);
+  }
+  assert.match(matchIntent(stay, "what is the parking lot rate").text, /\$28/);
+  assert.match(matchIntent(stay, "what is your dog policy").text, /Dogs under 40/);
+});
+
 test("Jim's three phone misses call 911 first", () => {
   for (const q of [
     "Someone just fell down the stairs",
